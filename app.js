@@ -1,4 +1,4 @@
-const API_URL = 'http://96.170.184.35.bc.googleusercontent.com:3000';
+const API_URL = 'https://popcon.ga:3000';
 
 function getResponse(url) {
   return new Promise(function (resolve, reject) {
