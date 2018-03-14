@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import MainContainer from './MainContainer';
 import TopMenu from './TopMenu';
 
 class App extends Component {
@@ -6,6 +7,7 @@ class App extends Component {
     return (
       <div className="App">
         <TopMenu />
+        <MainContainer />
       </div>
     );
   }
