@@ -1,4 +1,7 @@
 import React, { Component } from 'react'
+// TODO
+import '../../node_modules/react-vis/dist/style.css';
+import { HorizontalGridLines, LineSeries, VerticalGridLines, XAxis, XYPlot, YAxis } from 'react-vis';
 import { Image } from 'semantic-ui-react'
 
 export default class Chart extends Component {
@@ -56,10 +59,6 @@ export default class Chart extends Component {
     for (let [languageId, languageName] of topLanguages) {
       // TODO: magic number
       chartData.push(await this.getScoresForLanguage(languageId, 12));
-      // TODO
-      if (chartData.length === 2) {
-        break;
-      }
     }
 
     this.setState({
@@ -93,10 +92,26 @@ export default class Chart extends Component {
     return scores;
   }
 
+  yAxisLabelFormatter(label) {
+    return (Number(label) / 1000000).toFixed(1) + 'M'
+  }
+
   // TODO: gracefully handle if API isn't available
   render() {
+    // TODO: do this programatically
+    const xAxisValues = ["2017-04-01", "2017-05-01", "2017-06-01", "2017-07-01", "2017-08-01", "2017-09-01", "2017-10-01", "2017-11-01", "2017-12-01", "2018-01-01", "2018-02-01", "2018-03-01"];
+
+    // TODO: this isn't responsive
     return (
-      <code>{JSON.stringify(this.state.chartData)}</code>
-    )
+      <div className="App">
+        <XYPlot height={500} width={900}>
+          <VerticalGridLines />
+          <HorizontalGridLines />
+          <XAxis tickFormat={v => xAxisValues[v - 1]} tickTotal={this.state.chartData.length} />
+          <YAxis tickFormat={this.yAxisLabelFormatter} />
+          {this.state.chartData.map(seriesData => <LineSeries data={seriesData} />)}
+        </XYPlot>
+      </div>
+    );
   }
 }
