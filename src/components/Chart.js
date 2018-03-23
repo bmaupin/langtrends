@@ -43,8 +43,7 @@ export default class Chart extends Component {
     let topLanguages = await apiHelper.getTopLanguages();
 
     for (let [languageId, languageName] of topLanguages) {
-      // TODO: magic number
-      chartData.push(await apiHelper.getScoresForLanguage(languageId, 12));
+      chartData.push(await apiHelper.getScoresForLanguage(languageId));
     }
 
     this.setState({
@@ -53,7 +52,7 @@ export default class Chart extends Component {
   }
 
   yAxisLabelFormatter(label) {
-    return (Number(label) / 1000000).toFixed(1) + 'M'
+    return (Number(label) / 1000000).toFixed(1) + 'M';
   }
 
   // TODO: gracefully handle if API isn't available
@@ -76,22 +75,21 @@ export default class Chart extends Component {
   }
 }
 
+const API_BASE_URL = 'http://localhost:3000';
+
+const INTERVAL_MONTHLY = 'monthly';
+const INTERVAL_QUARTERLY = 'quarterly';
+const INTERVAL_YEARLY = 'yearly';
+
 // TODO: this probably needs to be split out of React
 class apiHelper {
-  static async getScoresForLanguage(languageId, numScores) {
+  static async getScoresForLanguage(languageId) {
     let scores = [];
-    let scoresFromApi = [];
-    let date = apiHelper._getFirstDayOfMonthUTC();
+    let dates = apiHelper.buildDates(apiHelper._getFirstDayOfMonthUTC(), INTERVAL_MONTHLY);
+    let response = await fetch(apiHelper.buildScoresApiUrl(languageId, dates));
+    let scoresFromApi = await response.json();
 
-    for (let i = 0; i < numScores; i++) {
-      scoresFromApi.push({
-        date: date,
-        points: await apiHelper.getScore(languageId, date)
-      });
-      date = apiHelper._subtractOneMonthUTC(date);
-    }
-
-    // Sort by date, oldest first
+    // Sort by date, oldest first (the dates probably won't be in order)
     scoresFromApi.sort((a, b) => {
       return new Date(a.date) - new Date(b.date);
     });
@@ -108,11 +106,31 @@ class apiHelper {
     return scores;
   }
 
-  static async getScore(languageId, date) {
-    let response = await fetch(`http://localhost:3000/api/scores?filter[where][and][0][date]=${date}&filter[where][and][1][languageId]=${languageId}`);
-    let scoreFromApi = await response.json();
+  static buildDates(lastDate, interval) {
+    switch (interval) {
+      case INTERVAL_MONTHLY:
+        let dates = [];
+        let currentDate = lastDate;
+        // TODO: magic number
+        for (let i = 0; i < 12; i++) {
+          dates.push(currentDate);
+          currentDate = apiHelper._subtractOneMonthUTC(currentDate);
+        }
+        return dates.reverse();
+        break;
+      default:
+        throw `Error: interval ${interval} unimplemented`;
+    }
+  }
 
-    return scoreFromApi[0].points;
+  static buildScoresApiUrl(languageId, dates) {
+    let scoresApiUrl = `${API_BASE_URL}/api/scores?filter[where][and][0][languageId]=${languageId}`
+
+    for (let i = 0; i < dates.length; i++) {
+      scoresApiUrl += `&filter[where][or][${i}][date]=${dates[i]}`
+    }
+
+    return scoresApiUrl;
   }
 
   static async getTopLanguages() {
