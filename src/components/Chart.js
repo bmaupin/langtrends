@@ -17,34 +17,16 @@ export default class Chart extends Component {
     await this.setChartData();
   }
 
-  // TODO data needs to look like this
-  /*
-  const seriesOne = [
-    {x: 1, y: 10},
-    {x: 2, y: 0},
-    {x: 3, y: 15}
-  ];
-
-  const seriesTwo = [
-    {x: 1, y: 10},
-    {x: 2, y: 5},
-    {x: 3, y: 15}
-  ];
-
-  const seriesThree = [
-    {x: 1, y: 0},
-    {x: 2, y: 0},
-    {x: 3, y: 15}
-  ];
-  */
   async setChartData() {
     let chartData = [];
 
-    let topLanguages = await apiHelper.getTopLanguages();
+    let topLanguages = await ApiHelper.getTopLanguages();
 
     for (let [languageId, languageName] of topLanguages) {
-      chartData.push(await apiHelper.getScoresForLanguage(languageId));
+      chartData.push(await ApiHelper.getScoresForLanguage(languageId));
     }
+
+    console.log(chartData);
 
     this.setState({
       chartData: chartData,
@@ -58,7 +40,7 @@ export default class Chart extends Component {
   // TODO: gracefully handle if API isn't available
   render() {
     // TODO: do this programatically
-    const xAxisValues = ["2017-04-01", "2017-05-01", "2017-06-01", "2017-07-01", "2017-08-01", "2017-09-01", "2017-10-01", "2017-11-01", "2017-12-01", "2018-01-01", "2018-02-01", "2018-03-01"];
+    // const xAxisValues = ["2017-04-01", "2017-05-01", "2017-06-01", "2017-07-01", "2017-08-01", "2017-09-01", "2017-10-01", "2017-11-01", "2017-12-01", "2018-01-01", "2018-02-01", "2018-03-01"];
 
     // TODO: make this responsive
     return (
@@ -66,7 +48,8 @@ export default class Chart extends Component {
         <XYPlot height={500} width={900}>
           <VerticalGridLines />
           <HorizontalGridLines />
-          <XAxis tickFormat={v => xAxisValues[v]} tickTotal={this.state.chartData.length} />
+          {/*<XAxis tickFormat={v => xAxisValues[v]} tickTotal={this.state.chartData.length} />*/}
+          <XAxis tickTotal={this.state.chartData.length} />
           <YAxis tickFormat={this.yAxisLabelFormatter} />
           {this.state.chartData.map(seriesData => <LineSeries data={seriesData} />)}
         </XYPlot>
@@ -82,11 +65,11 @@ const INTERVAL_QUARTERLY = 'quarterly';
 const INTERVAL_YEARLY = 'yearly';
 
 // TODO: this probably needs to be split out of React
-class apiHelper {
+class ApiHelper {
   static async getScoresForLanguage(languageId) {
     let scores = [];
-    let dates = apiHelper.buildDates(apiHelper._getFirstDayOfMonthUTC(), INTERVAL_MONTHLY);
-    let response = await fetch(apiHelper.buildScoresApiUrl(languageId, dates));
+    let dates = ApiHelper.buildDates(ApiHelper._getFirstDayOfMonthUTC(), INTERVAL_QUARTERLY);
+    let response = await fetch(ApiHelper.buildScoresApiUrl(languageId, dates));
     let scoresFromApi = await response.json();
 
     // Sort by date, oldest first (the dates probably won't be in order)
@@ -107,20 +90,29 @@ class apiHelper {
   }
 
   static buildDates(lastDate, interval) {
-    switch (interval) {
-      case INTERVAL_MONTHLY:
-        let dates = [];
-        let currentDate = lastDate;
-        // TODO: magic number
-        for (let i = 0; i < 12; i++) {
-          dates.push(currentDate);
-          currentDate = apiHelper._subtractOneMonthUTC(currentDate);
-        }
-        return dates.reverse();
-        break;
-      default:
-        throw `Error: interval ${interval} unimplemented`;
+    let dates = [];
+    let currentDate = lastDate;
+
+    // TODO: magic number
+    for (let i = 0; i < 12; i++) {
+      dates.push(currentDate);
+
+      switch (interval) {
+        case INTERVAL_MONTHLY:
+          currentDate = ApiHelper._subtractOneMonthUTC(currentDate);
+          break;
+        case INTERVAL_QUARTERLY:
+          currentDate = ApiHelper._subtractOneQuarterUTC(currentDate);
+          break;
+        case INTERVAL_YEARLY:
+          currentDate = ApiHelper._subtractOneYearUTC(currentDate);
+          break;
+        default:
+          throw `Error: interval ${interval} unimplemented`;
+      }
     }
+
+    return dates.reverse();
   }
 
   static buildScoresApiUrl(languageId, dates) {
@@ -135,7 +127,7 @@ class apiHelper {
 
   static async getTopLanguages() {
     let topLanguages = new Map();
-    const firstDayofMonth = apiHelper._getFirstDayOfMonthUTC();
+    const firstDayofMonth = ApiHelper._getFirstDayOfMonthUTC();
     let response = await fetch(`http://localhost:3000/api/scores?filter[where][date]=${firstDayofMonth}&filter[include]=language&filter[order]=points%20DESC&filter[limit]=10`);
     let topScores = await response.json();
 
@@ -151,14 +143,20 @@ class apiHelper {
   }
 
   static _subtractOneMonthUTC(date) {
-    let newDate = new Date(date);
-    newDate.setUTCMonth(newDate.getUTCMonth() - 1);
-    return newDate;
+    return ApiHelper._subtractMonthsUTC(date, 1);
+  }
+
+  static _subtractOneQuarterUTC(date) {
+    return ApiHelper._subtractMonthsUTC(date, 3);
   }
 
   static _subtractOneYearUTC(date) {
+    return ApiHelper._subtractMonthsUTC(date, 12);
+  }
+
+  static _subtractMonthsUTC(date, monthsToSubtract) {
     let newDate = new Date(date);
-    newDate.setUTCFullYear(newDate.getUTCFullYear() - 1);
+    newDate.setUTCMonth(newDate.getUTCMonth() - monthsToSubtract);
     return newDate;
   }
 }
