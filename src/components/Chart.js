@@ -4,6 +4,9 @@ import '../../node_modules/react-vis/dist/style.css';
 import { HorizontalGridLines, LineSeries, VerticalGridLines, XAxis, XYPlot, YAxis } from 'react-vis';
 import { Image } from 'semantic-ui-react'
 
+const API_BASE_URL = 'http://localhost:3000';
+const API_TOKEN = process.env.REACT_APP_API_TOKEN;
+
 export default class Chart extends Component {
   constructor(props) {
     super(props);
@@ -26,7 +29,8 @@ export default class Chart extends Component {
       chartData.push(await ApiHelper.getScoresForLanguage(languageId));
     }
 
-    console.log(chartData);
+    // TODO
+    console.log(`chartData=${chartData}`);
 
     this.setState({
       chartData: chartData,
@@ -58,17 +62,15 @@ export default class Chart extends Component {
   }
 }
 
-const API_BASE_URL = 'http://localhost:3000';
-
 const INTERVAL_MONTHLY = 'monthly';
 const INTERVAL_QUARTERLY = 'quarterly';
 const INTERVAL_YEARLY = 'yearly';
 
-// TODO: this probably needs to be split out of React
+// TODO: this probably needs to be split out of the component
 class ApiHelper {
   static async getScoresForLanguage(languageId) {
     let scores = [];
-    let dates = ApiHelper.buildDates(ApiHelper._getFirstDayOfMonthUTC(), INTERVAL_QUARTERLY);
+    let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), INTERVAL_QUARTERLY);
     let response = await fetch(ApiHelper.buildScoresApiUrl(languageId, dates));
     let scoresFromApi = await response.json();
 
@@ -93,7 +95,7 @@ class ApiHelper {
     let dates = [];
     let currentDate = lastDate;
 
-    // TODO: magic number
+    // TODO: magic number?
     for (let i = 0; i < 12; i++) {
       dates.push(currentDate);
 
@@ -127,8 +129,8 @@ class ApiHelper {
 
   static async getTopLanguages() {
     let topLanguages = new Map();
-    const firstDayofMonth = ApiHelper._getFirstDayOfMonthUTC();
-    let response = await fetch(`http://localhost:3000/api/scores?filter[where][date]=${firstDayofMonth}&filter[include]=language&filter[order]=points%20DESC&filter[limit]=10`);
+    const latestDateFromApi = await ApiHelper._getLatestDateFromApi();
+    let response = await fetch(`${API_BASE_URL}/api/scores?filter[where][date]=${latestDateFromApi.toISOString()}&filter[include]=language&filter[order]=points%20DESC&filter[limit]=10&access_token=${API_TOKEN}`);
     let topScores = await response.json();
 
     for (let i = 0 ; i < topScores.length; i++) {
@@ -138,8 +140,16 @@ class ApiHelper {
     return topLanguages;
   }
 
-  static _getFirstDayOfMonthUTC() {
-    return new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth()));
+  static async _getLatestDateFromApi() {
+    let filter = {
+      order: 'date DESC',
+      limit: 1
+    }
+    let apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
+
+    let response = await fetch(apiUrl);
+    let scoresFromApi = await response.json();
+    return new Date(scoresFromApi[0].date);
   }
 
   static _subtractOneMonthUTC(date) {
