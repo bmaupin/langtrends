@@ -118,11 +118,18 @@ class ApiHelper {
   }
 
   static buildScoresApiUrl(languageId, dates) {
-    let scoresApiUrl = `${API_BASE_URL}/api/scores?filter[where][and][0][languageId]=${languageId}`
-
-    for (let i = 0; i < dates.length; i++) {
-      scoresApiUrl += `&filter[where][or][${i}][date]=${dates[i]}`
+    let filter = {
+      where: {
+        and: [
+          { languageId: languageId },
+          {
+            or: dates.map(date => ({ date: date.toISOString() }))
+          }
+        ]
+      }
     }
+
+    let scoresApiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
 
     return scoresApiUrl;
   }
