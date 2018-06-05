@@ -4,8 +4,8 @@ import '../../node_modules/react-vis/dist/style.css';
 import { HorizontalGridLines, LineSeries, VerticalGridLines, XAxis, XYPlot, YAxis } from 'react-vis';
 import { Image } from 'semantic-ui-react'
 
-const API_BASE_URL = 'http://localhost:3000';
-const API_TOKEN = process.env.REACT_APP_API_TOKEN;
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
+const API_TOKEN = process.env.REACT_APP_API_TOKEN || null;
 
 export default class Chart extends Component {
   constructor(props) {
@@ -22,7 +22,6 @@ export default class Chart extends Component {
 
   async setChartData() {
     let chartData = [];
-
     let topLanguages = await ApiHelper.getTopLanguages();
 
     for (let [languageId, languageName] of topLanguages) {
@@ -71,8 +70,8 @@ class ApiHelper {
   static async getScoresForLanguage(languageId) {
     let scores = [];
     let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), INTERVAL_QUARTERLY);
-    let response = await fetch(ApiHelper.buildScoresApiUrl(languageId, dates));
-    let scoresFromApi = await response.json();
+    let scoresApiFilter = ApiHelper._buildScoresApiFilter(languageId, dates);
+    let scoresFromApi = await ApiHelper._callApi(scoresApiFilter);
 
     // Sort by date, oldest first (the dates probably won't be in order)
     scoresFromApi.sort((a, b) => {
@@ -117,8 +116,8 @@ class ApiHelper {
     return dates.reverse();
   }
 
-  static buildScoresApiUrl(languageId, dates) {
-    let filter = {
+  static _buildScoresApiFilter(languageId, dates) {
+    return {
       where: {
         and: [
           { languageId: languageId },
@@ -128,17 +127,28 @@ class ApiHelper {
         ]
       }
     }
+  }
 
-    let scoresApiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
+  static async _callApi(filter) {
+    let apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
 
-    return scoresApiUrl;
+    let response = await fetch(apiUrl);
+    return response.json();
   }
 
   static async getTopLanguages() {
     let topLanguages = new Map();
     const latestDateFromApi = await ApiHelper._getLatestDateFromApi();
-    let response = await fetch(`${API_BASE_URL}/api/scores?filter[where][date]=${latestDateFromApi.toISOString()}&filter[include]=language&filter[order]=points%20DESC&filter[limit]=10&access_token=${API_TOKEN}`);
-    let topScores = await response.json();
+
+    let filter = {
+      where: {
+        date: latestDateFromApi.toISOString(),
+      },
+      include: 'language',
+      order: 'points DESC',
+      limit: 10,
+    }
+    let topScores = await ApiHelper._callApi(filter);
 
     for (let i = 0 ; i < topScores.length; i++) {
       topLanguages.set(topScores[i].language.id, topScores[i].language.name);
@@ -152,10 +162,8 @@ class ApiHelper {
       order: 'date DESC',
       limit: 1
     }
-    let apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
+    let scoresFromApi = await ApiHelper._callApi(filter);
 
-    let response = await fetch(apiUrl);
-    let scoresFromApi = await response.json();
     return new Date(scoresFromApi[0].date);
   }
 
