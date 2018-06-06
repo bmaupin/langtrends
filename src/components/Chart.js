@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 // TODO
 import '../../node_modules/react-vis/dist/style.css';
-import { HorizontalGridLines, LineSeries, VerticalGridLines, XAxis, XYPlot, YAxis } from 'react-vis';
-import { Image } from 'semantic-ui-react'
+import { DiscreteColorLegend, FlexibleWidthXYPlot, HorizontalGridLines, LineSeries, VerticalGridLines, XAxis, YAxis } from 'react-vis';
+
+import './Chart.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 const API_TOKEN = process.env.REACT_APP_API_TOKEN || null;
@@ -24,15 +25,25 @@ export default class Chart extends Component {
     let chartData = [];
     let topLanguages = await ApiHelper.getTopLanguages();
 
+    // TODO: this is redundant
+    let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), INTERVAL_QUARTERLY);
+    let xAxisValues = dates.map(date => date.toISOString().slice(0, 10));
+
     for (let [languageId, languageName] of topLanguages) {
-      chartData.push(await ApiHelper.getScoresForLanguage(languageId));
+      chartData.push(
+        {
+          title: languageName,
+          data: await ApiHelper.getScoresForLanguage(languageId),
+        }
+      );
     }
 
     // TODO
-    console.log(`chartData=${chartData}`);
+    console.log(`chartData=${JSON.stringify(chartData)}`);
 
     this.setState({
       chartData: chartData,
+      xAxisValues: xAxisValues,
     });
   }
 
@@ -42,20 +53,29 @@ export default class Chart extends Component {
 
   // TODO: gracefully handle if API isn't available
   render() {
-    // TODO: do this programatically
-    // const xAxisValues = ["2017-04-01", "2017-05-01", "2017-06-01", "2017-07-01", "2017-08-01", "2017-09-01", "2017-10-01", "2017-11-01", "2017-12-01", "2018-01-01", "2018-02-01", "2018-03-01"];
-
-    // TODO: make this responsive
     return (
-      <div className="App">
-        <XYPlot height={500} width={900}>
-          <VerticalGridLines />
-          <HorizontalGridLines />
-          {/*<XAxis tickFormat={v => xAxisValues[v]} tickTotal={this.state.chartData.length} />*/}
-          <XAxis tickTotal={this.state.chartData.length} />
-          <YAxis tickFormat={this.yAxisLabelFormatter} />
-          {this.state.chartData.map(seriesData => <LineSeries data={seriesData} />)}
-        </XYPlot>
+      <div className="chart-container">
+        <div className="chart-content">
+          <FlexibleWidthXYPlot height={500}>
+            <VerticalGridLines />
+            <HorizontalGridLines />
+            <XAxis tickFormat={v => this.state.xAxisValues[v]} tickTotal={this.state.chartData.length} />
+            {/* <XAxis tickTotal={this.state.chartData.length} /> */}
+            <YAxis tickFormat={this.yAxisLabelFormatter} />
+            {this.state.chartData.map(entry =>
+              <LineSeries
+                key={entry.title}
+                data={entry.data}
+              />
+            )}
+          </FlexibleWidthXYPlot>
+        </div>
+
+        <div className="chart-legend">
+          <DiscreteColorLegend
+            width={180}
+            items={this.state.chartData}/>
+        </div>
       </div>
     );
   }

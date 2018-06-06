@@ -1,0 +1,11 @@
+.chart-container {
+    display: flex;
+}
+
+.chart-content {
+    width: 100%;
+}
+
+.chart-legend {
+    text-align: left;
+}
