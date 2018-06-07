@@ -7,7 +7,7 @@ export default class TopMenu extends Component {
       <Menu attached borderless inverted>
         <Container>
           <Menu.Item fitted='horizontally' header>
-            PopCon
+            Programming language popularity contest
           </Menu.Item>
 
           {/* TODO: add link to github */}
