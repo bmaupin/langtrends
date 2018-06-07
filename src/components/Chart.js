@@ -27,7 +27,7 @@ export default class Chart extends Component {
 
     // TODO: this is redundant
     let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), INTERVAL_QUARTERLY);
-    let xAxisValues = dates.map(date => date.toISOString().slice(0, 10));
+    let xAxisValues = dates.map(date => date.toISOString().slice(0, 7));
 
     for (let [languageId, languageName] of topLanguages) {
       chartData.push(
@@ -56,11 +56,10 @@ export default class Chart extends Component {
     return (
       <div className="chart-container">
         <div className="chart-content">
-          <FlexibleWidthXYPlot height={500}>
+          <FlexibleWidthXYPlot height={500} margin={{right: 30}}>
             <VerticalGridLines />
             <HorizontalGridLines />
             <XAxis tickFormat={v => this.state.xAxisValues[v]} tickTotal={this.state.chartData.length} />
-            {/* <XAxis tickTotal={this.state.chartData.length} /> */}
             <YAxis tickFormat={this.yAxisLabelFormatter} />
             {this.state.chartData.map(entry =>
               <LineSeries
@@ -101,6 +100,7 @@ class ApiHelper {
     for (let i = 0; i < scoresFromApi.length; i++) {
       scores.push(
         {
+          // The x axis values must be numbers
           x: scores.length,
           y: scoresFromApi[i].points
         }
