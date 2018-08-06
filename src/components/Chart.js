@@ -25,7 +25,6 @@ export default class Chart extends Component {
     let chartData = [];
     let topLanguages = await ApiHelper.getTopLanguages();
 
-    // TODO: this is redundant
     let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), INTERVAL_QUARTERLY);
     let xAxisValues = dates.map(date => date.toISOString().slice(0, 7));
 
@@ -33,7 +32,7 @@ export default class Chart extends Component {
       chartData.push(
         {
           title: languageName,
-          data: await ApiHelper.getScoresForLanguage(languageId),
+          data: await ApiHelper.getScoresForLanguage(languageId, dates),
         }
       );
     }
@@ -86,9 +85,8 @@ const INTERVAL_YEARLY = 'yearly';
 
 // TODO: this probably needs to be split out of the component
 class ApiHelper {
-  static async getScoresForLanguage(languageId) {
+  static async getScoresForLanguage(languageId, dates) {
     let scores = [];
-    let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), INTERVAL_QUARTERLY);
     let scoresApiFilter = ApiHelper._buildScoresApiFilter(languageId, dates);
     let scoresFromApi = await ApiHelper._callApi(scoresApiFilter);
 
