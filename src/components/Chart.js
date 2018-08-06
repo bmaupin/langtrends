@@ -72,7 +72,7 @@ export default class Chart extends Component {
         <div className="chart-legend">
           <DiscreteColorLegend
             width={180}
-            items={this.state.chartData}/>
+            items={this.state.chartData} />
         </div>
       </div>
     );
@@ -127,7 +127,7 @@ class ApiHelper {
           currentDate = ApiHelper._subtractOneYearUTC(currentDate);
           break;
         default:
-          throw `Error: interval ${interval} unimplemented`;
+          throw new Error(`Error: interval ${interval} unimplemented`);
       }
     }
 
@@ -168,7 +168,7 @@ class ApiHelper {
     }
     let topScores = await ApiHelper._callApi(filter);
 
-    for (let i = 0 ; i < topScores.length; i++) {
+    for (let i = 0; i < topScores.length; i++) {
       topLanguages.set(topScores[i].language.id, topScores[i].language.name);
     }
 
