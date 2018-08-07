@@ -1,7 +1,16 @@
 import React, { Component } from 'react'
 // TODO
 import '../../node_modules/react-vis/dist/style.css';
-import { DiscreteColorLegend, FlexibleWidthXYPlot, HorizontalGridLines, LineSeries, VerticalGridLines, XAxis, YAxis } from 'react-vis';
+import {
+  Crosshair,
+  DiscreteColorLegend,
+  FlexibleWidthXYPlot,
+  HorizontalGridLines,
+  LineSeries,
+  VerticalGridLines,
+  XAxis,
+  YAxis
+} from 'react-vis';
 
 import './Chart.css';
 
@@ -14,6 +23,8 @@ export default class Chart extends Component {
 
     this.state = {
       chartData: [],
+      crosshairValues: [],
+      dates: [],
     };
   }
 
@@ -26,7 +37,7 @@ export default class Chart extends Component {
     let topLanguages = await ApiHelper.getTopLanguages();
 
     let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), INTERVAL_QUARTERLY);
-    let xAxisValues = dates.map(date => date.toISOString().slice(0, 7));
+    let xAxisValues = dates.map(date => this._formatDateForLabel(date));
 
     for (let [languageId, languageName] of topLanguages) {
       chartData.push(
@@ -42,11 +53,37 @@ export default class Chart extends Component {
 
     this.setState({
       chartData: chartData,
+      dates: dates,
       xAxisValues: xAxisValues,
+    });
+
+    this._formatCrosshairItems = this._formatCrosshairItems.bind(this);
+    this._formatCrosshairTitle = this._formatCrosshairTitle.bind(this);
+  }
+
+  _formatCrosshairItems(values) {
+    const {chartData} = this.state;
+    return values.map((v, i) => {
+      return {
+        title: chartData[i].title,
+        value: v.y,
+      };
     });
   }
 
-  yAxisLabelFormatter(label) {
+  _formatCrosshairTitle(values) {
+    const {dates} = this.state;
+    return {
+      title: 'Date',
+      value: this._formatDateForLabel(dates[values[0].x]),
+    };
+  }
+
+  _formatDateForLabel(date) {
+    return date.toISOString().slice(0, 7);
+  }
+
+  _yAxisLabelFormatter(label) {
     return (Number(label) / 1000000).toFixed(1) + 'M';
   }
 
@@ -55,17 +92,26 @@ export default class Chart extends Component {
     return (
       <div className="chart-container">
         <div className="chart-content">
-          <FlexibleWidthXYPlot height={500} margin={{right: 30}}>
+          <FlexibleWidthXYPlot
+            height={500}
+            margin={{right: 30}}
+            onMouseLeave={() => this.setState({crosshairValues: []})}>
             <VerticalGridLines />
             <HorizontalGridLines />
             <XAxis tickFormat={v => this.state.xAxisValues[v]} tickTotal={this.state.chartData.length} />
-            <YAxis tickFormat={this.yAxisLabelFormatter} />
+            <YAxis tickFormat={this._yAxisLabelFormatter} />
             {this.state.chartData.map(entry =>
               <LineSeries
                 key={entry.title}
                 data={entry.data}
+                onNearestX={(value, {index}) =>
+                  this.setState({crosshairValues: this.state.chartData.map(entry => entry.data[index])})}
               />
             )}
+            <Crosshair
+              itemsFormat={this._formatCrosshairItems}
+              titleFormat={this._formatCrosshairTitle}
+              values={this.state.crosshairValues} />
           </FlexibleWidthXYPlot>
         </div>
 
@@ -138,7 +184,7 @@ class ApiHelper {
     return {
       where: {
         and: [
-          { languageId: languageId },
+          {languageId: languageId},
           {
             or: dates.map(date => ({ date: date.toISOString() }))
           }
