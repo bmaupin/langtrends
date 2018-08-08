@@ -34,10 +34,12 @@ export default class Chart extends Component {
   }
 
   async setChartData() {
+    const interval = INTERVAL_QUARTERLY;
     let chartData = [];
     let topLanguages = await ApiHelper.getTopLanguages();
+    // let topLanguages = await ApiHelper.getFastestGrowingLanguages(await ApiHelper._getLatestDateFromApi(), interval);
 
-    let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), INTERVAL_QUARTERLY);
+    let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), interval);
     let xAxisValues = dates.map(date => this._formatDateForLabel(date));
 
     for (let [languageId, languageName] of topLanguages) {
@@ -153,6 +155,60 @@ class ApiHelper {
     }
 
     return scores;
+  }
+
+  // TODO: this feels like a hot mess
+  static async getFastestGrowingLanguages(lastDate, interval) {
+    const previousDate = ApiHelper._subtractIntervalFromDate(lastDate, interval);
+    let scores = await ApiHelper._getScoresForDates([lastDate, previousDate]);
+    let scoresByLanguage = {};
+    let languageNames = {};
+
+    for (let i = 0; i < scores.length; i++) {
+      const date = scores[i].date;
+      const languageId = scores[i].languageId;
+      const languageName = scores[i].language.name;
+      const points = scores[i].points;
+
+      if (!scoresByLanguage.hasOwnProperty(languageId)) {
+        scoresByLanguage[languageId] = {};
+        languageNames[languageId] = languageName;
+      }
+
+      scoresByLanguage[languageId][date] = points;
+    }
+
+    let scoreDifferences = {};
+
+    for (let langaugeId in scoresByLanguage) {
+      // TODO: have separate UI options for the different algorithms
+      // scoreDifferences[langaugeId] = scoresByLanguage[langaugeId][lastDate.toISOString()] - scoresByLanguage[langaugeId][previousDate.toISOString()];
+
+      if (scoresByLanguage[langaugeId][previousDate.toISOString()] > 100) {
+        scoreDifferences[langaugeId] = scoresByLanguage[langaugeId][lastDate.toISOString()] / scoresByLanguage[langaugeId][previousDate.toISOString()] * 100;
+      }
+    }
+
+    let sortedScores = Object.keys(scoreDifferences).sort(function(a,b) {return scoreDifferences[b] - scoreDifferences[a]})
+    let fastestGrowingLanguages = new Map();
+
+    for (let i = 0; i < NUMBER_OF_LANGUAGES; i++) {
+      fastestGrowingLanguages.set(sortedScores[i], languageNames[sortedScores[i]]);
+    }
+
+    return fastestGrowingLanguages;
+  }
+
+  static async _getScoresForDates(dates) {
+    let apiFilter = {
+      where: {
+        or: dates.map(date => ({date: date.toISOString()}))
+      },
+      // This makes sure the language details get included. In particular we need the language name for labels
+      include: 'language',
+    }
+
+    return await ApiHelper._callApi(apiFilter);
   }
 
   static buildDates(lastDate, interval) {
