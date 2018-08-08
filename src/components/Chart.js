@@ -16,6 +16,7 @@ import './Chart.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 const API_TOKEN = process.env.REACT_APP_API_TOKEN || null;
+const NUMBER_OF_LANGUAGES = 10;
 
 export default class Chart extends Component {
   constructor(props) {
@@ -161,23 +162,23 @@ class ApiHelper {
     // TODO: magic number?
     for (let i = 0; i < 12; i++) {
       dates.push(currentDate);
-
-      switch (interval) {
-        case INTERVAL_MONTHLY:
-          currentDate = ApiHelper._subtractOneMonthUTC(currentDate);
-          break;
-        case INTERVAL_QUARTERLY:
-          currentDate = ApiHelper._subtractOneQuarterUTC(currentDate);
-          break;
-        case INTERVAL_YEARLY:
-          currentDate = ApiHelper._subtractOneYearUTC(currentDate);
-          break;
-        default:
-          throw new Error(`Error: interval ${interval} unimplemented`);
-      }
+      currentDate = ApiHelper._subtractIntervalFromDate(currentDate, interval);
     }
 
     return dates.reverse();
+  }
+
+  static _subtractIntervalFromDate(date, interval) {
+    switch (interval) {
+      case INTERVAL_MONTHLY:
+        return ApiHelper._subtractOneMonthUTC(date);
+      case INTERVAL_QUARTERLY:
+        return ApiHelper._subtractOneQuarterUTC(date);
+      case INTERVAL_YEARLY:
+        return ApiHelper._subtractOneYearUTC(date);
+      default:
+        throw new Error(`Error: interval ${interval} unimplemented`);
+    }
   }
 
   static _buildScoresApiFilter(languageId, dates) {
@@ -186,7 +187,7 @@ class ApiHelper {
         and: [
           {languageId: languageId},
           {
-            or: dates.map(date => ({ date: date.toISOString() }))
+            or: dates.map(date => ({date: date.toISOString()}))
           }
         ]
       }
@@ -208,10 +209,11 @@ class ApiHelper {
       where: {
         date: latestDateFromApi.toISOString(),
       },
+      // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',
       order: 'points DESC',
-      limit: 10,
-    }
+      limit: NUMBER_OF_LANGUAGES,
+    };
     let topScores = await ApiHelper._callApi(filter);
 
     for (let i = 0; i < topScores.length; i++) {
