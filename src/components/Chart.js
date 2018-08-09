@@ -24,6 +24,12 @@ export default class Chart extends Component {
       crosshairValues: [],
       dates: [],
     };
+
+    this._formatCrosshairItems = this._formatCrosshairItems.bind(this);
+    this._formatCrosshairTitle = this._formatCrosshairTitle.bind(this);
+    this._onMouseLeave = this._onMouseLeave.bind(this);
+    this._onNearestX = this._onNearestX.bind(this);
+    this._xAxisLabelFormatter = this._xAxisLabelFormatter.bind(this);
   }
 
   async componentDidMount() {
@@ -56,9 +62,6 @@ export default class Chart extends Component {
       dates: dates,
       xAxisValues: xAxisValues,
     });
-
-    this._formatCrosshairItems = this._formatCrosshairItems.bind(this);
-    this._formatCrosshairTitle = this._formatCrosshairTitle.bind(this);
   }
 
   _formatCrosshairItems(values) {
@@ -83,6 +86,18 @@ export default class Chart extends Component {
     return date.toISOString().slice(0, 7);
   }
 
+  _onMouseLeave() {
+    this.setState({crosshairValues: []});
+  }
+
+  _onNearestX(value, {index}) {
+    this.setState({crosshairValues: this.state.chartData.map(entry => entry.data[index])});
+  }
+
+  _xAxisLabelFormatter(index) {
+    return this.state.xAxisValues[index];
+  }
+
   _yAxisLabelFormatter(label) {
     return (Number(label) / 1000000).toFixed(1) + 'M';
   }
@@ -95,17 +110,16 @@ export default class Chart extends Component {
           <FlexibleWidthXYPlot
             height={500}
             margin={{right: 30}}
-            onMouseLeave={() => this.setState({crosshairValues: []})}>
+            onMouseLeave={this._onMouseLeave}>
             <VerticalGridLines />
             <HorizontalGridLines />
-            <XAxis tickFormat={v => this.state.xAxisValues[v]} tickTotal={this.state.chartData.length} />
+            <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.chartData.length} />
             <YAxis tickFormat={this._yAxisLabelFormatter} />
             {this.state.chartData.map(entry =>
               <LineSeries
                 key={entry.title}
                 data={entry.data}
-                onNearestX={(value, {index}) =>
-                  this.setState({crosshairValues: this.state.chartData.map(entry => entry.data[index])})}
+                onNearestX={this._onNearestX}
               />
             )}
             <Crosshair
