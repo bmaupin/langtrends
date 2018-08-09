@@ -62,18 +62,30 @@ export default class Chart extends Component {
     });
   }
 
+  /**
+   * A callback to format the crosshair items.
+   *
+   * Takes the crosshair values (set by _onNearestX) and format them for display, adding a title, etc.
+   * @param {Object} values Array of values.
+   * @returns {Array<Object>} Array of objects with titles and values.
+   * @private
+   */
   _formatCrosshairItems(values) {
-    const {chartData} = this.state;
-    return values.map((v, i) => {
+    const chartData = this.state.chartData;
+    let crossHairItems = values.map((v, i) => {
       return {
         title: chartData[i].title,
         value: v.y,
       };
     });
+
+    crossHairItems.sort((a, b) => {return b.value - a.value});
+
+    return crossHairItems;
   }
 
   _formatCrosshairTitle(values) {
-    const {dates} = this.state;
+    const dates = this.state.dates;
     return {
       title: 'Date',
       value: this._formatDateForLabel(dates[values[0].x]),
@@ -88,8 +100,19 @@ export default class Chart extends Component {
     this.setState({crosshairValues: []});
   }
 
+  /**
+   * Event handler for chart onNearestX.
+   *
+   * This will set the crosshair values based on the x coordinate closest to the user's mouse.
+   * @param {Object} value Selected value.
+   * @param {number} index Index of the series.
+   * @private
+   */
   _onNearestX(value, {index}) {
-    this.setState({crosshairValues: this.state.chartData.map(entry => entry.data[index])});
+    const chartData = this.state.chartData;
+    this.setState({
+      crosshairValues: chartData.map(entry => entry.data[index])
+    });
   }
 
   _xAxisLabelFormatter(index) {
