@@ -43,7 +43,6 @@ export default class Chart extends Component {
     // let topLanguages = await ApiHelper.getFastestGrowingLanguages(await ApiHelper._getLatestDateFromApi(), interval);
 
     let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), interval);
-    let xAxisValues = dates.map(date => this._formatDateForLabel(date));
 
     for (let [languageId, languageName] of topLanguages) {
       chartData.push(
@@ -60,7 +59,6 @@ export default class Chart extends Component {
     this.setState({
       chartData: chartData,
       dates: dates,
-      xAxisValues: xAxisValues,
     });
   }
 
@@ -95,7 +93,7 @@ export default class Chart extends Component {
   }
 
   _xAxisLabelFormatter(index) {
-    return this.state.xAxisValues[index];
+    return this._formatDateForLabel(this.state.dates[index]);
   }
 
   _yAxisLabelFormatter(label) {
