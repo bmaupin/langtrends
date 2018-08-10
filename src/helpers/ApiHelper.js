@@ -1,5 +1,6 @@
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 const API_TOKEN = process.env.REACT_APP_API_TOKEN || null;
+const NUMBER_OF_DATES = 12;
 const NUMBER_OF_LANGUAGES = 10;
 
 class ApiHelper {
@@ -29,9 +30,9 @@ class ApiHelper {
     return scores;
   }
 
-  // TODO: this feels like a hot mess
-  static async getFastestGrowingLanguages(lastDate, interval) {
-    const previousDate = ApiHelper._subtractIntervalFromDate(lastDate, interval);
+  // TODO: this is a hot mess
+  static async getFastestGrowingLanguages(lastDate, intervalInMonths) {
+    const previousDate = ApiHelper._subtractMonthsUTC(lastDate, intervalInMonths);
     let scores = await ApiHelper._getScoresForDates([lastDate, previousDate]);
     let scoresByLanguage = {};
     let languageNames = {};
@@ -56,7 +57,7 @@ class ApiHelper {
       // TODO: have separate UI options for the different algorithms
       // scoreDifferences[langaugeId] = scoresByLanguage[langaugeId][lastDate.toISOString()] - scoresByLanguage[langaugeId][previousDate.toISOString()];
 
-      if (scoresByLanguage[langaugeId][previousDate.toISOString()] > 100) {
+      if (scoresByLanguage[langaugeId][previousDate.toISOString()] > 1000) {
         scoreDifferences[langaugeId] = scoresByLanguage[langaugeId][lastDate.toISOString()] / scoresByLanguage[langaugeId][previousDate.toISOString()] * 100;
       }
     }
@@ -83,30 +84,16 @@ class ApiHelper {
     return await ApiHelper._callApi(apiFilter);
   }
 
-  static buildDates(lastDate, interval) {
+  static buildDates(lastDate, intervalInMonths) {
     let dates = [];
     let currentDate = lastDate;
 
-    // TODO: magic number?
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < NUMBER_OF_DATES; i++) {
       dates.push(currentDate);
-      currentDate = ApiHelper._subtractIntervalFromDate(currentDate, interval);
+      currentDate = ApiHelper._subtractMonthsUTC(currentDate, intervalInMonths);
     }
 
     return dates.reverse();
-  }
-
-  static _subtractIntervalFromDate(date, interval) {
-    switch (interval) {
-      case ApiHelper.INTERVAL_MONTHLY:
-        return ApiHelper._subtractOneMonthUTC(date);
-      case ApiHelper.INTERVAL_QUARTERLY:
-        return ApiHelper._subtractOneQuarterUTC(date);
-      case ApiHelper.INTERVAL_YEARLY:
-        return ApiHelper._subtractOneYearUTC(date);
-      default:
-        throw new Error(`Error: interval ${interval} unimplemented`);
-    }
   }
 
   static _buildScoresApiFilter(languageId, dates) {
@@ -161,27 +148,11 @@ class ApiHelper {
     return new Date(scoresFromApi[0].date);
   }
 
-  static _subtractOneMonthUTC(date) {
-    return ApiHelper._subtractMonthsUTC(date, 1);
-  }
-
-  static _subtractOneQuarterUTC(date) {
-    return ApiHelper._subtractMonthsUTC(date, 3);
-  }
-
-  static _subtractOneYearUTC(date) {
-    return ApiHelper._subtractMonthsUTC(date, 12);
-  }
-
   static _subtractMonthsUTC(date, monthsToSubtract) {
     let newDate = new Date(date);
     newDate.setUTCMonth(newDate.getUTCMonth() - monthsToSubtract);
     return newDate;
   }
 }
-
-ApiHelper.INTERVAL_MONTHLY = 'monthly';
-ApiHelper.INTERVAL_QUARTERLY = 'quarterly';
-ApiHelper.INTERVAL_YEARLY = 'yearly';
 
 export default ApiHelper;

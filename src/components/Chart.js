@@ -37,12 +37,12 @@ export default class Chart extends Component {
   }
 
   async setChartData() {
-    const interval = ApiHelper.INTERVAL_QUARTERLY;
+    const intervalInMonths = 3;
     let chartData = [];
     let topLanguages = await ApiHelper.getTopLanguages();
-    // let topLanguages = await ApiHelper.getFastestGrowingLanguages(await ApiHelper._getLatestDateFromApi(), interval);
+    // let topLanguages = await ApiHelper.getFastestGrowingLanguages(await ApiHelper._getLatestDateFromApi(), intervalInMonths);
 
-    let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), interval);
+    let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), intervalInMonths);
 
     for (let [languageId, languageName] of topLanguages) {
       chartData.push(
