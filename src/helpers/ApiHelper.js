@@ -31,7 +31,8 @@ class ApiHelper {
   }
 
   // TODO: this is a hot mess
-  static async getFastestGrowingLanguages(lastDate, intervalInMonths) {
+  static async getFastestGrowingLanguages(intervalInMonths) {
+    const lastDate = await ApiHelper._getLatestDateFromApi();
     const previousDate = ApiHelper._subtractMonthsUTC(lastDate, intervalInMonths);
     let scores = await ApiHelper._getScoresForDates([lastDate, previousDate]);
     let scoresByLanguage = {};
@@ -84,9 +85,9 @@ class ApiHelper {
     return await ApiHelper._callApi(apiFilter);
   }
 
-  static buildDates(lastDate, intervalInMonths) {
+  static async buildDates(intervalInMonths) {
     let dates = [];
-    let currentDate = lastDate;
+    let currentDate = await ApiHelper._getLatestDateFromApi();
 
     for (let i = 0; i < NUMBER_OF_DATES; i++) {
       dates.push(currentDate);
