@@ -40,9 +40,9 @@ export default class Chart extends Component {
     const intervalInMonths = 3;
     let chartData = [];
     let topLanguages = await ApiHelper.getTopLanguages();
-    // let topLanguages = await ApiHelper.getFastestGrowingLanguages(await ApiHelper._getLatestDateFromApi(), intervalInMonths);
+    // let topLanguages = await ApiHelper.getFastestGrowingLanguages(intervalInMonths);
 
-    let dates = ApiHelper.buildDates(await ApiHelper._getLatestDateFromApi(), intervalInMonths);
+    let dates = await ApiHelper.buildDates(intervalInMonths);
 
     for (let [languageId, languageName] of topLanguages) {
       chartData.push(
