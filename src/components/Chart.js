@@ -41,9 +41,6 @@ export default class Chart extends Component {
 
     let chartData = await ApiHelper.getChartData(ApiHelper.CHART_TYPES.TOP_LANGUAGES, intervalInMonths);
 
-    // TODO
-    console.log(`chartData=${JSON.stringify(chartData)}`);
-
     // TODO: just one object for chart data?
     this.setState({
       chartData: chartData.series,

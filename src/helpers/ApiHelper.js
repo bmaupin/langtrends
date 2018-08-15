@@ -9,23 +9,16 @@ class ApiHelper {
     chartData.dates = await ApiHelper._buildDates(intervalInMonths);
     chartData.series = await ApiHelper._getSeriesData(chartType, chartData.dates);
 
+    // TODO
+    console.log(`chartData=${JSON.stringify(chartData)}`);
+
     return chartData;
   }
 
   static async _getSeriesData(chartType, dates) {
     let chartLanguages = await ApiHelper._getChartLanguages(chartType, dates);
 
-    let chartData = [];
-    for (let [languageId, languageName] of chartLanguages) {
-      chartData.push(
-        {
-          title: languageName,
-          data: await ApiHelper._getScoresForLanguage(languageId, dates),
-        }
-      );
-    }
-
-    return chartData;
+    return await ApiHelper._getScoresForChart(chartLanguages, dates);
   }
 
   static async _getChartLanguages(chartType, dates) {
@@ -33,38 +26,63 @@ class ApiHelper {
       case ApiHelper.CHART_TYPES.TOP_LANGUAGES:
         return await ApiHelper._getTopLanguages();
       case ApiHelper.CHART_TYPES.FASTEST_OVER_100:
-        throw new Error(`Unimplemented chart type: ${chartType}`);
       case ApiHelper.CHART_TYPES.FASTEST_OVER_1000:
-        throw new Error(`Unimplemented chart type: ${chartType}`);
       default:
-        throw new Error(`Unhandled chart type: ${chartType}`);
+        throw new Error(`Unknown chart type: ${chartType}`);
     }
   }
 
-  static async _getScoresForLanguage(languageId, dates) {
-    let scores = [];
-    let scoresApiFilter = ApiHelper._buildScoresApiFilter(languageId, dates);
-    let scoresFromApi = await ApiHelper._callApi(scoresApiFilter);
+  static async _getScoresForChart(languages, dates) {
+    let apiFilter = ApiHelper._buildSeriesApiFilter(languages, dates);
+    let scoresFromApi = await ApiHelper._callApi(apiFilter);
+    let formattedScores = ApiHelper._formatScoresForChart(scoresFromApi);
 
-    // Sort by date, oldest first (the dates probably won't be in order)
-    scoresFromApi.sort((a, b) => {
-      return new Date(a.date) - new Date(b.date);
-    });
+    return formattedScores;
+  }
 
-    console.log(`dates=${JSON.stringify(dates)}`);
-    console.log(`scoresFromApi=${JSON.stringify(scoresFromApi)}`);
+  static _buildSeriesApiFilter(languages, dates) {
+    return {
+      where: {
+        and: [
+          {
+            or: Array.from(languages.keys()).map(languageId => ({languageId: languageId}))
+          },
+          {
+            or: dates.map(date => ({date: date.toISOString()}))
+          }
+        ]
+      },
+      // This makes sure the language details get included. In particular we need the language name for labels
+      include: 'language',
+      order: 'date ASC',
+    };
+  }
 
-    for (let i = 0; i < scoresFromApi.length; i++) {
-      scores.push(
+  static _formatScoresForChart(scores) {
+    let formattedScores = [];
+
+    for (let i = 0; i < scores.length; i++) {
+      const languageName = scores[i].language.name;
+      const points = scores[i].points;
+
+      let languageData = formattedScores.find(languageData => languageData.title === languageName);
+      if (typeof languageData === 'undefined') {
+        languageData = {
+          title: languageName,
+          data: [],
+        };
+        formattedScores.push(languageData);
+      }
+
+      languageData.data.push(
         {
-          // The x axis values must be numbers
-          x: scores.length,
-          y: scoresFromApi[i].points
+          x: languageData.data.length,
+          y: points,
         }
-      );
+      )
     }
 
-    return scores;
+    return formattedScores;
   }
 
   // TODO: this is a hot mess
@@ -132,19 +150,6 @@ class ApiHelper {
     }
 
     return dates.reverse();
-  }
-
-  static _buildScoresApiFilter(languageId, dates) {
-    return {
-      where: {
-        and: [
-          {languageId: languageId},
-          {
-            or: dates.map(date => ({date: date.toISOString()}))
-          }
-        ]
-      }
-    };
   }
 
   static async _callApi(filter) {
