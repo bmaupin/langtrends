@@ -4,7 +4,44 @@ const NUMBER_OF_DATES = 12;
 const NUMBER_OF_LANGUAGES = 10;
 
 class ApiHelper {
-  static async getScoresForLanguage(languageId, dates) {
+  static async getChartData(chartType, intervalInMonths) {
+    let chartData = {};
+    chartData.dates = await ApiHelper._buildDates(intervalInMonths);
+    chartData.series = await ApiHelper._getSeriesData(chartType, chartData.dates);
+
+    return chartData;
+  }
+
+  static async _getSeriesData(chartType, dates) {
+    let chartLanguages = await ApiHelper._getChartLanguages(chartType, dates);
+
+    let chartData = [];
+    for (let [languageId, languageName] of chartLanguages) {
+      chartData.push(
+        {
+          title: languageName,
+          data: await ApiHelper._getScoresForLanguage(languageId, dates),
+        }
+      );
+    }
+
+    return chartData;
+  }
+
+  static async _getChartLanguages(chartType, dates) {
+    switch(chartType) {
+      case ApiHelper.CHART_TYPES.TOP_LANGUAGES:
+        return await ApiHelper._getTopLanguages();
+      case ApiHelper.CHART_TYPES.FASTEST_OVER_100:
+        throw new Error(`Unimplemented chart type: ${chartType}`);
+      case ApiHelper.CHART_TYPES.FASTEST_OVER_1000:
+        throw new Error(`Unimplemented chart type: ${chartType}`);
+      default:
+        throw new Error(`Unhandled chart type: ${chartType}`);
+    }
+  }
+
+  static async _getScoresForLanguage(languageId, dates) {
     let scores = [];
     let scoresApiFilter = ApiHelper._buildScoresApiFilter(languageId, dates);
     let scoresFromApi = await ApiHelper._callApi(scoresApiFilter);
@@ -85,7 +122,7 @@ class ApiHelper {
     return await ApiHelper._callApi(apiFilter);
   }
 
-  static async buildDates(intervalInMonths) {
+  static async _buildDates(intervalInMonths) {
     let dates = [];
     let currentDate = await ApiHelper._getLatestDateFromApi();
 
@@ -117,7 +154,7 @@ class ApiHelper {
     return response.json();
   }
 
-  static async getTopLanguages() {
+  static async _getTopLanguages() {
     let topLanguages = new Map();
     const latestDateFromApi = await ApiHelper._getLatestDateFromApi();
 
@@ -155,5 +192,11 @@ class ApiHelper {
     return newDate;
   }
 }
+
+ApiHelper.CHART_TYPES = {
+  TOP_LANGUAGES: 'toplanguages',
+  FASTEST_OVER_100: 'fastestover100',
+  FASTEST_OVER_1000: 'fastestover1000',
+};
 
 export default ApiHelper;
