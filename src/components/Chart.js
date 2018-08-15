@@ -38,27 +38,16 @@ export default class Chart extends Component {
 
   async setChartData() {
     const intervalInMonths = 3;
-    let chartData = [];
-    let topLanguages = await ApiHelper.getTopLanguages();
-    // let topLanguages = await ApiHelper.getFastestGrowingLanguages(intervalInMonths);
 
-    let dates = await ApiHelper.buildDates(intervalInMonths);
-
-    for (let [languageId, languageName] of topLanguages) {
-      chartData.push(
-        {
-          title: languageName,
-          data: await ApiHelper.getScoresForLanguage(languageId, dates),
-        }
-      );
-    }
+    let chartData = await ApiHelper.getChartData(ApiHelper.CHART_TYPES.TOP_LANGUAGES, intervalInMonths);
 
     // TODO
     console.log(`chartData=${JSON.stringify(chartData)}`);
 
+    // TODO: just one object for chart data?
     this.setState({
-      chartData: chartData,
-      dates: dates,
+      chartData: chartData.series,
+      dates: chartData.dates,
     });
   }
 
