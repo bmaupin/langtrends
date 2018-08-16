@@ -39,7 +39,7 @@ export default class Chart extends Component {
   async setChartData() {
     const intervalInMonths = 3;
 
-    let chartData = await ApiHelper.getChartData(ApiHelper.CHART_TYPES.TOP_LANGUAGES, intervalInMonths);
+    let chartData = await ApiHelper.getChartData(ApiHelper.CHART_TYPES.FASTEST_OVER_1000, intervalInMonths);
 
     // TODO: just one object for chart data?
     this.setState({
