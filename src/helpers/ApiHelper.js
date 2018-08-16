@@ -35,7 +35,7 @@ class ApiHelper {
   static async _getScoresForChart(languages, dates) {
     let apiFilter = ApiHelper._buildSeriesApiFilter(languages, dates);
     let scoresFromApi = await ApiHelper._callApi(apiFilter);
-    let formattedScores = ApiHelper._formatScoresForChart(scoresFromApi);
+    let formattedScores = ApiHelper._formatScoresForChart(languages, scoresFromApi);
 
     return formattedScores;
   }
@@ -58,21 +58,23 @@ class ApiHelper {
     };
   }
 
-  static _formatScoresForChart(scores) {
+  static _formatScoresForChart(languages, scores) {
     let formattedScores = [];
+
+    languages.forEach(languageName => {
+      formattedScores.push(
+        {
+          title: languageName,
+          data: [],
+        }
+      );
+    });
 
     for (let i = 0; i < scores.length; i++) {
       const languageName = scores[i].language.name;
       const points = scores[i].points;
 
       let languageData = formattedScores.find(languageData => languageData.title === languageName);
-      if (typeof languageData === 'undefined') {
-        languageData = {
-          title: languageName,
-          data: [],
-        };
-        formattedScores.push(languageData);
-      }
 
       languageData.data.push(
         {
