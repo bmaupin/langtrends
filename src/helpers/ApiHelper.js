@@ -26,7 +26,9 @@ class ApiHelper {
       case ApiHelper.CHART_TYPES.TOP_LANGUAGES:
         return await ApiHelper._getTopLanguages();
       case ApiHelper.CHART_TYPES.FASTEST_OVER_100:
+        return await ApiHelper._getFastestGrowingLanguages(dates, 100);
       case ApiHelper.CHART_TYPES.FASTEST_OVER_1000:
+        return await ApiHelper._getFastestGrowingLanguages(dates, 1000);
       default:
         throw new Error(`Unknown chart type: ${chartType}`);
     }
@@ -88,9 +90,8 @@ class ApiHelper {
   }
 
   // TODO: this is a hot mess
-  static async getFastestGrowingLanguages(intervalInMonths) {
-    const lastDate = await ApiHelper._getLatestDateFromApi();
-    const previousDate = ApiHelper._subtractMonthsUTC(lastDate, intervalInMonths);
+  static async _getFastestGrowingLanguages(dates, minimumScore) {
+    let [previousDate, lastDate] = dates.slice(dates.length - 2, dates.length);
     let scores = await ApiHelper._getScoresForDates([lastDate, previousDate]);
     let scoresByLanguage = {};
     let languageNames = {};
@@ -115,7 +116,7 @@ class ApiHelper {
       // TODO: have separate UI options for the different algorithms
       // scoreDifferences[langaugeId] = scoresByLanguage[langaugeId][lastDate.toISOString()] - scoresByLanguage[langaugeId][previousDate.toISOString()];
 
-      if (scoresByLanguage[langaugeId][previousDate.toISOString()] > 1000) {
+      if (scoresByLanguage[langaugeId][previousDate.toISOString()] > minimumScore) {
         scoreDifferences[langaugeId] = scoresByLanguage[langaugeId][lastDate.toISOString()] / scoresByLanguage[langaugeId][previousDate.toISOString()] * 100;
       }
     }
