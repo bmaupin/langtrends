@@ -18,7 +18,7 @@ class ApiHelper {
   static async _getSeriesData(chartType, dates) {
     let chartLanguages = await ApiHelper._getChartLanguages(chartType, dates);
 
-    return await ApiHelper._getScoresForChart(chartLanguages, dates);
+    return await ApiHelper._getScoresForChart(chartType, chartLanguages, dates);
   }
 
   static async _getChartLanguages(chartType, dates) {
@@ -34,12 +34,13 @@ class ApiHelper {
     }
   }
 
-  static async _getScoresForChart(languages, dates) {
+  static async _getScoresForChart(chartType, languages, dates) {
     let apiFilter = ApiHelper._buildSeriesApiFilter(languages, dates);
     let scoresFromApi = await ApiHelper._callApi(apiFilter);
-    let formattedScores = ApiHelper._formatScoresForChart(languages, scoresFromApi);
+    let calculatedSeriesData = ApiHelper._calculateDataForChart(chartType, scoresFromApi);
+    let formattedSeriesData = ApiHelper._formatDataForChart(languages, calculatedSeriesData);
 
-    return formattedScores;
+    return formattedSeriesData;
   }
 
   static _buildSeriesApiFilter(languages, dates) {
@@ -60,31 +61,60 @@ class ApiHelper {
     };
   }
 
-  static _formatScoresForChart(languages, scores) {
-    let formattedScores = [];
+  static _calculateDataForChart(chartType, scores) {
+    // intermediate format: calculatedData = {'languagename': [score, score], 'languagename': [score, score]}
 
-    languages.forEach(languageName => {
-      formattedScores.push(
-        {
-          title: languageName,
-          data: [],
-        }
-      );
-    });
+    let calculatedData = {};
 
     for (let i = 0; i < scores.length; i++) {
       const languageName = scores[i].language.name;
       const points = scores[i].points;
 
-      let languageData = formattedScores.find(languageData => languageData.title === languageName);
-
-      languageData.data.push(
-        {
-          x: languageData.data.length,
-          y: points,
-        }
-      )
+      if (!calculatedData.hasOwnProperty(languageName)) {
+        calculatedData[languageName] = [];
+      }
+      calculatedData[languageName].push(points);
     }
+
+    return calculatedData;
+  }
+
+  static _formatDataForChart(languages, calculatedSeriesData) {
+    let formattedScores = [];
+
+    languages.forEach(languageName => {
+      let languageData = [];
+
+      for (let i = 0; i < calculatedSeriesData[languageName].length; i++) {
+        languageData.push(
+          {
+            x: i,
+            y: calculatedSeriesData[languageName][i],
+          }
+        );
+      }
+
+      formattedScores.push(
+        {
+          title: languageName,
+          data: languageData,
+        }
+      );
+    });
+
+    // for (let i = 0; i < scores.length; i++) {
+    //   const languageName = scores[i].language.name;
+    //   const points = scores[i].points;
+
+    //   let languageData = formattedScores.find(languageData => languageData.title === languageName);
+
+    //   languageData.data.push(
+    //     {
+    //       x: languageData.data.length,
+    //       y: points,
+    //     }
+    //   )
+    // }
 
     return formattedScores;
   }
@@ -138,6 +168,9 @@ class ApiHelper {
       },
       // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',
+      // TODO
+      // Have the API sort the data for us so we don't have to
+      // order: 'date DESC',
     };
 
     return await ApiHelper._callApi(apiFilter);
