@@ -27,7 +27,7 @@ class ChartData {
     }
 
     let dates = await ChartData._buildDates(interval);
-    let series = await chart.getSeries(chartType, dates);
+    let series = await ChartData._getSeries(chart, dates);
 
     return new ChartData(dates, series);
   }
@@ -42,6 +42,15 @@ class ChartData {
     }
 
     return dates.reverse();
+  }
+
+  static async _getSeries(chart, dates) {
+    // let chartLanguages = await ApiHelper._getChartLanguages(chartType, dates);
+    let chartLanguages = await chart.getLanguages(dates);
+
+    // return await ApiHelper._getScoresForChart(chartType, chartLanguages, dates);
+    // return await ChartData._getScoresForChart(chart, chartLanguages, dates);
+    return await chart.getScores(chartLanguages, dates);
   }
 
   get dates() {
