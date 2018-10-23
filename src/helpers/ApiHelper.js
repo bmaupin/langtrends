@@ -1,19 +1,18 @@
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 const API_TOKEN = process.env.REACT_APP_API_TOKEN || null;
 const NUMBER_OF_DATES = 12;
-const NUMBER_OF_LANGUAGES = 10;
 
 class ApiHelper {
-  static async getChartData(chartType, intervalInMonths) {
-    let chartData = {};
-    chartData.dates = await ApiHelper._buildDates(intervalInMonths);
-    chartData.series = await ApiHelper._getSeriesData(chartType, chartData.dates);
+  // static async getChartData(chartType, intervalInMonths) {
+  //   let chartData = {};
+  //   chartData.dates = await ApiHelper._buildDates(intervalInMonths);
+  //   chartData.series = await ApiHelper._getSeriesData(chartType, chartData.dates);
 
-    // TODO
-    console.log(`chartData=${JSON.stringify(chartData)}`);
+  //   // TODO
+  //   console.log(`chartData=${JSON.stringify(chartData)}`);
 
-    return chartData;
-  }
+  //   return chartData;
+  // }
 
   static async _getSeriesData(chartType, dates) {
     let chartLanguages = await ApiHelper._getChartLanguages(chartType, dates);
@@ -154,7 +153,7 @@ class ApiHelper {
     let sortedScores = Object.keys(scoreDifferences).sort(function(a,b) {return scoreDifferences[b] - scoreDifferences[a];});
     let fastestGrowingLanguages = new Map();
 
-    for (let i = 0; i < NUMBER_OF_LANGUAGES; i++) {
+    for (let i = 0; i < ApiHelper.NUMBER_OF_LANGUAGES; i++) {
       fastestGrowingLanguages.set(sortedScores[i], languageNames[sortedScores[i]]);
     }
 
@@ -206,7 +205,7 @@ class ApiHelper {
       // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',
       order: 'points DESC',
-      limit: NUMBER_OF_LANGUAGES,
+      limit: ApiHelper.NUMBER_OF_LANGUAGES,
     };
     let topScores = await ApiHelper._callApi(filter);
 
@@ -239,5 +238,6 @@ ApiHelper.CHART_TYPES = {
   FASTEST_OVER_100: 'fastestover100',
   FASTEST_OVER_1000: 'fastestover1000',
 };
+ApiHelper.NUMBER_OF_LANGUAGES = 10;
 
 export default ApiHelper;

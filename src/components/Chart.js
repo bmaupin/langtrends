@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis
 } from 'react-vis';
-import ApiHelper from '../helpers/ApiHelper';
+import ChartData from '../chart-data/ChartData';
 
 import './Chart.css';
 
@@ -39,7 +39,11 @@ export default class Chart extends Component {
   async setChartData() {
     const intervalInMonths = 3;
 
-    let chartData = await ApiHelper.getChartData(ApiHelper.CHART_TYPES.FASTEST_OVER_1000, intervalInMonths);
+    // let chartData = await ApiHelper.getChartData(ApiHelper.CHART_TYPES.FASTEST_OVER_1000, intervalInMonths);
+    // let chartData = new ChartData(ChartData.CHART_TYPES.TOP_LANGUAGES, intervalInMonths);
+    let chartData = await ChartData.fromType(ChartData.CHART_TYPES.TOP_LANGUAGES, intervalInMonths);
+
+    console.log(`chartData.dates=${chartData.dates}`)
 
     // TODO: just one object for chart data?
     this.setState({
