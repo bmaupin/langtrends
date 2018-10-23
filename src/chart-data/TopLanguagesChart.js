@@ -24,15 +24,7 @@ export default class TopLanguagesChart extends LanguagesChart {
     return topLanguages;
   }
 
-  async getScores(languages, dates) {
-    let apiFilter = ApiHelper._buildSeriesApiFilter(languages, dates);
-    let scoresFromApi = await ApiHelper._callApi(apiFilter);
-    let formattedSeriesData = this._formatDataForChart(languages, scoresFromApi);
-
-    return formattedSeriesData;
-  }
-
-  _formatDataForChart(languages, scores) {
+  formatDataForChart(languages, scores) {
     let formattedScores = [];
 
     languages.forEach(languageName => {
