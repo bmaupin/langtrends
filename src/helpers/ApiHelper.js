@@ -1,6 +1,5 @@
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 const API_TOKEN = process.env.REACT_APP_API_TOKEN || null;
-const NUMBER_OF_DATES = 12;
 
 class ApiHelper {
   // static async getChartData(chartType, intervalInMonths) {
@@ -173,18 +172,6 @@ class ApiHelper {
     };
 
     return await ApiHelper._callApi(apiFilter);
-  }
-
-  static async _buildDates(intervalInMonths) {
-    let dates = [];
-    let currentDate = await ApiHelper._getLatestDateFromApi();
-
-    for (let i = 0; i < NUMBER_OF_DATES; i++) {
-      dates.push(currentDate);
-      currentDate = ApiHelper._subtractMonthsUTC(currentDate, intervalInMonths);
-    }
-
-    return dates.reverse();
   }
 
   static async _callApi(filter) {
