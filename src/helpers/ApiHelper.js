@@ -41,6 +41,7 @@ class ApiHelper {
   //   return formattedSeriesData;
   // }
 
+  // TODO: Move this to ChartData if that's the only place it's used
   static _buildSeriesApiFilter(languages, dates) {
     return {
       where: {
