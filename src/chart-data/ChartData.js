@@ -1,6 +1,8 @@
 import ApiHelper from '../helpers/ApiHelper';
 import TopLanguagesChart from './TopLanguagesChart';
 
+const NUMBER_OF_DATES = 12;
+
 class ChartData {
   constructor(dates, series) {
     this._dates = dates;
@@ -24,10 +26,22 @@ class ChartData {
         throw new Error(`Unknown chart type: ${chartType}`);
     }
 
-    let dates = await ApiHelper._buildDates(interval);
+    let dates = await ChartData._buildDates(interval);
     let series = await chart.getSeries(chartType, dates);
 
     return new ChartData(dates, series);
+  }
+
+  static async _buildDates(intervalInMonths) {
+    let dates = [];
+    let currentDate = await ApiHelper._getLatestDateFromApi();
+
+    for (let i = 0; i < NUMBER_OF_DATES; i++) {
+      dates.push(currentDate);
+      currentDate = ApiHelper._subtractMonthsUTC(currentDate, intervalInMonths);
+    }
+
+    return dates.reverse();
   }
 
   get dates() {
