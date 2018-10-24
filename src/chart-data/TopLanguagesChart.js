@@ -3,7 +3,6 @@ import LanguagesChart from './LanguagesChart';
 
 export default class TopLanguagesChart extends LanguagesChart {
   async getLanguages(dates) {
-    let topLanguages = new Map();
     const latestDateFromApi = await ApiHelper._getLatestDateFromApi();
 
     let filter = {
@@ -17,9 +16,12 @@ export default class TopLanguagesChart extends LanguagesChart {
     };
     let topScores = await ApiHelper._callApi(filter);
 
+    let topLanguages = new Map();
     for (let i = 0; i < topScores.length; i++) {
       topLanguages.set(topScores[i].language.id, topScores[i].language.name);
     }
+
+    console.log(`topLanguages=${JSON.stringify([...topLanguages])}`)
 
     return topLanguages;
   }
