@@ -10,7 +10,7 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
 
   async getLanguages(dates) {
     let [nextToLastDate, lastDate] = dates.slice(dates.length - 2, dates.length);
-    let scoresForLastTwoDates = await ApiHelper._getScoresForDates([lastDate, nextToLastDate]);
+    let scoresForLastTwoDates = await FastestGrowingLanguagesChart._getScoresForDates([lastDate, nextToLastDate]);
 
     console.log(`SCORES=${JSON.stringify(scoresForLastTwoDates)}`)
 
@@ -54,7 +54,17 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
     return fastestGrowingLanguages;
   }
 
+  static async _getScoresForDates(dates) {
+    const apiFilter = {
+      where: {
+        or: dates.map(date => ({date: date.toISOString()}))
+      },
+      // This makes sure the language details get included. In particular we need the language name for labels
+      include: 'language',
+    };
 
+    return await ApiHelper._callApi(apiFilter);
+  }
 
   // formatDataForChart(languages, scores) {
   //   console.log(`scores=${JSON.stringify(scores)}`)

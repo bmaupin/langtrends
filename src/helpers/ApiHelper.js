@@ -177,20 +177,20 @@ class ApiHelper {
     return fastestGrowingLanguages;
   }
 
-  static async _getScoresForDates(dates) {
-    let apiFilter = {
-      where: {
-        or: dates.map(date => ({date: date.toISOString()}))
-      },
-      // This makes sure the language details get included. In particular we need the language name for labels
-      include: 'language',
-      // TODO
-      // Have the API sort the data for us so we don't have to
-      // order: 'date DESC',
-    };
+  // static async _getScoresForDates(dates) {
+  //   let apiFilter = {
+  //     where: {
+  //       or: dates.map(date => ({date: date.toISOString()}))
+  //     },
+  //     // This makes sure the language details get included. In particular we need the language name for labels
+  //     include: 'language',
+  //     // TODO
+  //     // Have the API sort the data for us so we don't have to
+  //     // order: 'date DESC',
+  //   };
 
-    return await ApiHelper._callApi(apiFilter);
-  }
+  //   return await ApiHelper._callApi(apiFilter);
+  // }
 
   static async _callApi(filter) {
     let apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
