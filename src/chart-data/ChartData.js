@@ -1,5 +1,6 @@
 import ApiHelper from '../helpers/ApiHelper';
 import TopLanguagesChart from './TopLanguagesChart';
+import FastestGrowingLanguagesChart from './FastestGrowingLanguagesChart';
 
 const NUMBER_OF_DATES = 12;
 
@@ -17,27 +18,33 @@ class ChartData {
         chart = new TopLanguagesChart();
         break;
       case ChartData.CHART_TYPES.FASTEST_OVER_100:
-        // TODO
-        // return await ApiHelper._getFastestGrowingLanguages(dates, 100);
+        chart = new FastestGrowingLanguagesChart(100);
+        break;
       case ChartData.CHART_TYPES.FASTEST_OVER_1000:
-        // TODO
-        // return await ApiHelper._getFastestGrowingLanguages(dates, 1000);
+        chart = new FastestGrowingLanguagesChart(1000);
+        break;
       default:
         throw new Error(`Unknown chart type: ${chartType}`);
     }
+
+    chart = new FastestGrowingLanguagesChart(1000);
 
     let dates = await ChartData._buildDates(interval);
     let series = await ChartData._getSeries(chart, dates);
     // let series = await chart.getSeries(dates);
 
+    // TODO: remove this
+    console.log(`SERIES=${JSON.stringify(series)}`)
+    new FastestGrowingLanguagesChart(1000).getLanguages(dates);
+
     return new ChartData(dates, series);
   }
 
-  static async _buildDates(intervalInMonths) {
+  static async _buildDates(intervalInMonths, numberOfDates = NUMBER_OF_DATES) {
     let dates = [];
     let currentDate = await ApiHelper._getLatestDateFromApi();
 
-    for (let i = 0; i < NUMBER_OF_DATES; i++) {
+    for (let i = 0; i < numberOfDates; i++) {
       dates.push(currentDate);
       currentDate = ApiHelper._subtractMonthsUTC(currentDate, intervalInMonths);
     }
