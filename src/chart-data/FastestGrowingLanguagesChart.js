@@ -31,10 +31,12 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
       scoresPerLanguage[languageId].scores[date] = points;
 
       if (Object.keys(scoresPerLanguage[languageId].scores).length === 2) {
-        scoresPerLanguage[languageId].percentageChange = (
-          scoresPerLanguage[languageId].scores[lastDate.toISOString()] /
-          scoresPerLanguage[languageId].scores[nextToLastDate.toISOString()] * 100
-        );
+        if (scoresPerLanguage[languageId].scores[nextToLastDate.toISOString()] > this._minimumScore) {
+          scoresPerLanguage[languageId].percentageChange = (
+            scoresPerLanguage[languageId].scores[lastDate.toISOString()] /
+            scoresPerLanguage[languageId].scores[nextToLastDate.toISOString()] * 100
+          );
+        }
       }
     }
 
