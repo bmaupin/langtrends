@@ -41,24 +41,24 @@ class ApiHelper {
   //   return formattedSeriesData;
   // }
 
-  // TODO: Move this to ChartData if that's the only place it's used
-  static _buildSeriesApiFilter(languages, dates) {
-    return {
-      where: {
-        and: [
-          {
-            or: Array.from(languages.keys()).map(languageId => ({languageId: languageId}))
-          },
-          {
-            or: dates.map(date => ({date: date.toISOString()}))
-          }
-        ]
-      },
-      // This makes sure the language details get included. In particular we need the language name for labels
-      include: 'language',
-      order: 'date ASC',
-    };
-  }
+  // // TODO: Move this to ChartData if that's the only place it's used
+  // static _buildSeriesApiFilter(languages, dates) {
+  //   return {
+  //     where: {
+  //       and: [
+  //         {
+  //           or: Array.from(languages.keys()).map(languageId => ({languageId: languageId}))
+  //         },
+  //         {
+  //           or: dates.map(date => ({date: date.toISOString()}))
+  //         }
+  //       ]
+  //     },
+  //     // This makes sure the language details get included. In particular we need the language name for labels
+  //     include: 'language',
+  //     order: 'date ASC',
+  //   };
+  // }
 
   // static _calculateDataForChart(chartType, scores) {
   //   // intermediate format: calculatedData = {'languagename': [score, score], 'languagename': [score, score]}
@@ -224,11 +224,11 @@ class ApiHelper {
   // }
 
   static async _getLatestDateFromApi() {
-    let filter = {
+    const apiFilter = {
       order: 'date DESC',
       limit: 1
     };
-    let scoresFromApi = await ApiHelper._callApi(filter);
+    let scoresFromApi = await ApiHelper._callApi(apiFilter);
 
     return new Date(scoresFromApi[0].date);
   }
