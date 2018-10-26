@@ -8,11 +8,9 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
     this._minimumScore = minimumScore;
   }
 
-  async getLanguages(dates) {
+  async getLanguages1(dates) {
     let [nextToLastDate, lastDate] = dates.slice(dates.length - 2, dates.length);
     let scoresForLastTwoDates = await FastestGrowingLanguagesChart._getScoresForDates([lastDate, nextToLastDate]);
-
-    console.log(`SCORES=${JSON.stringify(scoresForLastTwoDates)}`)
 
     let scoresPerLanguage = {};
 
@@ -36,21 +34,65 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
             scoresPerLanguage[languageId].scores[lastDate.toISOString()] /
             scoresPerLanguage[languageId].scores[nextToLastDate.toISOString()] * 100
           );
+        } else {
+          scoresPerLanguage[languageId].percentageChange = 0;
         }
       }
     }
 
-    console.log(`scoresPerLanguage=${JSON.stringify(scoresPerLanguage)}`)
-
     let fastestGrowingLanguageIds = Object.keys(scoresPerLanguage).sort((a,b) => {
       return scoresPerLanguage[b].percentageChange - scoresPerLanguage[a].percentageChange;
     });
-    // return fastestGrowingLanguageIds.slice(0, ApiHelper.NUMBER_OF_LANGUAGES);
 
     let fastestGrowingLanguages = new Map();
     for (let i = 0; i < ApiHelper.NUMBER_OF_LANGUAGES; i++) {
       const languageId = fastestGrowingLanguageIds[i];
       fastestGrowingLanguages.set(languageId, scoresPerLanguage[languageId].languageName);
+    }
+
+    return fastestGrowingLanguages;
+  }
+
+  // TODO: pick an algorithm :)
+  async getLanguages(dates) {
+    return await this.getLanguages1(dates)
+  }
+
+  async getLanguages2(dates) {
+    let [nextToLastDate, lastDate] = dates.slice(dates.length - 2, dates.length);
+    let scores = await FastestGrowingLanguagesChart._getScoresForDates([lastDate, nextToLastDate]);
+
+    let scoresByLanguage = {};
+    let languageNames = {};
+    for (let i = 0; i < scores.length; i++) {
+      const date = scores[i].date;
+      const languageId = scores[i].languageId;
+      const languageName = scores[i].language.name;
+      const points = scores[i].points;
+
+      if (!scoresByLanguage.hasOwnProperty(languageId)) {
+        scoresByLanguage[languageId] = {};
+        languageNames[languageId] = languageName;
+      }
+
+      scoresByLanguage[languageId][date] = points;
+    }
+
+    let scoreDifferences = {};
+    for (let langaugeId in scoresByLanguage) {
+      if (scoresByLanguage[langaugeId][nextToLastDate.toISOString()] > this._minimumScore) {
+        scoreDifferences[langaugeId] = (
+          scoresByLanguage[langaugeId][lastDate.toISOString()] /
+          scoresByLanguage[langaugeId][nextToLastDate.toISOString()] * 100
+        );
+      }
+    }
+
+    let sortedScores = Object.keys(scoreDifferences).sort((a,b) => {return scoreDifferences[b] - scoreDifferences[a];});
+
+    let fastestGrowingLanguages = new Map();
+    for (let i = 0; i < ApiHelper.NUMBER_OF_LANGUAGES; i++) {
+      fastestGrowingLanguages.set(sortedScores[i], languageNames[sortedScores[i]]);
     }
 
     return fastestGrowingLanguages;
@@ -99,13 +141,13 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
   //   return formattedScores;
   // }
 
+  // TODO: use percentage instead of score
   formatDataForChart(languages, scores) {
     let intermediateScoreData = this._intermediateFormatScores(scores);
 
     let formattedScores = [];
 
     languages.forEach(languageName => {
-      console.log(`languageName=${languageName}`)
       let languageData = [];
 
       for (let i = 0; i < intermediateScoreData[languageName].length; i++) {
