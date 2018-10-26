@@ -118,64 +118,64 @@ class ApiHelper {
   //   return formattedScores;
   // }
 
-  // TODO: this is a hot mess
-  static async _getFastestGrowingLanguages(dates, minimumScore) {
-    let [previousDate, lastDate] = dates.slice(dates.length - 2, dates.length);
-    let scores = await ApiHelper._getScoresForDates([lastDate, previousDate]);
-    let scoresByLanguage = {};
-    let languageNames = {};
+  // // TODO: this is a hot mess
+  // static async _getFastestGrowingLanguages(dates, minimumScore) {
+  //   let [previousDate, lastDate] = dates.slice(dates.length - 2, dates.length);
+  //   let scores = await ApiHelper._getScoresForDates([lastDate, previousDate]);
+  //   let scoresByLanguage = {};
+  //   let languageNames = {};
 
-    console.log(`SCORES=${JSON.stringify(scores)}`);
-    // [{"date":"2018-05-01T00:00:00.000Z","points":112583,"id":19896,"languageId":8,"language":{"name":"Haskell","stackoverflowTag":null,"id":8}},{"date": ...},
+  //   console.log(`SCORES=${JSON.stringify(scores)}`);
+  //   // [{"date":"2018-05-01T00:00:00.000Z","points":112583,"id":19896,"languageId":8,"language":{"name":"Haskell","stackoverflowTag":null,"id":8}},{"date": ...},
 
-    for (let i = 0; i < scores.length; i++) {
-      const date = scores[i].date;
-      const languageId = scores[i].languageId;
-      const languageName = scores[i].language.name;
-      const points = scores[i].points;
+  //   for (let i = 0; i < scores.length; i++) {
+  //     const date = scores[i].date;
+  //     const languageId = scores[i].languageId;
+  //     const languageName = scores[i].language.name;
+  //     const points = scores[i].points;
 
-      if (!scoresByLanguage.hasOwnProperty(languageId)) {
-        scoresByLanguage[languageId] = {};
-        languageNames[languageId] = languageName;
-      }
+  //     if (!scoresByLanguage.hasOwnProperty(languageId)) {
+  //       scoresByLanguage[languageId] = {};
+  //       languageNames[languageId] = languageName;
+  //     }
 
-      scoresByLanguage[languageId][date] = points;
-    }
+  //     scoresByLanguage[languageId][date] = points;
+  //   }
 
-    console.log(scoresByLanguage);
-    // {1: {2018-05-01T00:00:00.000Z: 33054, 2018-08-01T00:00:00.000Z: 33178}, 2: ...}
+  //   console.log(scoresByLanguage);
+  //   // {1: {2018-05-01T00:00:00.000Z: 33054, 2018-08-01T00:00:00.000Z: 33178}, 2: ...}
 
-    let scoreDifferences = {};
+  //   let scoreDifferences = {};
 
-    for (let langaugeId in scoresByLanguage) {
-      // TODO: have separate UI options for the different algorithms
-      // scoreDifferences[langaugeId] = scoresByLanguage[langaugeId][lastDate.toISOString()] - scoresByLanguage[langaugeId][previousDate.toISOString()];
+  //   for (let langaugeId in scoresByLanguage) {
+  //     // TODO: have separate UI options for the different algorithms
+  //     // scoreDifferences[langaugeId] = scoresByLanguage[langaugeId][lastDate.toISOString()] - scoresByLanguage[langaugeId][previousDate.toISOString()];
 
-      if (scoresByLanguage[langaugeId][previousDate.toISOString()] > minimumScore) {
-        scoreDifferences[langaugeId] = scoresByLanguage[langaugeId][lastDate.toISOString()] / scoresByLanguage[langaugeId][previousDate.toISOString()] * 100;
-      }
-    }
+  //     if (scoresByLanguage[langaugeId][previousDate.toISOString()] > minimumScore) {
+  //       scoreDifferences[langaugeId] = scoresByLanguage[langaugeId][lastDate.toISOString()] / scoresByLanguage[langaugeId][previousDate.toISOString()] * 100;
+  //     }
+  //   }
 
-    console.log(scoreDifferences);
-    // 1:124, 2:54451
+  //   console.log(scoreDifferences);
+  //   // 1:124, 2:54451
 
-    let sortedScores = Object.keys(scoreDifferences).sort(function(a,b) {return scoreDifferences[b] - scoreDifferences[a];});
-    let fastestGrowingLanguages = new Map();
+  //   let sortedScores = Object.keys(scoreDifferences).sort(function(a,b) {return scoreDifferences[b] - scoreDifferences[a];});
+  //   let fastestGrowingLanguages = new Map();
 
-    for (let i = 0; i < ApiHelper.NUMBER_OF_LANGUAGES; i++) {
-      fastestGrowingLanguages.set(sortedScores[i], languageNames[sortedScores[i]]);
-    }
+  //   for (let i = 0; i < ApiHelper.NUMBER_OF_LANGUAGES; i++) {
+  //     fastestGrowingLanguages.set(sortedScores[i], languageNames[sortedScores[i]]);
+  //   }
 
-    console.log(sortedScores);
-    // 0:"10", 1:"9", 2:"15"
+  //   console.log(sortedScores);
+  //   // 0:"10", 1:"9", 2:"15"
 
-    console.log(fastestGrowingLanguages);
-    // 0:{"10" => "JavaScript"}, 1:{"9" => "Java"}, 2:{"15" => "Python"}
+  //   console.log(fastestGrowingLanguages);
+  //   // 0:{"10" => "JavaScript"}, 1:{"9" => "Java"}, 2:{"15" => "Python"}
 
-    // chartData=[{"title":"JavaScript","data":[{"x":0,"y":2466983},...,{"title":"Java","data":[{"x":0,"y":2199100},
+  //   // chartData=[{"title":"JavaScript","data":[{"x":0,"y":2466983},...,{"title":"Java","data":[{"x":0,"y":2199100},
 
-    return fastestGrowingLanguages;
-  }
+  //   return fastestGrowingLanguages;
+  // }
 
   // static async _getScoresForDates(dates) {
   //   let apiFilter = {
@@ -201,27 +201,27 @@ class ApiHelper {
     return response.json();
   }
 
-  static async _getTopLanguages() {
-    let topLanguages = new Map();
-    const latestDateFromApi = await ApiHelper._getLatestDateFromApi();
+  // static async _getTopLanguages() {
+  //   let topLanguages = new Map();
+  //   const latestDateFromApi = await ApiHelper._getLatestDateFromApi();
 
-    let filter = {
-      where: {
-        date: latestDateFromApi.toISOString(),
-      },
-      // This makes sure the language details get included. In particular we need the language name for labels
-      include: 'language',
-      order: 'points DESC',
-      limit: ApiHelper.NUMBER_OF_LANGUAGES,
-    };
-    let topScores = await ApiHelper._callApi(filter);
+  //   let filter = {
+  //     where: {
+  //       date: latestDateFromApi.toISOString(),
+  //     },
+  //     // This makes sure the language details get included. In particular we need the language name for labels
+  //     include: 'language',
+  //     order: 'points DESC',
+  //     limit: ApiHelper.NUMBER_OF_LANGUAGES,
+  //   };
+  //   let topScores = await ApiHelper._callApi(filter);
 
-    for (let i = 0; i < topScores.length; i++) {
-      topLanguages.set(topScores[i].language.id, topScores[i].language.name);
-    }
+  //   for (let i = 0; i < topScores.length; i++) {
+  //     topLanguages.set(topScores[i].language.id, topScores[i].language.name);
+  //   }
 
-    return topLanguages;
-  }
+  //   return topLanguages;
+  // }
 
   static async _getLatestDateFromApi() {
     let filter = {
@@ -245,6 +245,7 @@ class ApiHelper {
 //   FASTEST_OVER_100: 'fastestover100',
 //   FASTEST_OVER_1000: 'fastestover1000',
 // };
+// TODO: put this somewhere else
 ApiHelper.NUMBER_OF_LANGUAGES = 10;
 
 export default ApiHelper;
