@@ -232,12 +232,6 @@ class ApiHelper {
 
     return new Date(scoresFromApi[0].date);
   }
-
-  static _subtractMonthsUTC(date, monthsToSubtract) {
-    let newDate = new Date(date);
-    newDate.setUTCMonth(newDate.getUTCMonth() - monthsToSubtract);
-    return newDate;
-  }
 }
 
 // ApiHelper.CHART_TYPES = {
