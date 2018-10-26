@@ -60,11 +60,31 @@ class ChartData {
 
   static async _getSeries(chart, dates) {
     let languages = await chart.getLanguages(dates);
-    let apiFilter = ApiHelper._buildSeriesApiFilter(languages, dates);
-    let scoresFromApi = await ApiHelper._callApi(apiFilter);
+    let scoresFromApi = await ChartData._getScoresForSeries(languages, dates);
     let formattedSeriesData = chart.formatDataForChart(languages, scoresFromApi);
 
     return formattedSeriesData;
+  }
+
+  static async _getScoresForSeries(languages, dates) {
+    const apiFilter = {
+      where: {
+        and: [
+          {
+            or: Array.from(languages.keys()).map(languageId => ({languageId: languageId}))
+          },
+          {
+            or: dates.map(date => ({date: date.toISOString()}))
+          }
+        ]
+      },
+      // This makes sure the language details get included. In particular we need the language name for labels
+      include: 'language',
+      // The methods that work with this data will assume that it's ordered by date
+      order: 'date ASC',
+    };
+
+    return await ApiHelper._callApi(apiFilter);
   }
 
   get dates() {
