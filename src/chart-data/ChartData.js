@@ -46,10 +46,16 @@ class ChartData {
 
     for (let i = 0; i < numberOfDates; i++) {
       dates.push(currentDate);
-      currentDate = ApiHelper._subtractMonthsUTC(currentDate, intervalInMonths);
+      currentDate = ChartData._subtractMonthsUTC(currentDate, intervalInMonths);
     }
 
     return dates.reverse();
+  }
+
+  static _subtractMonthsUTC(date, monthsToSubtract) {
+    let newDate = new Date(date);
+    newDate.setUTCMonth(newDate.getUTCMonth() - monthsToSubtract);
+    return newDate;
   }
 
   static async _getSeries(chart, dates) {
