@@ -2,8 +2,16 @@ import ApiHelper from '../helpers/ApiHelper';
 import LanguagesChart from './LanguagesChart';
 
 export default class TopLanguagesChart extends LanguagesChart {
-  async getLanguages(dates) {
-    const latestDateFromApi = await ApiHelper._getLatestDateFromApi();
+  async getSeries(dates) {
+    const languages = await this._getLanguages(dates);
+    const scoresForSeries = await ApiHelper.getScoresForSeries(languages, dates);
+    let formattedSeriesData = this._formatDataForChart(languages, scoresForSeries);
+
+    return formattedSeriesData;
+  }
+
+  async _getLanguages(dates) {
+    const latestDateFromApi = await ApiHelper.getLatestDateFromApi();
 
     let filter = {
       where: {
@@ -27,7 +35,7 @@ export default class TopLanguagesChart extends LanguagesChart {
     return topLanguages;
   }
 
-  formatDataForChart(languages, scores) {
+  _formatDataForChart(languages, scores) {
     let formattedScores = [];
 
     languages.forEach(languageName => {

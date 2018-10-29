@@ -5,7 +5,7 @@ export default class LanguagesChart {
   /**
    * @ignore
    */
-  getLanguages() {}
+  _getLanguages() {}
 
   /**
    * @ignore
