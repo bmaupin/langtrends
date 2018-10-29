@@ -2,15 +2,25 @@ import ApiHelper from '../helpers/ApiHelper';
 import LanguagesChart from './LanguagesChart';
 
 export default class FastestGrowingLanguagesChart extends LanguagesChart {
-  constructor(minimumScore) {
+  constructor(minimumScore, interval) {
     super();
 
+    this._interval = interval;
     this._minimumScore = minimumScore;
   }
 
-  async getLanguages(dates) {
+  async getSeries(dates) {
+    const languages = await this._getLanguages(dates);
+    const datesForScores = await ApiHelper.buildDates(this._interval, ApiHelper.NUMBER_OF_DATES + 1);
+    const scoresForSeries = await ApiHelper.getScoresForSeries(languages, datesForScores);
+    let formattedSeriesData = this._formatDataForChart(languages, scoresForSeries);
+
+    return formattedSeriesData;
+  }
+
+  async _getLanguages(dates) {
     let [nextToLastDate, lastDate] = dates.slice(dates.length - 2, dates.length);
-    let scoresForLastTwoDates = await FastestGrowingLanguagesChart._getScoresForDates([lastDate, nextToLastDate]);
+    let scoresForLastTwoDates = await FastestGrowingLanguagesChart._getAllScores([lastDate, nextToLastDate]);
 
     let scoresByLanguage = {};
     let languageNamesById = {};
@@ -38,7 +48,7 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
       }
     }
 
-    let fastestGrowingLanguageIds = Object.keys(scorePercentageChanges).sort((a,b) => {
+    let fastestGrowingLanguageIds = Object.keys(scorePercentageChanges).sort((a, b) => {
       return scorePercentageChanges[b] - scorePercentageChanges[a];
     });
 
@@ -51,10 +61,10 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
     return fastestGrowingLanguages;
   }
 
-  static async _getScoresForDates(dates) {
+  static async _getAllScores(dates) {
     const apiFilter = {
       where: {
-        or: dates.map(date => ({date: date.toISOString()}))
+        or: dates.map(date => ({ date: date.toISOString() }))
       },
       // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',
@@ -95,19 +105,19 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
   // }
 
   // TODO: use percentage instead of score
-  formatDataForChart(languages, scores) {
+  _formatDataForChart(languages, scores) {
     let intermediateScoreData = this._intermediateFormatScores(scores);
 
     let formattedScores = [];
-
     languages.forEach(languageName => {
       let languageData = [];
 
-      for (let i = 0; i < intermediateScoreData[languageName].length; i++) {
+      // Start from 1 because the previous language is just used for calculating the score
+      for (let i = 1; i < intermediateScoreData[languageName].length; i++) {
         languageData.push(
           {
-            x: i,
-            y: intermediateScoreData[languageName][i],
+            x: i - 1,
+            y: intermediateScoreData[languageName][i] / intermediateScoreData[languageName][i - 1] * 100,
           }
         );
       }
@@ -134,6 +144,8 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
     //   )
     // }
 
+    console.log(`formattedScores=${JSON.stringify(formattedScores)}`)
+
     return formattedScores;
   }
 
@@ -141,7 +153,6 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
     // intermediate format: calculatedData = {'languagename': [score, score], 'languagename': [score, score]}
 
     let intermediateScoreData = {};
-
     for (let i = 0; i < scores.length; i++) {
       const languageName = scores[i].language.name;
       const points = scores[i].points;
