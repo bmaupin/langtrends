@@ -104,7 +104,6 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
   //   return formattedScores;
   // }
 
-  // TODO: use percentage instead of score
   _formatDataForChart(languages, scores) {
     let intermediateScoreData = this._intermediateFormatScores(scores);
 
@@ -114,10 +113,16 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
 
       // Start from 1 because the previous language is just used for calculating the score
       for (let i = 1; i < intermediateScoreData[languageName].length; i++) {
+        let percentageGrowth = intermediateScoreData[languageName][i] / intermediateScoreData[languageName][i - 1] * 100;
+        // percentageGrowth could be NaN or Infinity
+        if (!Number.isFinite(percentageGrowth)) {
+          percentageGrowth = 0;
+        }
+
         languageData.push(
           {
             x: i - 1,
-            y: intermediateScoreData[languageName][i] / intermediateScoreData[languageName][i - 1] * 100,
+            y: percentageGrowth,
           }
         );
       }
