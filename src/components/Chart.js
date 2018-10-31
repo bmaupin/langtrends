@@ -128,6 +128,7 @@ export default class Chart extends Component {
             <YAxis tickFormat={this._yAxisLabelFormatter} />
             {this.state.chartData.map(entry =>
               <LineSeries
+                getNull={(d) => d.y !== null}
                 key={entry.title}
                 data={entry.data}
                 onNearestX={this._onNearestX}
