@@ -70,39 +70,8 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
       include: 'language',
     };
 
-    return await ApiHelper._callApi(apiFilter);
+    return await ApiHelper.callApi(apiFilter);
   }
-
-  // formatDataForChart(languages, scores) {
-  //   console.log(`scores=${JSON.stringify(scores)}`)
-
-  //   let formattedScores = [];
-
-  //   languages.forEach(languageName => {
-  //     formattedScores.push(
-  //       {
-  //         title: languageName,
-  //         data: [],
-  //       }
-  //     );
-  //   });
-
-  //   for (let i = 0; i < scores.length; i++) {
-  //     const languageName = scores[i].language.name;
-  //     const points = scores[i].points;
-
-  //     let languageData = formattedScores.find(languageData => languageData.title === languageName);
-
-  //     languageData.data.push(
-  //       {
-  //         x: languageData.data.length,
-  //         y: points,
-  //       }
-  //     )
-  //   }
-
-  //   return formattedScores;
-  // }
 
   _formatDataForChart(languages, scores) {
     let intermediateScoreData = this._intermediateFormatScores(scores);
@@ -135,28 +104,10 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
       );
     });
 
-    // for (let i = 0; i < scores.length; i++) {
-    //   const languageName = scores[i].language.name;
-    //   const points = scores[i].points;
-
-    //   let languageData = formattedScores.find(languageData => languageData.title === languageName);
-
-    //   languageData.data.push(
-    //     {
-    //       x: languageData.data.length,
-    //       y: points,
-    //     }
-    //   )
-    // }
-
-    console.log(`formattedScores=${JSON.stringify(formattedScores)}`)
-
     return formattedScores;
   }
 
   _intermediateFormatScores(scores) {
-    // intermediate format: calculatedData = {'languagename': [score, score], 'languagename': [score, score]}
-
     let intermediateScoreData = {};
     for (let i = 0; i < scores.length; i++) {
       const languageName = scores[i].language.name;
@@ -170,11 +121,4 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
 
     return intermediateScoreData;
   }
-
-  /*
-    - For each date in the list of dates (starting with index 1)
-      - Get the languageData
-      - Calculate score: scores[language][dates[i]] / scores[language][dates[i] - 1] / 100
-      - languageData.push(score)
-  */
 }
