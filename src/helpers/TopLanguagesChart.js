@@ -10,7 +10,7 @@ export default class TopLanguagesChart extends LanguagesChart {
     return formattedSeriesData;
   }
 
-  async _getLanguages(dates) {
+  async _getLanguages() {
     const latestDateFromApi = await ApiHelper.getLatestDateFromApi();
 
     let filter = {
@@ -56,7 +56,7 @@ export default class TopLanguagesChart extends LanguagesChart {
           x: languageData.data.length,
           y: points,
         }
-      )
+      );
     }
 
     return formattedScores;
