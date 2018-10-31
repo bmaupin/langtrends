@@ -69,7 +69,7 @@ export default class Chart extends Component {
       };
     });
 
-    crossHairItems.sort((a, b) => {return b.value - a.value});
+    crossHairItems.sort((a, b) => {return b.value - a.value;});
 
     return crossHairItems;
   }
