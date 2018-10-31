@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis
 } from 'react-vis';
-import ChartData from '../chart-data/ChartData';
+import ChartData from '../helpers/ChartData';
 
 import './Chart.css';
 
