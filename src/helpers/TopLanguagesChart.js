@@ -1,4 +1,4 @@
-import ApiHelper from '../helpers/ApiHelper';
+import ApiHelper from './ApiHelper';
 import LanguagesChart from './LanguagesChart';
 
 export default class TopLanguagesChart extends LanguagesChart {

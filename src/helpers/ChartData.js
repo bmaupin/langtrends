@@ -1,4 +1,4 @@
-import ApiHelper from '../helpers/ApiHelper';
+import ApiHelper from './ApiHelper';
 import TopLanguagesChart from './TopLanguagesChart';
 import FastestGrowingLanguagesChart from './FastestGrowingLanguagesChart';
 
