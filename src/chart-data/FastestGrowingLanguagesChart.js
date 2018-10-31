@@ -116,7 +116,7 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
         let percentageGrowth = intermediateScoreData[languageName][i] / intermediateScoreData[languageName][i - 1] * 100;
         // percentageGrowth could be NaN or Infinity
         if (!Number.isFinite(percentageGrowth)) {
-          percentageGrowth = 0;
+          percentageGrowth = null;
         }
 
         languageData.push(
