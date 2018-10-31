@@ -25,16 +25,8 @@ class ChartData {
         throw new Error(`Unknown chart type: ${chartType}`);
     }
 
-    // TODO: remove this
-    chart = new FastestGrowingLanguagesChart(1000, interval);
-
     let dates = await ApiHelper.buildDates(interval);
     let series = await chart.getSeries(dates);
-
-    // TODO: remove this
-    console.log(`DATES=${JSON.stringify(dates)}`)
-    console.log(`SERIES=${JSON.stringify(series)}`)
-    // new FastestGrowingLanguagesChart(1000, interval)._getLanguages(dates);
 
     return new ChartData(dates, series);
   }

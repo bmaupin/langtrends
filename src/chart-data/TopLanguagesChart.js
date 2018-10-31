@@ -22,15 +22,13 @@ export default class TopLanguagesChart extends LanguagesChart {
       order: 'points DESC',
       limit: ApiHelper.NUMBER_OF_LANGUAGES,
     };
-    let topScores = await ApiHelper._callApi(filter);
+    let topScores = await ApiHelper.callApi(filter);
 
     // Use a Map because it is guaranteed to maintain order (unlike a plain object)
     let topLanguages = new Map();
     for (let i = 0; i < topScores.length; i++) {
       topLanguages.set(topScores[i].language.id, topScores[i].language.name);
     }
-
-    console.log(`topLanguages=${JSON.stringify([...topLanguages])}`)
 
     return topLanguages;
   }
