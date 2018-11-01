@@ -1,7 +1,6 @@
 import ApiHelper from './ApiHelper';
-import LanguagesChart from './LanguagesChart';
 
-export default class TopLanguagesChart extends LanguagesChart {
+export default class TopLanguagesChart {
   async getSeries(dates) {
     const languages = await this._getLanguages(dates);
     const scoresForSeries = await ApiHelper.getScoresForSeries(languages, dates);

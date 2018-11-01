@@ -1,10 +1,7 @@
 import ApiHelper from './ApiHelper';
-import LanguagesChart from './LanguagesChart';
 
-export default class FastestGrowingLanguagesChart extends LanguagesChart {
+export default class FastestGrowingLanguagesChart {
   constructor(minimumScore, interval) {
-    super();
-
     this._interval = interval;
     this._minimumScore = minimumScore;
   }
