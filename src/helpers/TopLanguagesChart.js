@@ -9,12 +9,12 @@ export default class TopLanguagesChart {
     return formattedSeriesData;
   }
 
-  async _getLanguages() {
-    const latestDateFromApi = await ApiHelper.getLatestDateFromApi();
+  async _getLanguages(dates) {
+    let [lastDate] = dates.slice(-1);
 
-    let filter = {
+    const filter = {
       where: {
-        date: latestDateFromApi.toISOString(),
+        date: lastDate.toISOString(),
       },
       // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',

@@ -16,7 +16,7 @@ export default class FastestGrowingLanguagesChart {
   }
 
   async _getLanguages(dates) {
-    let [nextToLastDate, lastDate] = dates.slice(dates.length - 2, dates.length);
+    let [nextToLastDate, lastDate] = dates.slice(-2);
     let scoresForLastTwoDates = await FastestGrowingLanguagesChart._getAllScores([lastDate, nextToLastDate]);
 
     let scoresByLanguage = {};
