@@ -4,7 +4,7 @@ const API_TOKEN = process.env.REACT_APP_API_TOKEN || null;
 class ApiHelper {
   static async buildDates(intervalInMonths, numberOfDates = ApiHelper.NUMBER_OF_DATES) {
     let dates = [];
-    let currentDate = await ApiHelper.getLatestDateFromApi();
+    let currentDate = await ApiHelper._getLatestDateFromApi();
 
     for (let i = 0; i < numberOfDates; i++) {
       dates.push(currentDate);
@@ -12,6 +12,16 @@ class ApiHelper {
     }
 
     return dates.reverse();
+  }
+
+  static async _getLatestDateFromApi() {
+    const apiFilter = {
+      order: 'date DESC',
+      limit: 1
+    };
+    let scoresFromApi = await ApiHelper.callApi(apiFilter);
+
+    return new Date(scoresFromApi[0].date);
   }
 
   static _subtractMonthsUTC(date, monthsToSubtract) {
@@ -25,16 +35,6 @@ class ApiHelper {
 
     let response = await fetch(apiUrl);
     return response.json();
-  }
-
-  static async getLatestDateFromApi() {
-    const apiFilter = {
-      order: 'date DESC',
-      limit: 1
-    };
-    let scoresFromApi = await ApiHelper.callApi(apiFilter);
-
-    return new Date(scoresFromApi[0].date);
   }
 
   static async getScoresForSeries(languages, dates) {
