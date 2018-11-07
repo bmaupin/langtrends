@@ -5,13 +5,28 @@ class ApiHelper {
   static async buildDates(intervalInMonths, numberOfDates = ApiHelper.NUMBER_OF_DATES) {
     let dates = [];
     let currentDate = await ApiHelper._getLatestDateFromApi();
+    let earliestDate = await ApiHelper._getEarliestDateFromApi();
 
     for (let i = 0; i < numberOfDates; i++) {
+      if (currentDate <= earliestDate) {
+        break;
+      }
+
       dates.push(currentDate);
       currentDate = ApiHelper._subtractMonthsUTC(currentDate, intervalInMonths);
     }
 
     return dates.reverse();
+  }
+
+  static async _getEarliestDateFromApi() {
+    const apiFilter = {
+      order: 'date ASC',
+      limit: 1
+    };
+    let scoresFromApi = await ApiHelper.callApi(apiFilter);
+
+    return new Date(scoresFromApi[0].date);
   }
 
   static async _getLatestDateFromApi() {
