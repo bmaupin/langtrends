@@ -1,16 +1,27 @@
 import ApiHelper from './ApiHelper';
 
 export default class TopLanguagesChart {
-  async getSeries(dates) {
-    const languages = await this._getLanguages(dates);
-    const scoresForSeries = await ApiHelper.getScoresForSeries(languages, dates);
+  constructor(interval) {
+    this._interval = interval;
+  }
+
+  async getDates() {
+    if (typeof this._dates === 'undefined') {
+      this._dates = await ApiHelper.buildDates(this._interval);
+    }
+    return this._dates;
+  }
+
+  async getSeries() {
+    const languages = await this._getLanguages();
+    const scoresForSeries = await ApiHelper.getScoresForSeries(languages, await this.getDates());
     let formattedSeriesData = this._formatDataForChart(languages, scoresForSeries);
 
     return formattedSeriesData;
   }
 
-  async _getLanguages(dates) {
-    let [lastDate] = dates.slice(-1);
+  async _getLanguages() {
+    let [lastDate] = (await this.getDates()).slice(-1);
 
     const filter = {
       where: {

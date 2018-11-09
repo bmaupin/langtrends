@@ -1,22 +1,33 @@
 import ApiHelper from './ApiHelper';
 
 export default class FastestGrowingLanguagesChart {
-  constructor(minimumScore, interval) {
+  constructor(interval, minimumScore) {
     this._interval = interval;
     this._minimumScore = minimumScore;
   }
 
-  async getSeries(dates) {
-    const languages = await this._getLanguages(dates);
-    const datesForScores = await ApiHelper.buildDates(this._interval, ApiHelper.NUMBER_OF_DATES + 1);
-    const scoresForSeries = await ApiHelper.getScoresForSeries(languages, datesForScores);
+  async getDates() {
+    // We need one extra date internally to calculate growth, so to avoid extra API calls just drop the extra date
+    return (await this._getDatesForGrowth()).slice(1);
+  }
+
+  async _getDatesForGrowth() {
+    if (typeof this._dates === 'undefined') {
+      this._dates = await ApiHelper.buildDates(this._interval, ApiHelper.NUMBER_OF_DATES + 1);
+    }
+    return this._dates;
+  }
+
+  async getSeries() {
+    const languages = await this._getLanguages();
+    const scoresForSeries = await ApiHelper.getScoresForSeries(languages, await this._getDatesForGrowth());
     let formattedSeriesData = this._formatDataForChart(languages, scoresForSeries);
 
     return formattedSeriesData;
   }
 
-  async _getLanguages(dates) {
-    let [nextToLastDate, lastDate] = dates.slice(-2);
+  async _getLanguages() {
+    let [nextToLastDate, lastDate] = (await this._getDatesForGrowth()).slice(-2);
     let scoresForLastTwoDates = await FastestGrowingLanguagesChart._getAllScores([lastDate, nextToLastDate]);
 
     let scoresByLanguage = {};
