@@ -1,4 +1,3 @@
-import ApiHelper from './ApiHelper';
 import TopLanguagesChart from './TopLanguagesChart';
 import FastestGrowingLanguagesChart from './FastestGrowingLanguagesChart';
 
@@ -10,23 +9,22 @@ class ChartData {
 
   static async fromType(chartType, interval) {
     let chart;
-
     switch(chartType) {
       case ChartData.CHART_TYPES.TOP_LANGUAGES:
-        chart = new TopLanguagesChart();
+        chart = new TopLanguagesChart(interval);
         break;
       case ChartData.CHART_TYPES.FASTEST_OVER_100:
-        chart = new FastestGrowingLanguagesChart(100, interval);
+        chart = new FastestGrowingLanguagesChart(interval, 100);
         break;
       case ChartData.CHART_TYPES.FASTEST_OVER_1000:
-        chart = new FastestGrowingLanguagesChart(1000, interval);
+        chart = new FastestGrowingLanguagesChart(interval, 1000);
         break;
       default:
         throw new Error(`Unknown chart type: ${chartType}`);
     }
 
-    let dates = await ApiHelper.buildDates(interval);
-    let series = await chart.getSeries(dates);
+    let dates = await chart.getDates();
+    let series = await chart.getSeries();
 
     return new ChartData(dates, series);
   }
