@@ -7,11 +7,11 @@ export default class FastestGrowingLanguagesChart {
   }
 
   async getDates() {
-    // We need one extra date internally to calculate growth, so to avoid extra API calls just drop the extra date
-    return (await this._getDatesForGrowth()).slice(1);
+    // We need one extra date internally for calculations, so to avoid extra API calls just drop the extra date
+    return (await this._getDatesForCalculations()).slice(1);
   }
 
-  async _getDatesForGrowth() {
+  async _getDatesForCalculations() {
     if (typeof this._dates === 'undefined') {
       this._dates = await ApiHelper.buildDates(this._interval, ApiHelper.NUMBER_OF_DATES + 1);
     }
@@ -20,14 +20,14 @@ export default class FastestGrowingLanguagesChart {
 
   async getSeries() {
     const languages = await this._getLanguages();
-    const scoresForSeries = await ApiHelper.getScoresForSeries(languages, await this._getDatesForGrowth());
+    const scoresForSeries = await ApiHelper.getScoresForSeries(languages, await this._getDatesForCalculations());
     let formattedSeriesData = this._formatDataForChart(languages, scoresForSeries);
 
     return formattedSeriesData;
   }
 
   async _getLanguages() {
-    let [nextToLastDate, lastDate] = (await this._getDatesForGrowth()).slice(-2);
+    let [nextToLastDate, lastDate] = (await this._getDatesForCalculations()).slice(-2);
     let scoresForLastTwoDates = await FastestGrowingLanguagesChart._getAllScores([lastDate, nextToLastDate]);
 
     let scoresByLanguage = {};
@@ -48,10 +48,10 @@ export default class FastestGrowingLanguagesChart {
 
     let scorePercentageChanges = {};
     for (let langaugeId in scoresByLanguage) {
-      if (scoresByLanguage[langaugeId][nextToLastDate.toISOString()] > this._minimumScore) {
-        scorePercentageChanges[langaugeId] = (
-          scoresByLanguage[langaugeId][lastDate.toISOString()] /
-          scoresByLanguage[langaugeId][nextToLastDate.toISOString()] * 100
+      if (scoresByLanguage[langaugeId][lastDate.toISOString()] > this._minimumScore) {
+        scorePercentageChanges[langaugeId] = FastestGrowingLanguagesChart._calculatePercentageChange(
+          scoresByLanguage[langaugeId][nextToLastDate.toISOString()],
+          scoresByLanguage[langaugeId][lastDate.toISOString()]
         );
       }
     }
@@ -81,6 +81,10 @@ export default class FastestGrowingLanguagesChart {
     return await ApiHelper.callApi(apiFilter);
   }
 
+  static _calculatePercentageChange(oldValue, newValue) {
+    return newValue / oldValue * 100;
+  }
+
   _formatDataForChart(languages, scores) {
     let intermediateScoreData = this._intermediateFormatScores(scores);
 
@@ -90,16 +94,19 @@ export default class FastestGrowingLanguagesChart {
 
       // Start from 1 because the previous language is just used for calculating the score
       for (let i = 1; i < intermediateScoreData[languageName].length; i++) {
-        let percentageGrowth = intermediateScoreData[languageName][i] / intermediateScoreData[languageName][i - 1] * 100;
-        // percentageGrowth could be NaN or Infinity
-        if (!Number.isFinite(percentageGrowth)) {
-          percentageGrowth = null;
+        let percentageChange = FastestGrowingLanguagesChart._calculatePercentageChange(
+          intermediateScoreData[languageName][i - 1],
+          intermediateScoreData[languageName][i]
+        );
+        // percentageChange could be NaN or Infinity
+        if (!Number.isFinite(percentageChange)) {
+          percentageChange = null;
         }
 
         languageData.push(
           {
             x: i - 1,
-            y: percentageGrowth,
+            y: percentageChange,
           }
         );
       }
