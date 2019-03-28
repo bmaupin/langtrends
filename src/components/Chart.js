@@ -23,6 +23,7 @@ export default class Chart extends Component {
       chartData: [],
       crosshairValues: [],
       dates: [],
+      yDomain: null,
     };
 
     this._formatCrosshairItems = this._formatCrosshairItems.bind(this);
@@ -49,6 +50,7 @@ export default class Chart extends Component {
     this.setState({
       chartData: chartData.series,
       dates: chartData.dates,
+      yDomain: chartData.yDomain,
     });
   }
 
@@ -121,7 +123,9 @@ export default class Chart extends Component {
           <FlexibleWidthXYPlot
             height={500}
             margin={{right: 30}}
-            onMouseLeave={this._onMouseLeave}>
+            onMouseLeave={this._onMouseLeave}
+            yDomain={this.state.yDomain}
+            >
             <VerticalGridLines />
             <HorizontalGridLines />
             <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.chartData.length} />
