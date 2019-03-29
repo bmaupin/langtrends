@@ -21,8 +21,6 @@ export default class FastestGrowingLanguagesChart {
   async getSeries() {
     const languages = await this._getLanguages();
     const scoresForSeries = await ApiHelper.getScoresForSeries(languages, await this._getDatesForCalculations());
-    let formattedSeriesData = this._formatDataForChart(languages, scoresForSeries);
-    // TODO
     let formattedSeriesDataNew = await this._formatDataForChartNew(languages, scoresForSeries)
 
     return formattedSeriesDataNew;
@@ -87,84 +85,6 @@ export default class FastestGrowingLanguagesChart {
     return newValue / oldValue * 100;
   }
 
-  _formatDataForChart(languages, scores) {
-    let intermediateScoreData = this._intermediateFormatScores(scores);
-
-    // console.log(`intermediateScoreData=${JSON.stringify(intermediateScoreData)}`)
-
-    let formattedScores = [];
-    languages.forEach(languageName => {
-      let languageData = [];
-
-      // Start from 1 because the previous language is just used for calculating the score
-      for (let i = 1; i < intermediateScoreData[languageName].length; i++) {
-        let percentageChange = FastestGrowingLanguagesChart._calculatePercentageChange(
-          intermediateScoreData[languageName][i - 1],
-          intermediateScoreData[languageName][i]
-        );
-        // percentageChange could be NaN or Infinity
-        percentageChange = FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChange);
-
-        languageData.push(
-          {
-            x: i - 1,
-            y: percentageChange,
-          }
-        );
-      }
-
-      formattedScores.push(
-        {
-          title: languageName,
-          data: languageData,
-        }
-      );
-    });
-
-    return formattedScores;
-  }
-
-  _intermediateFormatScores(scores) {
-    console.log(scores)
-
-    let intermediateScoreData = {};
-    for (let i = 0; i < scores.length; i++) {
-      const languageName = scores[i].language.name;
-      const points = scores[i].points;
-
-      if (!intermediateScoreData.hasOwnProperty(languageName)) {
-        intermediateScoreData[languageName] = [];
-      }
-      intermediateScoreData[languageName].push(points);
-    }
-
-    // console.log(intermediateScoreData)
-
-    return intermediateScoreData;
-  }
-
-/*
-- calculate percentage change
-  - for each language
-    - for each date
-      - calculate the percentage change and store it
-- for each date
-  - sort all the percentage changes for that date
-    - use that to build the new chart
-
-
-
-- first pass
-  - organize scores by language so we can access each one directly
-- second pass
-  - calculate percentage change for each language
-- third pass
-  - for each date, sort percentage changes
-- fourth pass
-  - put into proper format for chart
-
-*/
-
   async _getPercentageChangesByDate(scoresByLanguage, datesForCalculations) {
     let percentageChangesByDate = {};
     for (let languageName in scoresByLanguage) {
@@ -180,18 +100,6 @@ export default class FastestGrowingLanguagesChart {
         // percentageChange could be NaN or Infinity
         percentageChange = FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChange);
 
-        // TODO
-        // if (!percentageChangesByLanguage.hasOwnProperty(languageName)) {
-        //   percentageChangesByLanguage[languageName] = {};
-        // }
-        // // scoresByLanguage[languageName].push(points);
-        // percentageChangesByLanguage[languageName][datesForCalculations[i].toISOString()] = percentageChange;
-
-        // if (!percentageChangesByDate.hasOwnProperty(date)) {
-        //   percentageChangesByDate[date] = [];
-        // }
-        // percentageChangesByDate[date].push([languageName, percentageChange])
-
         if (!percentageChangesByDate.hasOwnProperty(date)) {
           percentageChangesByDate[date] = {};
         }
@@ -204,15 +112,8 @@ export default class FastestGrowingLanguagesChart {
 
   async _formatDataForChartNew(languages, scores) {
     let scoresByLanguage = FastestGrowingLanguagesChart._organizeScoresByLanguage(scores);
-    console.log(`scoresByLanguage=${JSON.stringify(scoresByLanguage)}`)
-
     let datesForCalculations = await this._getDatesForCalculations();
     let percentageChangesByDate = await this._getPercentageChangesByDate(scoresByLanguage, datesForCalculations);
-    console.log(`percentageChangesByDate=${JSON.stringify(percentageChangesByDate)}`)
-
-    // let percentageChangesByDate = {};
-
-    console.log(languages)
 
     let formattedScores = [];
     for (let languageName of languages.values()) {
@@ -222,17 +123,17 @@ export default class FastestGrowingLanguagesChart {
           data: [],
         }
       );
-    };
+    }
 
     // Start from 1 because the previous language is just used for calculating the score
     for (let i = 1; i < datesForCalculations.length; i++) {
       let date = datesForCalculations[i].toISOString();
+      // For each date, sort percentage changes
       let sortedKeys = Object.keys(percentageChangesByDate[date]).sort(function (a, b) {
         return (percentageChangesByDate[date][b] - percentageChangesByDate[date][a]);
       });
 
-      console.log(`sortedKeys=${sortedKeys}`)
-
+      // Put data into proper format for chart
       let formattedScoresIndex = 0;
       for (let languageName of languages.values()) {
         let percentageChange = percentageChangesByDate[date][languageName];
@@ -251,56 +152,8 @@ export default class FastestGrowingLanguagesChart {
           }
         );
         formattedScoresIndex ++;
-      };
+      }
     }
-
-    // console.log(`percentageChangesByDate=${JSON.stringify(percentageChangesByDate)}`)
-
-
-
-
-
-    // // let scoresByLanguage = this._intermediateFormatScores(scores);
-    // // let formattedScores = [];
-    // for (let languageName of languages.values()) {
-    //   let languageData = [];
-    //   // for (let i = 1; i < datesForCalculations.length; i++) {
-    //   //   let date = datesForCalculations[i].toISOString();
-
-    //   //   languageData.push(
-    //   //     {
-    //   //       x: i - 1,
-    //   //       y: datesForCalculations[date],
-    //   //     }
-    //   //   );
-
-
-
-
-    //   // Start from 1 because the previous language is just used for calculating the score
-    //   for (let i = 1; i < scoresByLanguage[languageName].length; i++) {
-    //     let percentageChange = FastestGrowingLanguagesChart._calculatePercentageChange(
-    //       scoresByLanguage[languageName][i - 1],
-    //       scoresByLanguage[languageName][i]
-    //     );
-    //     // percentageChange could be NaN or Infinity
-    //     percentageChange = FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChange);
-
-    //     languageData.push(
-    //       {
-    //         x: i - 1,
-    //         y: percentageChange,
-    //       }
-    //     );
-    //   }
-
-    //   formattedScores.push(
-    //     {
-    //       title: languageName,
-    //       data: languageData,
-    //     }
-    //   );
-    // };
 
     return formattedScores;
   }
@@ -330,136 +183,4 @@ export default class FastestGrowingLanguagesChart {
     }
     return number;
   }
-
-//   _intermediateFormatScoresNew(scores) {
-//     console.log(scores)
-
-//     let intermediateScoreData = {};
-//     for (let i = 0; i < scores.length; i++) {
-//       const date = scores[i].date.toISOString();
-//       const languageName = scores[i].language.name;
-//       const points = scores[i].points;
-
-//       if (!intermediateScoreData.hasOwnProperty(date)) {
-//         intermediateScoreData[date] = [];
-//       }
-//       intermediateScoreData[languageName].push({
-//         languageName: languageName,
-//         points: points,
-//       });
-//     }
-
-//     return intermediateScoreData;
-//   }
-
-
-
 }
-
-/* 2019-03-26: BUMP CHART
-- Old format:
-    {
-    "title": "Hack",
-    "data": [
-      {
-        "x": 0,
-        "y": null
-      },
-      {
-        "x": 1,
-        "y": null
-      },
-      {
-        "x": 2,
-        "y": 100
-      },
-      {
-        "x": 3,
-        "y": 200
-      },
-      ...
-    ]
-  },
-  {
-    "title": "Dart",
-    "data": [
-      {
-        "x": 0,
-        "y": null
-      },
-      {
-        "x": 1,
-        "y": null
-      },
-      {
-        "x": 2,
-        "y": 250
-      },
-      {
-        "x": 3,
-        "y": 1480
-      },
-      ...
-    ]
-  },
-- New format:
-    {
-    "title": "Hack",
-    "data": [
-      {
-        "x": 0,
-        "y": null
-      },
-      {
-        "x": 1,
-        "y": null
-      },
-      {
-        "x": 2,
-        "y": 10 // ordinal
-      },
-      {
-        "x": 3,
-        "y": 9 // ordinal
-      },
-      ...
-    ],
-    // Set these in _formatCrosshairItems > value
-    "crosshairValues": [
-      null,
-      null,
-      100,
-      200,
-    ]
-  },
-  {
-    "title": "Dart",
-    "data": [
-      {
-        "x": 0,
-        "y": null
-      },
-      {
-        "x": 1,
-        "y": null
-      },
-      {
-        "x": 2,
-        "y": 8 // ordinal
-      },
-      {
-        "x": 3,
-        "y": 7 // ordinal
-      },
-      ...
-    ],
-    "crosshairValues": [
-      null,
-      null,
-      250,
-      1480,
-    ]
-  },
-
-
-*/
