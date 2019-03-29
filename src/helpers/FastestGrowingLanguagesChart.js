@@ -179,6 +179,9 @@ export default class FastestGrowingLanguagesChart {
           scoresByLanguage[languageName][date]
         );
 
+        // percentageChange could be NaN or Infinity
+        percentageChange = FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChange);
+
         // TODO
         // if (!percentageChangesByLanguage.hasOwnProperty(languageName)) {
         //   percentageChangesByLanguage[languageName] = {};
@@ -227,8 +230,7 @@ export default class FastestGrowingLanguagesChart {
     for (let i = 1; i < datesForCalculations.length; i++) {
       let date = datesForCalculations[i].toISOString();
       let sortedKeys = Object.keys(percentageChangesByDate[date]).sort(function (a, b) {
-        return (FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChangesByDate[date][b]) -
-          FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChangesByDate[date][a]));
+        return (percentageChangesByDate[date][b] - percentageChangesByDate[date][a]);
       });
 
       console.log(`sortedKeys=${sortedKeys}`)
