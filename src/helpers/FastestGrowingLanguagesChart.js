@@ -24,8 +24,6 @@ export default class FastestGrowingLanguagesChart {
     let formattedSeriesData = this._formatDataForChart(languages, scoresForSeries);
     // TODO
     let formattedSeriesDataNew = await this._formatDataForChartNew(languages, scoresForSeries)
-    console.log(`formattedSeriesData1=${JSON.stringify(formattedSeriesData)}`)
-    console.log(`formattedSeriesData2=${JSON.stringify(formattedSeriesDataNew)}`)
 
     return formattedSeriesDataNew;
   }
@@ -237,19 +235,19 @@ export default class FastestGrowingLanguagesChart {
 
       let formattedScoresIndex = 0;
       for (let languageName of languages.values()) {
-        let yValue = sortedKeys.indexOf(languageName) + 1;
-        if (FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChangesByDate[date][languageName]) === null) {
-          yValue = null;
+        let percentageChange = percentageChangesByDate[date][languageName];
+        let rank = sortedKeys.indexOf(languageName) + 1;
+        if (percentageChange === null) {
+          rank = null;
         }
-
-
-        // TODO
-        // yValue = FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChangesByDate[date][languageName]);
 
         formattedScores[formattedScoresIndex].data.push(
           {
             x: i - 1,
-            y: yValue,
+            // Use the ordinal number ranking for the chart data in order to create a bump chart
+            y: rank,
+            // Put the actual percentage change in the detailed crosshair table on mouseover
+            crosshairValue: `${Math.round(percentageChange)}%`,
           }
         );
         formattedScoresIndex ++;
@@ -325,7 +323,7 @@ export default class FastestGrowingLanguagesChart {
 
     return scoresByLanguage;
   }
-  
+
   static _convertNonFiniteToNull(number) {
     if (!Number.isFinite(number)) {
       number = null;
