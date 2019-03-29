@@ -21,9 +21,9 @@ export default class FastestGrowingLanguagesChart {
   async getSeries() {
     const languages = await this._getLanguages();
     const scoresForSeries = await ApiHelper.getScoresForSeries(languages, await this._getDatesForCalculations());
-    let formattedSeriesDataNew = await this._formatDataForChartNew(languages, scoresForSeries)
+    let formattedSeriesData = await this._convertAndFormatScores(languages, scoresForSeries);
 
-    return formattedSeriesDataNew;
+    return formattedSeriesData;
   }
 
   async _getLanguages() {
@@ -85,9 +85,36 @@ export default class FastestGrowingLanguagesChart {
     return newValue / oldValue * 100;
   }
 
+  // Convert the data from raw scores into percentage changes and format for the chart
+  async _convertAndFormatScores(languages, scores) {
+    let scoresByLanguage = FastestGrowingLanguagesChart._organizeScoresByLanguage(scores);
+    let datesForCalculations = await this._getDatesForCalculations();
+    let percentageChangesByDate = await this._getPercentageChangesByDate(scoresByLanguage, datesForCalculations);
+
+    return this._formatDataForChart(languages, percentageChangesByDate, datesForCalculations);
+  }
+
+  // Organize scores by language so we can access each one directly
+  static _organizeScoresByLanguage(scores) {
+    let scoresByLanguage = {};
+    for (let i = 0; i < scores.length; i++) {
+      const date = scores[i].date;
+      const languageName = scores[i].language.name;
+      const points = scores[i].points;
+
+      if (!scoresByLanguage.hasOwnProperty(languageName)) {
+        scoresByLanguage[languageName] = {};
+      }
+      scoresByLanguage[languageName][date] = points;
+    }
+
+    return scoresByLanguage;
+  }
+
   async _getPercentageChangesByDate(scoresByLanguage, datesForCalculations) {
     let percentageChangesByDate = {};
     for (let languageName in scoresByLanguage) {
+      // Start from 1 because the previous language is just used for calculating the percentage change
       for (let i = 1; i < datesForCalculations.length; i++) {
         let date = datesForCalculations[i].toISOString();
         let previousDate = datesForCalculations[i - 1].toISOString();
@@ -97,7 +124,7 @@ export default class FastestGrowingLanguagesChart {
           scoresByLanguage[languageName][date]
         );
 
-        // percentageChange could be NaN or Infinity
+        // percentageChange could be NaN or Infinity, but react-vis can only handle numbers or null
         percentageChange = FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChange);
 
         if (!percentageChangesByDate.hasOwnProperty(date)) {
@@ -110,11 +137,14 @@ export default class FastestGrowingLanguagesChart {
     return percentageChangesByDate;
   }
 
-  async _formatDataForChartNew(languages, scores) {
-    let scoresByLanguage = FastestGrowingLanguagesChart._organizeScoresByLanguage(scores);
-    let datesForCalculations = await this._getDatesForCalculations();
-    let percentageChangesByDate = await this._getPercentageChangesByDate(scoresByLanguage, datesForCalculations);
+  static _convertNonFiniteToNull(number) {
+    if (!Number.isFinite(number)) {
+      number = null;
+    }
+    return number;
+  }
 
+  _formatDataForChart(languages, percentageChangesByDate, datesForCalculations) {
     let formattedScores = [];
     for (let languageName of languages.values()) {
       formattedScores.push(
@@ -128,12 +158,11 @@ export default class FastestGrowingLanguagesChart {
     // Start from 1 because the previous language is just used for calculating the score
     for (let i = 1; i < datesForCalculations.length; i++) {
       let date = datesForCalculations[i].toISOString();
-      // For each date, sort percentage changes
+      // Sort percentage changes so we can do an ordinal ranking for a bump chart
       let sortedKeys = Object.keys(percentageChangesByDate[date]).sort(function (a, b) {
         return (percentageChangesByDate[date][b] - percentageChangesByDate[date][a]);
       });
 
-      // Put data into proper format for chart
       let formattedScoresIndex = 0;
       for (let languageName of languages.values()) {
         let percentageChange = percentageChangesByDate[date][languageName];
@@ -156,31 +185,5 @@ export default class FastestGrowingLanguagesChart {
     }
 
     return formattedScores;
-  }
-
-  // Organize scores by language so we can access each one directly
-  static _organizeScoresByLanguage(scores) {
-    let scoresByLanguage = {};
-    for (let i = 0; i < scores.length; i++) {
-      const date = scores[i].date;
-      const languageName = scores[i].language.name;
-      const points = scores[i].points;
-
-      if (!scoresByLanguage.hasOwnProperty(languageName)) {
-        scoresByLanguage[languageName] = {};
-      }
-      // TODO
-      // scoresByLanguage[languageName].push(points);
-      scoresByLanguage[languageName][date] = points;
-    }
-
-    return scoresByLanguage;
-  }
-
-  static _convertNonFiniteToNull(number) {
-    if (!Number.isFinite(number)) {
-      number = null;
-    }
-    return number;
   }
 }
