@@ -1,6 +1,11 @@
 ### To do
-- [ ] Convert fastest growing languages to basic bump chart
+- [x] Convert fastest growing languages to basic bump chart
+    - [x] Get basic bump chart working
+    - [x] Show actual percent change in crosshair items?
 - [ ] Add minimal functionality to switch between chart types
+    - [ ] Differentiate fastest growing > 100, > 1000
+    - [ ] Default: fastest growing > 1000
+- [ ] Add minimal functionality to switch date interval
 - [ ] Clean up components code
 - [ ] Minor UI polish
 - [ ] Minimal code to handle if API isn't available
@@ -14,5 +19,4 @@
     - Can react-vis support this? Would we need to create a custom chart?
         - https://www.google.ca/search?q=javascript+bump+chart
         - https://www.google.ca/search?q=d3+bump+chart
-- [ ] Add ability to change date
 - [ ] Add ability to view next N languages

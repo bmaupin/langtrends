@@ -64,16 +64,23 @@ export default class Chart extends Component {
    */
   _formatCrosshairItems(values) {
     const chartData = this.state.chartData;
-    let crossHairItems = values.map((v, i) => {
+
+    let crosshairItems = values.map((v, i) => {
+      let crosshairValue
+      if (v.hasOwnProperty('crosshairValue')) {
+        crosshairValue = v.crosshairValue;
+      } else {
+        crosshairValue = v.y;
+      }
       return {
         title: chartData[i].title,
-        value: v.y,
+        value: crosshairValue,
       };
     });
 
-    crossHairItems.sort((a, b) => {return b.value - a.value;});
+    crosshairItems.sort((a, b) => {return parseInt(b.value) - parseInt(a.value);});
 
-    return crossHairItems;
+    return crosshairItems;
   }
 
   _formatCrosshairTitle(values) {
