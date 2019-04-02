@@ -91,7 +91,7 @@ export default class FastestGrowingLanguagesChart {
     let datesForCalculations = await this._getDatesForCalculations();
     let percentageChangesByDate = await this._getPercentageChangesByDate(scoresByLanguage, datesForCalculations);
 
-    return this._formatDataForChart(languages, percentageChangesByDate, datesForCalculations);
+    return await this._formatDataForChart(languages, percentageChangesByDate);
   }
 
   // Organize scores by language so we can access each one directly
@@ -144,7 +144,7 @@ export default class FastestGrowingLanguagesChart {
     return number;
   }
 
-  _formatDataForChart(languages, percentageChangesByDate, datesForCalculations) {
+  async _formatDataForChart(languages, percentageChangesByDate) {
     let formattedScores = [];
     for (let languageName of languages.values()) {
       formattedScores.push(
@@ -155,9 +155,9 @@ export default class FastestGrowingLanguagesChart {
       );
     }
 
-    // Start from 1 because the previous language is just used for calculating the score
-    for (let i = 1; i < datesForCalculations.length; i++) {
-      let date = datesForCalculations[i].toISOString();
+    let datesForChart = await this.getDates();
+    for (let i = 0; i < datesForChart.length; i++) {
+      let date = datesForChart[i].toISOString();
       // Sort percentage changes so we can do an ordinal ranking for a bump chart
       let sortedKeys = Object.keys(percentageChangesByDate[date]).sort(function (a, b) {
         return (percentageChangesByDate[date][b] - percentageChangesByDate[date][a]);
@@ -173,7 +173,7 @@ export default class FastestGrowingLanguagesChart {
 
         formattedScores[formattedScoresIndex].data.push(
           {
-            x: i - 1,
+            x: i,
             // Use the ordinal number ranking for the chart data in order to create a bump chart
             y: rank,
             // Put the actual percentage change in the detailed crosshair table on mouseover
