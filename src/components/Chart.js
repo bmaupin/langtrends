@@ -6,7 +6,7 @@ import {
   DiscreteColorLegend,
   FlexibleWidthXYPlot,
   HorizontalGridLines,
-  LineSeries,
+  LineMarkSeries,
   VerticalGridLines,
   XAxis,
   YAxis
@@ -138,7 +138,7 @@ export default class Chart extends Component {
             <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.chartData.length} />
             <YAxis tickFormat={this._yAxisLabelFormatter} />
             {this.state.chartData.map(entry =>
-              <LineSeries
+              <LineMarkSeries
                 getNull={(d) => d.y !== null}
                 key={entry.title}
                 data={entry.data}
