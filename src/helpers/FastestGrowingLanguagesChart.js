@@ -176,8 +176,9 @@ export default class FastestGrowingLanguagesChart {
             x: i,
             // Use the ordinal number ranking for the chart data in order to create a bump chart
             y: rank,
-            // Put the actual percentage change in the detailed crosshair table on mouseover
-            crosshairValue: `${Math.round(percentageChange)}%`,
+            hintTitle: languageName,
+            // Add the actual percentage change as a separate property so it can be used for hints on mouseover
+            hintValue: `${Math.round(percentageChange)}% growth`,
           }
         );
         formattedScoresIndex ++;

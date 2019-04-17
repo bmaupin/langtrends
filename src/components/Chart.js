@@ -56,13 +56,11 @@ export default class Chart extends Component {
     return date.toISOString().slice(0, 7);
   }
 
-  _formatHint(hintValue) {
+  _formatHint(value) {
     return [
       {
-        // TODO: Replace 'Growth' with language name? This would require adding it as a separate property in the data
-        title: 'Growth',
-        // TODO: Rename this to something more relevant
-        value: hintValue.crosshairValue,
+        title: value.hintTitle,
+        value: value.hintValue,
       }
     ]
   }
