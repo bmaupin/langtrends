@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 // TODO
 import '../../node_modules/react-vis/dist/style.css';
 import {
-  Crosshair,
   DiscreteColorLegend,
   FlexibleWidthXYPlot,
+  Hint,
   HorizontalGridLines,
   LineMarkSeries,
   VerticalGridLines,
@@ -21,15 +21,13 @@ export default class Chart extends Component {
 
     this.state = {
       chartData: [],
-      crosshairValues: [],
       dates: [],
+      hintValue: null,
       yDomain: null,
     };
 
-    this._formatCrosshairItems = this._formatCrosshairItems.bind(this);
-    this._formatCrosshairTitle = this._formatCrosshairTitle.bind(this);
-    this._onMouseLeave = this._onMouseLeave.bind(this);
-    this._onNearestX = this._onNearestX.bind(this);
+    this._onValueMouseOut = this._onValueMouseOut.bind(this);
+    this._onValueMouseOver = this._onValueMouseOver.bind(this);
     this._xAxisLabelFormatter = this._xAxisLabelFormatter.bind(this);
   }
 
@@ -54,68 +52,35 @@ export default class Chart extends Component {
     });
   }
 
-  /**
-   * A callback to format the crosshair items.
-   *
-   * Takes the crosshair values (set by _onNearestX) and format them for display, adding a title, etc.
-   * @param {Object} values Array of values.
-   * @returns {Array<Object>} Array of objects with titles and values.
-   * @private
-   */
-  _formatCrosshairItems(values) {
-    const chartData = this.state.chartData;
-
-    let crosshairItems = values.map((v, i) => {
-      let crosshairValue
-      if (v.hasOwnProperty('crosshairValue')) {
-        crosshairValue = v.crosshairValue;
-      } else {
-        crosshairValue = v.y;
-      }
-      return {
-        title: chartData[i].title,
-        value: crosshairValue,
-      };
-    });
-
-    crosshairItems.sort((a, b) => {return parseInt(b.value) - parseInt(a.value);});
-
-    return crosshairItems;
-  }
-
-  _formatCrosshairTitle(values) {
-    const dates = this.state.dates;
-    return {
-      title: 'Date',
-      value: this._formatDateForLabel(dates[values[0].x]),
-    };
-  }
-
-  _formatDateForLabel(date) {
+  static _formatDateForLabel(date) {
     return date.toISOString().slice(0, 7);
   }
 
-  _onMouseLeave() {
-    this.setState({crosshairValues: []});
+  _formatHint(hintValue) {
+    return [
+      {
+        // TODO: Replace 'Growth' with language name? This would require adding it as a separate property in the data
+        title: 'Growth',
+        // TODO: Rename this to something more relevant
+        value: hintValue.crosshairValue,
+      }
+    ]
   }
 
-  /**
-   * Event handler for chart onNearestX.
-   *
-   * This will set the crosshair values based on the x coordinate closest to the user's mouse.
-   * @param {Object} value Selected value.
-   * @param {number} index Index of the series.
-   * @private
-   */
-  _onNearestX(value, {index}) {
-    const chartData = this.state.chartData;
+  _onValueMouseOut() {
     this.setState({
-      crosshairValues: chartData.map(entry => entry.data[index])
+      hintValue: null,
+    });
+  }
+
+  _onValueMouseOver(value) {
+    this.setState({
+      hintValue: value
     });
   }
 
   _xAxisLabelFormatter(index) {
-    return this._formatDateForLabel(this.state.dates[index]);
+    return Chart._formatDateForLabel(this.state.dates[index]);
   }
 
   _yAxisLabelFormatter(label) {
@@ -130,7 +95,6 @@ export default class Chart extends Component {
           <FlexibleWidthXYPlot
             height={500}
             margin={{right: 30}}
-            onMouseLeave={this._onMouseLeave}
             yDomain={this.state.yDomain}
             >
             <VerticalGridLines />
@@ -142,13 +106,16 @@ export default class Chart extends Component {
                 getNull={(d) => d.y !== null}
                 key={entry.title}
                 data={entry.data}
-                onNearestX={this._onNearestX}
+                onValueMouseOut={this._onValueMouseOut}
+                onValueMouseOver={this._onValueMouseOver}
               />
             )}
-            <Crosshair
-              itemsFormat={this._formatCrosshairItems}
-              titleFormat={this._formatCrosshairTitle}
-              values={this.state.crosshairValues} />
+            {this.state.hintValue &&
+              <Hint
+                format={this._formatHint}
+                value={this.state.hintValue}
+              />
+            }
           </FlexibleWidthXYPlot>
         </div>
 
