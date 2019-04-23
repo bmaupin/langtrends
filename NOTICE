@@ -1,0 +1,5 @@
+The following files are from or contain content from external sources:
+
+src/helpers/D3SigmoidCurve.js
+Source: https://github.com/d3/d3-shape/blob/master/src/curve/linear.js
+License: BSD 3-Clause
