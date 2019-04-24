@@ -12,6 +12,7 @@ import {
   YAxis
 } from 'react-vis';
 import ChartData from '../helpers/ChartData';
+import D3SigmoidCurve from '../helpers/D3SigmoidCurve';
 
 import './Chart.css';
 
@@ -73,7 +74,7 @@ export default class Chart extends Component {
 
   _onValueMouseOver(value) {
     this.setState({
-      hintValue: value
+      hintValue: value,
     });
   }
 
@@ -87,6 +88,7 @@ export default class Chart extends Component {
 
   // TODO: gracefully handle if API isn't available
   render() {
+    const d3sigmoidcurve = D3SigmoidCurve.compression(0.5);
     return (
       <div className="chart-container">
         <div className="chart-content">
@@ -94,13 +96,14 @@ export default class Chart extends Component {
             height={500}
             margin={{right: 30}}
             yDomain={this.state.yDomain}
-            >
+          >
             <VerticalGridLines />
             <HorizontalGridLines />
             <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.chartData.length} />
             <YAxis tickFormat={this._yAxisLabelFormatter} />
             {this.state.chartData.map(entry =>
               <LineMarkSeries
+                curve={d3sigmoidcurve}
                 getNull={(d) => d.y !== null}
                 key={entry.title}
                 data={entry.data}
