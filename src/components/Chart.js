@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 // TODO
 import '../../node_modules/react-vis/dist/style.css';
 import {
-  DiscreteColorLegend,
   FlexibleWidthXYPlot,
   Hint,
   HorizontalGridLines,
@@ -30,6 +29,7 @@ export default class Chart extends Component {
     this._onValueMouseOut = this._onValueMouseOut.bind(this);
     this._onValueMouseOver = this._onValueMouseOver.bind(this);
     this._xAxisLabelFormatter = this._xAxisLabelFormatter.bind(this);
+    this._yAxisLabelFormatter = this._yAxisLabelFormatter.bind(this);
   }
 
   async componentDidMount() {
@@ -83,7 +83,7 @@ export default class Chart extends Component {
   }
 
   _yAxisLabelFormatter(label) {
-    return (Number(label) / 1000000).toFixed(1) + 'M';
+    return this.state.chartData[label - 1].title;
   }
 
   // TODO: gracefully handle if API isn't available
@@ -94,13 +94,13 @@ export default class Chart extends Component {
         <div className="chart-content">
           <FlexibleWidthXYPlot
             height={500}
-            margin={{right: 30}}
+            margin={{right: 100}}
             yDomain={this.state.yDomain}
           >
             <VerticalGridLines />
             <HorizontalGridLines />
             <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.chartData.length} />
-            <YAxis tickFormat={this._yAxisLabelFormatter} />
+            <YAxis orientation="right" tickFormat={this._yAxisLabelFormatter} />
             {this.state.chartData.map(entry =>
               <LineMarkSeries
                 curve={d3sigmoidcurve}
@@ -118,12 +118,6 @@ export default class Chart extends Component {
               />
             }
           </FlexibleWidthXYPlot>
-        </div>
-
-        <div className="chart-legend">
-          <DiscreteColorLegend
-            width={180}
-            items={this.state.chartData} />
         </div>
       </div>
     );
