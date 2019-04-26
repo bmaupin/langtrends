@@ -89,7 +89,7 @@ export default class FastestGrowingLanguagesChart {
   async _convertAndFormatScores(languages, scores) {
     let scoresByLanguage = FastestGrowingLanguagesChart._organizeScoresByLanguage(scores);
     let datesForCalculations = await this._getDatesForCalculations();
-    let percentageChangesByDate = await this._getPercentageChangesByDate(scoresByLanguage, datesForCalculations);
+    let percentageChangesByDate = this._getPercentageChangesByDate(scoresByLanguage, datesForCalculations);
 
     return await this._formatDataForChart(languages, percentageChangesByDate);
   }
@@ -111,7 +111,7 @@ export default class FastestGrowingLanguagesChart {
     return scoresByLanguage;
   }
 
-  async _getPercentageChangesByDate(scoresByLanguage, datesForCalculations) {
+  _getPercentageChangesByDate(scoresByLanguage, datesForCalculations) {
     let percentageChangesByDate = {};
     for (let languageName in scoresByLanguage) {
       // Start from 1 because the previous language is just used for calculating the percentage change
