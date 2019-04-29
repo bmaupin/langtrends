@@ -78,8 +78,12 @@ export default class Chart extends Component {
     });
   }
 
-  _xAxisLabelFormatter(index) {
-    return Chart._formatDateForLabel(this.state.dates[index]);
+  _xAxisLabelFormatter(_label, index) {
+    console.log(`label=${_label}`)
+    console.log(`index=${index}`)
+
+    // TODO: somehow I've managed to break this...
+    // return Chart._formatDateForLabel(this.state.dates[index]);
   }
 
   _yAxisLabelFormatter(label) {
