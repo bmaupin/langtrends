@@ -13,9 +13,11 @@ export default class FastestGrowingLanguagesChart {
 
   async _getDatesForCalculations() {
     if (typeof this._dates === 'undefined') {
-      this._dates = await ApiHelper.buildDates(this._interval, ApiHelper.NUMBER_OF_DATES + 1);
+      let dates = await ApiHelper.buildDates(this._interval, ApiHelper.NUMBER_OF_DATES + 1);
+      // From this point on we only need the date as a string
+      this._dates = dates.map(date => date.toISOString());
     }
-    // TODO: map this using .toISOString() so we don't have to call it everywhere we use the dates
+
     return this._dates;
   }
 
@@ -33,7 +35,7 @@ export default class FastestGrowingLanguagesChart {
   static async _getAllScores(dates) {
     const apiFilter = {
       where: {
-        or: dates.map(date => ({ date: date.toISOString() }))
+        or: dates.map(date => ({ date: date }))
       },
       // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',
@@ -46,7 +48,6 @@ export default class FastestGrowingLanguagesChart {
   static _organizeScoresByDate(scores) {
     let scoresByDate = {};
     for (let i = 0; i < scores.length; i++) {
-      // This date comes directly from the API as a string, so no need to call .toISOString() on it
       const date = scores[i].date;
       const languageName = scores[i].language.name;
       const points = scores[i].points;
@@ -65,13 +66,13 @@ export default class FastestGrowingLanguagesChart {
 
     // Start from 1 because the previous date is just used for calculating the percentage change
     for (let i = 1; i < datesForCalculations.length; i++) {
-      let date = datesForCalculations[i].toISOString();
-      let previousDate = datesForCalculations[i - 1].toISOString();
+      let date = datesForCalculations[i];
+      let previousDate = datesForCalculations[i - 1];
       percentageChangesByDate[date] = {};
 
       for (let languageName in scoresByDate[date]) {
         // TODO: Filter by scores where the most recent score is above the minimum??
-        // if (scoresByDate[datesForCalculations[datesForCalculations.length - 1].toISOString()][languageName] > this._minimumScore) {
+        // if (scoresByDate[datesForCalculations[datesForCalculations.length - 1]][languageName] > this._minimumScore) {
         if (scoresByDate[date][languageName] > this._minimumScore) {
           let percentageChange = FastestGrowingLanguagesChart._calculatePercentageChange(
             scoresByDate[previousDate][languageName],
@@ -105,7 +106,7 @@ export default class FastestGrowingLanguagesChart {
     let topPercentageChanges = {};
 
     for (let i = 0; i < datesForChart.length; i++) {
-      let date = datesForChart[i].toISOString();
+      let date = datesForChart[i];
       // TODO: make this a map to guarantee order
       topPercentageChanges[date] = {};
 
@@ -138,7 +139,7 @@ export default class FastestGrowingLanguagesChart {
 
     let datesForChart = await this.getDates();
     for (let i = 0; i < datesForChart.length; i++) {
-      let date = datesForChart[i].toISOString();
+      let date = datesForChart[i];
 
       let formattedScoresIndex = 0;
       for (let languageName of allFastestGrowingLanguages) {
