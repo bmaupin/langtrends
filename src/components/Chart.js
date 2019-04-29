@@ -54,7 +54,7 @@ export default class Chart extends Component {
   }
 
   static _formatDateForLabel(date) {
-    return date.toISOString().slice(0, 7);
+    return date.slice(0, 7);
   }
 
   _formatHint(value) {
