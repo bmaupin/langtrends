@@ -79,11 +79,7 @@ export default class Chart extends Component {
   }
 
   _xAxisLabelFormatter(_label, index) {
-    console.log(`label=${_label}`)
-    console.log(`index=${index}`)
-
-    // TODO: somehow I've managed to break this...
-    // return Chart._formatDateForLabel(this.state.dates[index]);
+    return Chart._formatDateForLabel(this.state.dates[index]);
   }
 
   _yAxisLabelFormatter(label) {
@@ -103,7 +99,7 @@ export default class Chart extends Component {
           >
             <VerticalGridLines />
             <HorizontalGridLines />
-            <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.chartData.length} />
+            <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.dates.length} />
             <YAxis orientation="right" tickFormat={this._yAxisLabelFormatter} />
             {this.state.chartData.map(entry =>
               <LineMarkSeries
