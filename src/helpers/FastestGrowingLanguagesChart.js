@@ -23,7 +23,7 @@ export default class FastestGrowingLanguagesChart {
     const datesForCalculations = await this._getDatesForCalculations();
     const scoresFromApi = await FastestGrowingLanguagesChart._getAllScores(datesForCalculations);
     const scoresByDate = FastestGrowingLanguagesChart._organizeScoresByDate(scoresFromApi);
-    const percentageChangesByDate = FastestGrowingLanguagesChart._getPercentageChangesByDate(scoresByDate, datesForCalculations);
+    const percentageChangesByDate = this._getPercentageChangesByDate(scoresByDate, datesForCalculations);
     const topPercentageChanges = await this._calculateTopPercentageChanges(percentageChangesByDate);
     const formattedSeriesData = await this._formatDataForChart(topPercentageChanges);
 
@@ -60,7 +60,7 @@ export default class FastestGrowingLanguagesChart {
     return scoresByDate;
   }
 
-  static _getPercentageChangesByDate(scoresByDate, datesForCalculations) {
+  _getPercentageChangesByDate(scoresByDate, datesForCalculations) {
     let percentageChangesByDate = {};
 
     // Start from 1 because the previous date is just used for calculating the percentage change
@@ -70,15 +70,19 @@ export default class FastestGrowingLanguagesChart {
       percentageChangesByDate[date] = {};
 
       for (let languageName in scoresByDate[date]) {
-        let percentageChange = FastestGrowingLanguagesChart._calculatePercentageChange(
-          scoresByDate[previousDate][languageName],
-          scoresByDate[date][languageName]
-        );
+        // TODO: Filter by scores where the most recent score is above the minimum??
+        // if (scoresByDate[datesForCalculations[datesForCalculations.length - 1].toISOString()][languageName] > this._minimumScore) {
+        if (scoresByDate[date][languageName] > this._minimumScore) {
+          let percentageChange = FastestGrowingLanguagesChart._calculatePercentageChange(
+            scoresByDate[previousDate][languageName],
+            scoresByDate[date][languageName]
+          );
 
-        // percentageChange could be NaN or Infinity, but react-vis can only handle numbers or null
-        percentageChange = FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChange);
+          // percentageChange could be NaN or Infinity, but react-vis can only handle numbers or null
+          percentageChange = FastestGrowingLanguagesChart._convertNonFiniteToNull(percentageChange);
 
-        percentageChangesByDate[date][languageName] = percentageChange;
+          percentageChangesByDate[date][languageName] = percentageChange;
+        }
       }
     }
 
