@@ -2,6 +2,11 @@
 - [x] Convert fastest growing languages to basic bump chart
     - [x] Get basic bump chart working
     - [x] Show actual percent change in crosshair items?
+- [ ] Better bump chart
+    - [x] Instead of calculating fastest growing languages for current month (with null where that language has no score for that month), calculate it newly for every month
+        - Otherwise, the chart is deceptive. For example, Swift doesn't even show up unless it was the fastest growing for the latest interval...
+    - [ ] Visual improvements: add points (LineMarkSeries), curved lines, hover over individual values (instead of column), better legend
+        - See: https://www.kevinflerlage.com/2019/03/curvy-bump-chart-slope-chart-template.html
 - [ ] Add minimal functionality to switch between chart types
     - [ ] Differentiate fastest growing > 100, > 1000
     - [ ] Default: fastest growing > 1000
@@ -13,10 +18,11 @@
 - [ ] Publish!
 
 ### Wishlist
-- [ ] Better bump chart?
-    - Instead of calculating fastest growing languages for current month (with null where that language has no score
-    for that month), calculate it newly for every month
-    - Can react-vis support this? Would we need to create a custom chart?
-        - https://www.google.ca/search?q=javascript+bump+chart
-        - https://www.google.ca/search?q=d3+bump+chart
-- [ ] Add ability to view next N languages
+- [ ] Ability to change number of languages shown
+    - Based on a limited number of presets, e.g. 10, 15, 25
+
+### Non-goals
+- Showing languages other than the provided options
+- Showing dates other than the provided ranges
+- Any kind of analysis
+- Tests 😬
