@@ -1,3 +1,4 @@
+import ApiHelper from './ApiHelper';
 import TopLanguagesChart from './TopLanguagesChart';
 import FastestGrowingLanguagesChart from './FastestGrowingLanguagesChart';
 
@@ -18,13 +19,11 @@ class ChartData {
       case ChartData.CHART_TYPES.FASTEST_OVER_100:
         chart = new FastestGrowingLanguagesChart(interval, 100);
         // This reverses the y scale for the bump chart
-        // TODO: this is a magic number
-        yDomain = [10, 1];
+        yDomain = [ApiHelper.NUMBER_OF_LANGUAGES, 1];
         break;
       case ChartData.CHART_TYPES.FASTEST_OVER_1000:
         chart = new FastestGrowingLanguagesChart(interval, 1000);
-        // TODO: this is a magic number
-        yDomain = [10, 1];
+        yDomain = [ApiHelper.NUMBER_OF_LANGUAGES, 1];
         break;
       default:
         throw new Error(`Unknown chart type: ${chartType}`);
