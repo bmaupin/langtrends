@@ -14,6 +14,7 @@ import ChartData from '../helpers/ChartData';
 import D3SigmoidCurve from '../helpers/D3SigmoidCurve';
 
 import './Chart.css';
+import ApiHelper from '../helpers/ApiHelper';
 
 export default class Chart extends Component {
   constructor(props) {
@@ -37,13 +38,11 @@ export default class Chart extends Component {
   }
 
   async setChartData() {
+    // TODO: use this :P
     const intervalInMonths = 3;
 
-    // let chartData = await ApiHelper.getChartData(ApiHelper.CHART_TYPES.FASTEST_OVER_1000, intervalInMonths);
-    // let chartData = new ChartData(ChartData.CHART_TYPES.TOP_LANGUAGES, intervalInMonths);
-    let chartData = await ChartData.fromType(ChartData.CHART_TYPES.TOP_LANGUAGES, intervalInMonths);
-
-    console.log(`chartData.dates=${chartData.dates}`)
+    // let chartData = await ChartData.fromType(ChartData.CHART_TYPES.TOP_LANGUAGES, 12);
+    let chartData = await ChartData.fromType(ChartData.CHART_TYPES.FASTEST_OVER_1000, 3);
 
     // TODO: just one object for chart data?
     this.setState({
@@ -83,7 +82,8 @@ export default class Chart extends Component {
   }
 
   _yAxisLabelFormatter(label) {
-    return this.state.chartData[label - 1].title;
+    // TODO: fix these
+    // return this.state.chartData[label - 1].title;
   }
 
   // TODO: gracefully handle if API isn't available
@@ -93,7 +93,7 @@ export default class Chart extends Component {
       <div className="chart-container">
         <div className="chart-content">
           <FlexibleWidthXYPlot
-            height={500}
+            height={ApiHelper.NUMBER_OF_LANGUAGES * 49}
             margin={{right: 100}}
             yDomain={this.state.yDomain}
           >
