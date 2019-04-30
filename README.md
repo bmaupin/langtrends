@@ -20,6 +20,8 @@
 ### Wishlist
 - [ ] Ability to change number of languages shown
     - Based on a limited number of presets, e.g. 10, 15, 25
+        - 25 might be too much, even 15 gets pretty messy...
+        - But then is it even worth having this feature just to change between 10 and 15? Maybe it would be better to just pick one?
 
 ### Non-goals
 - Showing languages other than the provided options
