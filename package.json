@@ -10,11 +10,17 @@
     "react-vis": "^1.11.6",
     "semantic-ui-react": "^0.82.1"
   },
+  "homepage": "https://bmaupin.github.io/langtrends/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src/* --ext .js --ext .json",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
+  },
+  "devDependencies": {
+    "gh-pages": "^2.0.1"
   }
 }
