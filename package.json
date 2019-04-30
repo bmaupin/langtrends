@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "github-colors": "^2.2.18",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-scripts": "^1.1.4",
-    "react-vis": "^1.10.4",
+    "react-vis": "^1.11.6",
     "semantic-ui-react": "^0.82.1"
   },
   "scripts": {

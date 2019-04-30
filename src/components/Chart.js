@@ -1,6 +1,5 @@
+import GitHubColors from 'github-colors';
 import React, { Component } from 'react';
-// TODO
-import '../../node_modules/react-vis/dist/style.css';
 import {
   FlexibleWidthXYPlot,
   Hint,
@@ -10,11 +9,13 @@ import {
   XAxis,
   YAxis
 } from 'react-vis';
+
+import ApiHelper from '../helpers/ApiHelper';
 import ChartData from '../helpers/ChartData';
 import D3SigmoidCurve from '../helpers/D3SigmoidCurve';
 
 import './Chart.css';
-import ApiHelper from '../helpers/ApiHelper';
+import '../../node_modules/react-vis/dist/style.css';
 
 export default class Chart extends Component {
   constructor(props) {
@@ -91,6 +92,7 @@ export default class Chart extends Component {
     });
   }
 
+  // TODO: This doesn't get called for every point (https://github.com/uber/react-vis/issues/1157)
   _onValueMouseOver(value) {
     this.setState({
       hintValue: value,
@@ -130,6 +132,7 @@ export default class Chart extends Component {
                 curve={d3sigmoidcurve}
                 getNull={(d) => d.y !== null}
                 key={entry.title}
+                color={GitHubColors.get(entry.title, true).color}
                 data={entry.data}
                 onValueMouseOut={this._onValueMouseOut}
                 onValueMouseOver={this._onValueMouseOver}
