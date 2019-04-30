@@ -30,7 +30,6 @@ export default class Chart extends Component {
     this._onValueMouseOut = this._onValueMouseOut.bind(this);
     this._onValueMouseOver = this._onValueMouseOver.bind(this);
     this._xAxisLabelFormatter = this._xAxisLabelFormatter.bind(this);
-    this._yAxisLabelFormatter = this._yAxisLabelFormatter.bind(this);
   }
 
   async componentDidMount() {
@@ -41,19 +40,40 @@ export default class Chart extends Component {
     // TODO: use this :P
     const intervalInMonths = 3;
 
-    // let chartData = await ChartData.fromType(ChartData.CHART_TYPES.TOP_LANGUAGES, 12);
-    let chartData = await ChartData.fromType(ChartData.CHART_TYPES.FASTEST_OVER_1000, 3);
+    // const chartData = await ChartData.fromType(ChartData.CHART_TYPES.TOP_LANGUAGES, 12);
+    const chartData = await ChartData.fromType(ChartData.CHART_TYPES.FASTEST_OVER_1000, 3);
+    const leftYAxisLabels = Chart._generateLeftYAxisLabels(chartData.series);
+    const rightYAxisLabels = Chart._generateRightYAxisLabels(chartData.series);
 
     // TODO: just one object for chart data?
     this.setState({
       chartData: chartData.series,
       dates: chartData.dates,
+      leftYAxisLabels: leftYAxisLabels,
+      rightYAxisLabels: rightYAxisLabels,
       yDomain: chartData.yDomain,
     });
   }
 
-  static _formatDateForLabel(date) {
-    return date.slice(0, 7);
+  static _generateLeftYAxisLabels(series) {
+    return series
+      // Get just the data for the first date
+      .map(languageData => languageData.data[0])
+      // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
+      .sort((a, b) => b.y - a.y)
+      // Drop everything else (x value, y value) and return just a list of hint titles
+      .map(languageData => languageData && languageData.hintTitle);
+  }
+
+  // TODO: remove duplication here?
+  static _generateRightYAxisLabels(series) {
+    return series
+      // Get just the data for the last date
+      .map(languageData => languageData.data[languageData.data.length - 1])
+      // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
+      .sort((a, b) => b.y - a.y)
+      // Drop everything else (x value, y value) and return just a list of hint titles
+      .map(languageData => languageData && languageData.hintTitle);
   }
 
   _formatHint(value) {
@@ -77,13 +97,13 @@ export default class Chart extends Component {
     });
   }
 
-  _xAxisLabelFormatter(_label, index) {
+  // TODO: could we just format the dates ahead of time and get rid of this method?
+  _xAxisLabelFormatter(_value, index) {
     return Chart._formatDateForLabel(this.state.dates[index]);
   }
 
-  _yAxisLabelFormatter(label) {
-    // TODO: fix these
-    // return this.state.chartData[label - 1].title;
+  static _formatDateForLabel(date) {
+    return date.slice(0, 7);
   }
 
   // TODO: gracefully handle if API isn't available
@@ -94,13 +114,17 @@ export default class Chart extends Component {
         <div className="chart-content">
           <FlexibleWidthXYPlot
             height={ApiHelper.NUMBER_OF_LANGUAGES * 49}
-            margin={{right: 100}}
+            margin={{
+              left: 80,
+              right: 80
+            }}
             yDomain={this.state.yDomain}
           >
             <VerticalGridLines />
             <HorizontalGridLines />
             <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.dates.length} />
-            <YAxis orientation="right" tickFormat={this._yAxisLabelFormatter} />
+            <YAxis orientation="left" tickFormat={(v, i) => this.state.leftYAxisLabels[i]} />
+            <YAxis orientation="right" tickFormat={(v, i) => this.state.rightYAxisLabels[i]} />
             {this.state.chartData.map(entry =>
               <LineMarkSeries
                 curve={d3sigmoidcurve}
