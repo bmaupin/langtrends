@@ -10,9 +10,8 @@ export default class TopMenu extends Component {
             Programming language trends
           </Menu.Item>
 
-          {/* TODO: add link to github */}
           <Menu.Menu position='right'>
-            <Menu.Item>
+            <Menu.Item href='https://github.com/bmaupin/langtrends' icon>
               <Icon name='github' size='big' />
             </Menu.Item>
           </Menu.Menu>
