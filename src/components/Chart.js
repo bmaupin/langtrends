@@ -9,6 +9,7 @@ import {
   XAxis,
   YAxis
 } from 'react-vis';
+import { Dimmer, Loader, Image } from 'semantic-ui-react';
 
 import ApiHelper from '../helpers/ApiHelper';
 import ChartData from '../helpers/ChartData';
@@ -22,7 +23,7 @@ export default class Chart extends Component {
     super(props);
 
     this.state = {
-      chartData: [],
+      chartData: null,
       dates: [],
       hintValue: null,
       yDomain: null,
@@ -108,45 +109,67 @@ export default class Chart extends Component {
     return date.slice(0, 7);
   }
 
-  // TODO: gracefully handle if API isn't available
-  render() {
-    const d3sigmoidcurve = D3SigmoidCurve.compression(0.5);
+  static renderLoadingSpinner() {
     return (
-      <div className="chart-container">
-        <div className="chart-content">
-          <FlexibleWidthXYPlot
-            height={ApiHelper.NUMBER_OF_LANGUAGES * 49}
-            margin={{
-              left: 80,
-              right: 80
-            }}
-            yDomain={this.state.yDomain}
-          >
-            <VerticalGridLines />
-            <HorizontalGridLines />
-            <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.dates.length} />
-            <YAxis orientation="left" tickFormat={(v, i) => this.state.leftYAxisLabels[i]} />
-            <YAxis orientation="right" tickFormat={(v, i) => this.state.rightYAxisLabels[i]} />
-            {this.state.chartData.map(entry =>
-              <LineMarkSeries
-                curve={d3sigmoidcurve}
-                getNull={(d) => d.y !== null}
-                key={entry.title}
-                color={GitHubColors.get(entry.title, true).color}
-                data={entry.data}
-                onValueMouseOut={this._onValueMouseOut}
-                onValueMouseOver={this._onValueMouseOver}
-              />
-            )}
-            {this.state.hintValue &&
-              <Hint
-                format={this._formatHint}
-                value={this.state.hintValue}
-              />
-            }
-          </FlexibleWidthXYPlot>
-        </div>
-      </div>
+      <Dimmer.Dimmable blurring dimmed>
+        <Dimmer active inverted>
+          <Loader size='massive'>
+            Please wait up to 30 seconds
+            <div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
+              (The backend is running on a free Heroku instance)
+            </div>
+          </Loader>
+        </Dimmer>
+
+        <Image src='assets/images/chart-placeholder.png' />
+      </Dimmer.Dimmable>
     );
+  }
+
+  // TODO: can we cache the API results somehow?
+  render() {
+    if (!this.state.chartData) {
+      return Chart.renderLoadingSpinner();
+
+    } else {
+      const d3sigmoidcurve = D3SigmoidCurve.compression(0.5);
+      return (
+        <div className="chart-container">
+          <div className="chart-content">
+            <FlexibleWidthXYPlot
+              height={ApiHelper.NUMBER_OF_LANGUAGES * 49}
+              margin={{
+                left: 80,
+                right: 80
+              }}
+              yDomain={this.state.yDomain}
+            >
+              <VerticalGridLines />
+              <HorizontalGridLines />
+              <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.dates.length} />
+              <YAxis orientation="left" tickFormat={(v, i) => this.state.leftYAxisLabels[i]} />
+              <YAxis orientation="right" tickFormat={(v, i) => this.state.rightYAxisLabels[i]} />
+              {this.state.chartData.map(entry =>
+                <LineMarkSeries
+                  curve={d3sigmoidcurve}
+                  getNull={(d) => d.y !== null}
+                  key={entry.title}
+                  color={GitHubColors.get(entry.title, true).color}
+                  data={entry.data}
+                  onValueMouseOut={this._onValueMouseOut}
+                  onValueMouseOver={this._onValueMouseOver}
+                />
+              )}
+              {this.state.hintValue &&
+                <Hint
+                  format={this._formatHint}
+                  value={this.state.hintValue}
+                />
+              }
+            </FlexibleWidthXYPlot>
+          </div>
+        </div>
+      );
+    }
   }
 }
