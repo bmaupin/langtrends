@@ -26,6 +26,7 @@ export default class Chart extends Component {
       chartData: null,
       dates: [],
       hintValue: null,
+      hoveredSeriesIndex: null,
       yDomain: null,
     };
 
@@ -90,13 +91,15 @@ export default class Chart extends Component {
   _onValueMouseOut() {
     this.setState({
       hintValue: null,
+      hoveredSeriesIndex: null,
     });
   }
 
   // TODO: This doesn't get called for every point (https://github.com/uber/react-vis/issues/1157)
-  _onValueMouseOver(value) {
+  _onValueMouseOver(value, index) {
     this.setState({
       hintValue: value,
+      hoveredSeriesIndex: index,
     });
   }
 
@@ -149,7 +152,7 @@ export default class Chart extends Component {
               <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.dates.length} />
               <YAxis orientation="left" tickFormat={(v, i) => this.state.leftYAxisLabels[i]} />
               <YAxis orientation="right" tickFormat={(v, i) => this.state.rightYAxisLabels[i]} />
-              {this.state.chartData.map(entry =>
+              {this.state.chartData.map((entry, i) =>
                 <LineMarkSeries
                   curve={d3sigmoidcurve}
                   getNull={(d) => d.y !== null}
@@ -157,7 +160,8 @@ export default class Chart extends Component {
                   color={GitHubColors.get(entry.title, true).color}
                   data={entry.data}
                   onValueMouseOut={this._onValueMouseOut}
-                  onValueMouseOver={this._onValueMouseOver}
+                  onValueMouseOver={(datapoint) => this._onValueMouseOver(datapoint, i)}
+                  strokeWidth={this.state.hoveredSeriesIndex && this.state.hoveredSeriesIndex === i ? 4 : null}
                 />
               )}
               {this.state.hintValue &&
