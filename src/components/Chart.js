@@ -117,9 +117,9 @@ export default class Chart extends Component {
       <Dimmer.Dimmable blurring dimmed>
         <Dimmer active inverted>
           <Loader size='massive'>
-            Please wait up to 30 seconds
+            Please wait
             <div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
-              (The backend is running on a free Heroku instance)
+              (This may take up to 30 seconds)
             </div>
           </Loader>
         </Dimmer>
