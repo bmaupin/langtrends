@@ -33,7 +33,8 @@ D3SigmoidCurve.prototype = {
     this._line = 1 - this._line;
   },
   point: function(x, y) {
-    x = +x, y = +y;
+    x = +x;
+    y = +y;
     switch (this._point) {
       case 0: this._point = 1; this._line ? this._context.lineTo(x, y) : this._context.moveTo(x, y); break;
       case 1: this._point = 2; // proceed
