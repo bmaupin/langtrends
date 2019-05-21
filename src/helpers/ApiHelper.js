@@ -46,10 +46,41 @@ class ApiHelper {
   }
 
   static async callApi(filter) {
-    let apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
+    const apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
+    let response;
+    if ('caches' in window.self) {
+      const cache = await ApiHelper._getCache();
 
-    let response = await fetch(apiUrl);
+      response = await cache.match(apiUrl);
+      if (typeof response === 'undefined') {
+        await cache.add(apiUrl);
+        response = await cache.match(apiUrl);
+      }
+    } else {
+      response = await fetch(apiUrl);
+    }
+
     return response.json();
+  }
+
+  // TODO: compare current year/month to latest from API
+  static async _getCache() {
+    const cacheName = ApiHelper._getCurrentYearMonthString();
+    // Wipe the old caches every time we create a new one to keep from filling up available cache space
+    if (await !caches.has(cacheName)) {
+      ApiHelper._deleteAllCaches();
+    }
+    return await caches.open(cacheName);
+  }
+
+  static _getCurrentYearMonthString() {
+    return new Date().toISOString().slice(0, 7);
+  }
+
+  static async _deleteAllCaches() {
+    for (let cacheName of caches.keys()) {
+      await caches.delete(cacheName);
+    }
   }
 
   static async getScoresForSeries(languages, dates) {
