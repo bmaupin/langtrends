@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Grid, Item } from 'semantic-ui-react'
+import React, { Component } from 'react';
+import { Grid, Item } from 'semantic-ui-react';
 import Chart from './Chart';
 import ChartTopMenu from './ChartTopMenu';
 
@@ -16,6 +16,6 @@ export default class ChartGroup extends Component {
           <Chart />
         </Item.Content>
       </Item.Group>
-    )
+    );
   }
 }
