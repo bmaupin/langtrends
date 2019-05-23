@@ -85,7 +85,7 @@ export default class Chart extends Component {
         title: value.hintTitle,
         value: value.hintValue,
       }
-    ]
+    ];
   }
 
   _onValueMouseOut() {
