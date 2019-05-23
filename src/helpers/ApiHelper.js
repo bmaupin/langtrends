@@ -29,12 +29,12 @@ class ApiHelper {
     return new Date(scoresFromApi[0].date);
   }
 
-  static async _getLatestDateFromApi() {
+  static async _getLatestDateFromApi(bypassCache) {
     const apiFilter = {
       order: 'date DESC',
       limit: 1
     };
-    let scoresFromApi = await ApiHelper.callApi(apiFilter);
+    let scoresFromApi = await ApiHelper.callApi(apiFilter, bypassCache);
 
     return new Date(scoresFromApi[0].date);
   }
@@ -45,40 +45,52 @@ class ApiHelper {
     return newDate;
   }
 
-  static async callApi(filter) {
+  static async callApi(filter, bypassCache) {
     const apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
     let response;
-    if ('caches' in window.self) {
-      const cache = await ApiHelper._getCache();
 
+    if (bypassCache || !('caches' in window.self)) {
+      response = await fetch(apiUrl);
+    } else {
+      const cache = await ApiHelper._getCache();
       response = await cache.match(apiUrl);
       if (typeof response === 'undefined') {
         await cache.add(apiUrl);
         response = await cache.match(apiUrl);
       }
-    } else {
-      response = await fetch(apiUrl);
     }
 
     return response.json();
   }
 
-  // TODO: compare current year/month to latest from API
   static async _getCache() {
-    const cacheName = ApiHelper._getCurrentYearMonthString();
-    // Wipe the old caches every time we create a new one to keep from filling up available cache space
-    if (await !caches.has(cacheName)) {
-      ApiHelper._deleteAllCaches();
+    // If there's a cache matching the current year/month, return it
+    const currentYearMonthString = ApiHelper._getCurrentYearMonthString();
+    if (await caches.has(currentYearMonthString)) {
+      return await caches.open(currentYearMonthString);
     }
-    return await caches.open(cacheName);
+
+    // If the latest year/month in the API is current, delete all old caches and return a new one for the current year/month
+    const latestYearMonthString = await ApiHelper._getLatestYearMonthStringFromApi();
+    if (latestYearMonthString === currentYearMonthString) {
+      await ApiHelper._deleteAllCaches();
+      return await caches.open(currentYearMonthString);
+    }
+
+    // If we end up here, return a cache for the latest year/month in the API
+    return await caches.open(latestYearMonthString);
   }
 
   static _getCurrentYearMonthString() {
     return new Date().toISOString().slice(0, 7);
   }
 
+  static async _getLatestYearMonthStringFromApi() {
+    return (await ApiHelper._getLatestDateFromApi(true)).toISOString().slice(0, 7);
+  }
+
   static async _deleteAllCaches() {
-    for (let cacheName of caches.keys()) {
+    for (let cacheName of await caches.keys()) {
       await caches.delete(cacheName);
     }
   }
