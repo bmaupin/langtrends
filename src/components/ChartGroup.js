@@ -17,8 +17,8 @@ export default class ChartGroup extends Component {
     this.handleIntervalChanged = this.handleIntervalChanged.bind(this);
   }
 
-  handleIntervalChanged(_event, { intervalInMonths }) {
-    this.setState({ intervalInMonths: Number(intervalInMonths) });
+  handleIntervalChanged(_event, { value }) {
+    this.setState({ intervalInMonths: Number(value) });
   }
 
   render() {
