@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Container, Icon, Menu } from 'semantic-ui-react'
+import React, { Component } from 'react';
+import { Container, Icon, Menu } from 'semantic-ui-react';
 
 export default class TopMenu extends Component {
   render() {
@@ -17,6 +17,6 @@ export default class TopMenu extends Component {
           </Menu.Menu>
         </Container>
       </Menu>
-    )
+    );
   }
 }
