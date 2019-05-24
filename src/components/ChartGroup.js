@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Grid, Item } from 'semantic-ui-react';
+import { Container, Grid, Item } from 'semantic-ui-react';
+
 import Chart from './Chart';
 import ChartBottomMenu from './ChartBottomMenu';
 import ChartTopMenu from './ChartTopMenu';
@@ -23,22 +24,26 @@ export default class ChartGroup extends Component {
 
   render() {
     return (
-      <Item.Group className="chart-group">
-        <Item.Content>
-          <Grid centered padded>
-            <ChartTopMenu />
-          </Grid>
-          <Chart
-            intervalInMonths={this.state.intervalInMonths}
-          />
-          <Grid centered padded>
-            <ChartBottomMenu
-              handleItemClick={this.handleIntervalChanged}
-              intervalInMonths={this.state.intervalInMonths}
-            />
-          </Grid>
-        </Item.Content>
-      </Item.Group>
+      <Container>
+        <Grid centered padded>
+          <Item.Group className="chart-group">
+            <Item.Content>
+              <Grid centered padded>
+                <ChartTopMenu />
+              </Grid>
+              <Chart
+                intervalInMonths={this.state.intervalInMonths}
+              />
+              <Grid centered padded>
+                <ChartBottomMenu
+                  handleItemClick={this.handleIntervalChanged}
+                  intervalInMonths={this.state.intervalInMonths}
+                />
+              </Grid>
+            </Item.Content>
+          </Item.Group>
+        </Grid>
+      </Container>
     );
   }
 }
