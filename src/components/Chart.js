@@ -119,12 +119,7 @@ export default class Chart extends Component {
     return (
       <Dimmer.Dimmable blurring dimmed>
         <Dimmer active inverted>
-          <Loader size='massive'>
-            Please wait
-            <div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
-              (This may take up to 30 seconds)
-            </div>
-          </Loader>
+          <Loader size='massive' />
         </Dimmer>
 
         <Image src='assets/images/chart-placeholder.png' />
@@ -132,7 +127,6 @@ export default class Chart extends Component {
     );
   }
 
-  // TODO: can we cache the API results somehow?
   render() {
     if (!this.state.chartData) {
       return Chart.renderLoadingSpinner();
