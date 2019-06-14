@@ -70,15 +70,42 @@ class ApiHelper {
       return await caches.open(currentYearMonthString);
     }
 
-    // If the latest year/month in the API is current, delete all old caches and return a new one for the current year/month
+    // If the latest year/month in the API is current and the API is finished syncing,
+    // delete all old caches and return a new one for the current year/month
     const latestYearMonthString = await ApiHelper._getLatestYearMonthStringFromApi();
-    if (latestYearMonthString === currentYearMonthString) {
+    if (latestYearMonthString === currentYearMonthString && ApiHelper._isApiFinishedSyncing(currentYearMonthString)) {
       await ApiHelper._deleteAllCaches();
       return await caches.open(currentYearMonthString);
     }
 
     // If we end up here, return a cache for the latest year/month in the API
     return await caches.open(latestYearMonthString);
+  }
+
+  static async _isApiFinishedSyncing(yearMonthString) {
+    return await ApiHelper._getNumberOfLanguagesFromApi(yearMonthString) === await ApiHelper._getTotalNumberOfLanguages();
+  }
+
+  static async _getNumberOfLanguagesFromApi(yearMonthString) {
+    const where = {
+      date: yearMonthString
+    };
+    const apiUrl = encodeURI(`${API_BASE_URL}/api/scores/count?where=${JSON.stringify(where)}&access_token=${API_TOKEN}`);
+    const response = await fetch(apiUrl);
+
+    return (await response.json()).count;
+  }
+
+  static async _getTotalNumberOfLanguages() {
+    const response = await fetch('https://raw.githubusercontent.com/bmaupin/langtrends-api/master/server/boot/classes/languages.json');
+    const languages = await response.json();
+
+    return Object.keys(languages).reduce((numberOfIncludedLanguages, languageName) => {
+      if (languages[languageName].include === true) {
+        numberOfIncludedLanguages += 1;
+      }
+      return numberOfIncludedLanguages;
+    }, 0);
   }
 
   static _getCurrentYearMonthString() {
