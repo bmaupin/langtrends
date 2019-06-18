@@ -130,7 +130,7 @@ class ApiHelper {
             or: Array.from(languages.keys()).map(languageId => ({languageId: languageId}))
           },
           {
-            or: dates.map(date => ({date: date.toISOString()}))
+            or: dates.map(date => ({ date: date }))
           }
         ]
       },
