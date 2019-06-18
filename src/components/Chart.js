@@ -40,14 +40,15 @@ export default class Chart extends Component {
   }
 
   async componentDidUpdate(prevProps) {
-    if (this.props.intervalInMonths !== prevProps.intervalInMonths) {
+    if (this.props.chartType !== prevProps.chartType ||
+        this.props.intervalInMonths !== prevProps.intervalInMonths) {
       await this.setChartData();
     }
   }
 
   async setChartData() {
     // const chartData = await ChartData.fromType(ChartData.CHART_TYPES.TOP_LANGUAGES, 12);
-    const chartData = await ChartData.fromType(ChartData.CHART_TYPES.FASTEST_OVER_1000, this.props.intervalInMonths);
+    const chartData = await ChartData.fromType(this.props.chartType, this.props.intervalInMonths);
     const leftYAxisLabels = Chart._generateLeftYAxisLabels(chartData.series);
     const rightYAxisLabels = Chart._generateRightYAxisLabels(chartData.series);
 

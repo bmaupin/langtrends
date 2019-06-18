@@ -1,20 +1,28 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Menu } from 'semantic-ui-react';
 
-export default class ChartTopMenu extends Component {
-  state = { activeItem: 'fastest growing' };
+import ChartData from '../helpers/ChartData';
 
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name })
+export default function ChartTopMenu(props) {
+  const chartType = props.chartType;
 
-  render() {
-    const { activeItem } = this.state;
-
-    return (
-      <Menu secondary>
-        <Menu.Item name='fastest growing' active={activeItem === 'fastest growing'} onClick={this.handleItemClick} />
-        {/* TODO */}
-        {/* <Menu.Item name='top' active={activeItem === 'top'} onClick={this.handleItemClick} /> */}
-      </Menu>
-    );
-  }
+  return (
+    <Menu secondary>
+      <Menu.Item
+        name={ChartData.CHART_TYPES.FASTEST_OVER_1000}
+        active={chartType === ChartData.CHART_TYPES.FASTEST_OVER_1000}
+        onClick={props.handleItemClick}
+      />
+      <Menu.Item
+        name={ChartData.CHART_TYPES.FASTEST_OVER_100}
+        active={chartType === ChartData.CHART_TYPES.FASTEST_OVER_100}
+        onClick={props.handleItemClick}
+      />
+      <Menu.Item
+        name={ChartData.CHART_TYPES.TOP_LANGUAGES}
+        active={chartType === ChartData.CHART_TYPES.TOP_LANGUAGES}
+        onClick={props.handleItemClick}
+      />
+    </Menu>
+  );
 }
