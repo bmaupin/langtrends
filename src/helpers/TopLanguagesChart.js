@@ -7,8 +7,11 @@ export default class TopLanguagesChart {
 
   async getDates() {
     if (typeof this._dates === 'undefined') {
-      this._dates = await ApiHelper.buildDates(this._interval);
+      let dates = await ApiHelper.buildDates(this._interval);
+      // From this point on we only need the date as a string
+      this._dates = dates.map(date => date.toISOString());
     }
+
     return this._dates;
   }
 
@@ -25,7 +28,7 @@ export default class TopLanguagesChart {
 
     const filter = {
       where: {
-        date: lastDate.toISOString(),
+        date: lastDate,
       },
       // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',
