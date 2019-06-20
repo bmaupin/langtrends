@@ -122,22 +122,13 @@ class ApiHelper {
     }
   }
 
-  static async getScoresForSeries(languages, dates) {
+  static async getAllScores(dates) {
     const apiFilter = {
       where: {
-        and: [
-          {
-            or: Array.from(languages.keys()).map(languageId => ({languageId: languageId}))
-          },
-          {
-            or: dates.map(date => ({ date: date }))
-          }
-        ]
+        or: dates.map(date => ({ date: date }))
       },
       // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',
-      // The methods that work with this data will assume that it's ordered by date
-      order: 'date ASC',
     };
 
     return await ApiHelper.callApi(apiFilter);

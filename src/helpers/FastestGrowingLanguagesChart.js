@@ -23,25 +23,13 @@ export default class FastestGrowingLanguagesChart {
 
   async getSeries() {
     const datesForCalculations = await this._getDatesForCalculations();
-    const scoresFromApi = await FastestGrowingLanguagesChart._getAllScores(datesForCalculations);
+    const scoresFromApi = await ApiHelper.getAllScores(datesForCalculations);
     const scoresByDate = FastestGrowingLanguagesChart._organizeScoresByDate(scoresFromApi);
     const percentageChangesByDate = this._getPercentageChangesByDate(scoresByDate, datesForCalculations);
     const topPercentageChanges = await this._calculateTopPercentageChanges(percentageChangesByDate);
     const formattedSeriesData = await this._formatDataForChart(topPercentageChanges);
 
     return formattedSeriesData;
-  }
-
-  static async _getAllScores(dates) {
-    const apiFilter = {
-      where: {
-        or: dates.map(date => ({ date: date }))
-      },
-      // This makes sure the language details get included. In particular we need the language name for labels
-      include: 'language',
-    };
-
-    return await ApiHelper.callApi(apiFilter);
   }
 
   // Organize scores by date so we can access each one directly
