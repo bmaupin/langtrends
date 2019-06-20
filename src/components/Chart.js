@@ -27,7 +27,6 @@ export default class Chart extends Component {
       dates: [],
       hintValue: null,
       hoveredSeriesIndex: null,
-      yDomain: null,
     };
 
     this._onValueMouseOut = this._onValueMouseOut.bind(this);
@@ -58,7 +57,6 @@ export default class Chart extends Component {
       dates: chartData.dates,
       leftYAxisLabels: leftYAxisLabels,
       rightYAxisLabels: rightYAxisLabels,
-      yDomain: chartData.yDomain,
     });
   }
 
@@ -143,7 +141,8 @@ export default class Chart extends Component {
                 left: 80,
                 right: 80
               }}
-              yDomain={this.state.yDomain}
+              // Reverse the y scale since we're doing a bump chart
+              yDomain={[ApiHelper.NUMBER_OF_LANGUAGES, 1]}
             >
               <VerticalGridLines />
               <HorizontalGridLines />
