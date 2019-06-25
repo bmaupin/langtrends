@@ -38,11 +38,10 @@ class ChartData {
   }
 }
 
-// Note: the string values are also used for the labels in the UI menu
 ChartData.CHART_TYPES = {
-  TOP_LANGUAGES: 'Top',
-  FASTEST_OVER_100: 'Fastest growing over 100',
-  FASTEST_OVER_1000: 'Fastest growing over 1000',
+  TOP_LANGUAGES: 'toplanguages',
+  FASTEST_OVER_100: 'fastestover100',
+  FASTEST_OVER_1000: 'fastestover1000',
 };
 
 export default ChartData;
