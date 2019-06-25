@@ -1,8 +1,10 @@
+const settings = require('../settings.json');
+
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 const API_TOKEN = process.env.REACT_APP_API_TOKEN || null;
 
 class ApiHelper {
-  static async buildDates(intervalInMonths, numberOfDates = ApiHelper.NUMBER_OF_DATES) {
+  static async buildDates(intervalInMonths, numberOfDates = settings.numberOfDates) {
     let dates = [];
     let currentDate = await ApiHelper._getLatestDateFromApi();
     let earliestDate = await ApiHelper._getEarliestDateFromApi();
@@ -134,8 +136,5 @@ class ApiHelper {
     return await ApiHelper.callApi(apiFilter);
   }
 }
-
-ApiHelper.NUMBER_OF_DATES = 12;
-ApiHelper.NUMBER_OF_LANGUAGES = 10;
 
 export default ApiHelper;

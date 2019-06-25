@@ -1,4 +1,4 @@
-import ApiHelper from './ApiHelper';
+import settings from '../settings.json';
 
 export default class LanguagesChart {
   // Organize scores by date so we can access each one directly
@@ -31,7 +31,7 @@ export default class LanguagesChart {
         return (scoresByDate[date][b] - scoresByDate[date][a]);
       });
 
-      for (let i = 0; i < ApiHelper.NUMBER_OF_LANGUAGES; i++) {
+      for (let i = 0; i < settings.numberOfLanguages; i++) {
         let languageName = sortedKeys[i];
         topScores[date][languageName] = scoresByDate[date][languageName];
       }
