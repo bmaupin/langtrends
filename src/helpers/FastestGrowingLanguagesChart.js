@@ -1,7 +1,10 @@
 import ApiHelper from './ApiHelper';
+import LanguagesChart from './LanguagesChart';
 
-export default class FastestGrowingLanguagesChart {
+export default class FastestGrowingLanguagesChart extends LanguagesChart {
   constructor(interval, minimumScore) {
+    super();
+
     this._interval = interval;
     this._minimumScore = minimumScore;
   }
@@ -24,29 +27,13 @@ export default class FastestGrowingLanguagesChart {
   async getSeries() {
     const datesForCalculations = await this._getDatesForCalculations();
     const scoresFromApi = await ApiHelper.getAllScores(datesForCalculations);
-    const scoresByDate = FastestGrowingLanguagesChart._organizeScoresByDate(scoresFromApi);
+    const scoresByDate = LanguagesChart._organizeScoresByDate(scoresFromApi);
     const percentageChangesByDate = this._getPercentageChangesByDate(scoresByDate, datesForCalculations);
-    const topPercentageChanges = await this._calculateTopPercentageChanges(percentageChangesByDate);
-    const formattedSeriesData = await this._formatDataForChart(topPercentageChanges);
+    const datesForChart = await this.getDates();
+    const topPercentageChanges = await LanguagesChart._calculateTopScores(datesForChart, percentageChangesByDate);
+    const formattedSeriesData = await this._formatDataForChart(datesForChart, topPercentageChanges);
 
     return formattedSeriesData;
-  }
-
-  // Organize scores by date so we can access each one directly
-  static _organizeScoresByDate(scores) {
-    let scoresByDate = {};
-    for (let i = 0; i < scores.length; i++) {
-      const date = scores[i].date;
-      const languageName = scores[i].language.name;
-      const points = scores[i].points;
-
-      if (!scoresByDate.hasOwnProperty(date)) {
-        scoresByDate[date] = {};
-      }
-      scoresByDate[date][languageName] = points;
-    }
-
-    return scoresByDate;
   }
 
   _getPercentageChangesByDate(scoresByDate, datesForCalculations) {
@@ -89,85 +76,7 @@ export default class FastestGrowingLanguagesChart {
     return number;
   }
 
-  async _calculateTopPercentageChanges(percentageChangesByDate) {
-    const datesForChart = await this.getDates();
-    let topPercentageChanges = {};
-
-    for (let i = 0; i < datesForChart.length; i++) {
-      let date = datesForChart[i];
-      // TODO: make this a map to guarantee order
-      topPercentageChanges[date] = {};
-
-      // Sort percentage changes so we can get the top N and do an ordinal ranking for a bump chart
-      let sortedKeys = Object.keys(percentageChangesByDate[date]).sort(function (a, b) {
-        return (percentageChangesByDate[date][b] - percentageChangesByDate[date][a]);
-      });
-
-      for (let i = 0; i < ApiHelper.NUMBER_OF_LANGUAGES; i++) {
-        let languageName = sortedKeys[i];
-        topPercentageChanges[date][languageName] = percentageChangesByDate[date][languageName];
-      }
-    }
-
-    return topPercentageChanges;
-  }
-
-  async _formatDataForChart(topPercentageChanges) {
-    let formattedScores = [];
-    const allFastestGrowingLanguages = FastestGrowingLanguagesChart._getAllFastestGrowingLanguages(topPercentageChanges);
-
-    for (let languageName of allFastestGrowingLanguages) {
-      formattedScores.push(
-        {
-          title: languageName,
-          data: [],
-        }
-      );
-    }
-
-    let datesForChart = await this.getDates();
-    for (let i = 0; i < datesForChart.length; i++) {
-      let date = datesForChart[i];
-
-      let formattedScoresIndex = 0;
-      for (let languageName of allFastestGrowingLanguages) {
-        let percentageChange = null;
-        let rank = null;
-        if (topPercentageChanges[date].hasOwnProperty(languageName)) {
-          percentageChange = topPercentageChanges[date][languageName];
-          // TODO: this should be a map to guarantee order
-          rank = Object.keys(topPercentageChanges[date]).indexOf(languageName) + 1;
-        }
-
-        formattedScores[formattedScoresIndex].data.push(
-          {
-            x: i,
-            // Use the ordinal number ranking for the chart data in order to create a bump chart
-            y: rank,
-            // TODO: don't add hintTitle and hintValue if rank/percentageChange is null
-            hintTitle: languageName,
-            // Add the actual percentage change as a separate property so it can be used for hints on mouseover
-            hintValue: `${Math.round(percentageChange)}% growth`,
-          }
-        );
-        formattedScoresIndex ++;
-      }
-    }
-
-    return formattedScores;
-  }
-
-  static _getAllFastestGrowingLanguages(topPercentageChanges) {
-    let allFastestGrowingLanguages = [];
-
-    for (let date in topPercentageChanges) {
-      for (let languageName in topPercentageChanges[date]) {
-        if (!allFastestGrowingLanguages.includes(languageName)) {
-          allFastestGrowingLanguages.push(languageName);
-        }
-      }
-    }
-
-    return allFastestGrowingLanguages;
+  _formatHintValue(hintValue) {
+    return `${Math.round(hintValue)}% growth`;
   }
 }
