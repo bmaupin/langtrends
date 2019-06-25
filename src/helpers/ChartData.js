@@ -11,10 +11,7 @@ class ChartData {
   static async fromType(chartType, interval) {
     let chart;
     switch(chartType) {
-      case ChartData.CHART_TYPES.FASTEST_OVER_100:
-        chart = new FastestGrowingLanguagesChart(interval, 100);
-        break;
-      case ChartData.CHART_TYPES.FASTEST_OVER_1000:
+      case ChartData.CHART_TYPES.FASTEST_GROWTH:
         chart = new FastestGrowingLanguagesChart(interval, 1000);
         break;
       case ChartData.CHART_TYPES.MOST_GROWTH:
@@ -43,8 +40,7 @@ class ChartData {
 }
 
 ChartData.CHART_TYPES = {
-  FASTEST_OVER_100: 'fastestover100',
-  FASTEST_OVER_1000: 'fastestover1000',
+  FASTEST_GROWTH: 'fastestgrowth',
   MOST_GROWTH: 'mostgrowth',
   TOP_LANGUAGES: 'toplanguages',
 };
