@@ -11,9 +11,9 @@ import {
 } from 'react-vis';
 import { Dimmer, Loader, Image } from 'semantic-ui-react';
 
-import ApiHelper from '../helpers/ApiHelper';
 import ChartData from '../helpers/ChartData';
 import D3SigmoidCurve from '../helpers/D3SigmoidCurve';
+import settings from '../settings.json';
 
 import './Chart.css';
 import '../../node_modules/react-vis/dist/style.css';
@@ -135,13 +135,13 @@ export default class Chart extends Component {
         <div className="chart-container">
           <div className="chart-content">
             <FlexibleWidthXYPlot
-              height={ApiHelper.NUMBER_OF_LANGUAGES * 49}
+              height={settings.numberOfLanguages * 49}
               margin={{
                 left: 80,
                 right: 80
               }}
               // Reverse the y scale since we're doing a bump chart
-              yDomain={[ApiHelper.NUMBER_OF_LANGUAGES, 1]}
+              yDomain={[settings.numberOfLanguages, 1]}
             >
               <VerticalGridLines />
               <HorizontalGridLines />

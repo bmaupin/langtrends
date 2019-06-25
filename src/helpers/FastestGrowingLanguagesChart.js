@@ -1,5 +1,6 @@
 import ApiHelper from './ApiHelper';
 import LanguagesChart from './LanguagesChart';
+import settings from '../settings.json';
 
 export default class FastestGrowingLanguagesChart extends LanguagesChart {
   constructor(interval, minimumScore) {
@@ -16,7 +17,7 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
 
   async _getDatesForCalculations() {
     if (typeof this._dates === 'undefined') {
-      let dates = await ApiHelper.buildDates(this._interval, ApiHelper.NUMBER_OF_DATES + 1);
+      let dates = await ApiHelper.buildDates(this._interval, settings.numberOfDates + 1);
       // From this point on we only need the date as a string
       this._dates = dates.map(date => date.toISOString());
     }
