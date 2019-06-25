@@ -1,5 +1,6 @@
 import TopLanguagesChart from './TopLanguagesChart';
 import FastestGrowingLanguagesChart from './FastestGrowingLanguagesChart';
+import MostGrowthLanguages from './MostGrowthLanguages';
 
 class ChartData {
   constructor(dates, series) {
@@ -10,14 +11,17 @@ class ChartData {
   static async fromType(chartType, interval) {
     let chart;
     switch(chartType) {
-      case ChartData.CHART_TYPES.TOP_LANGUAGES:
-        chart = new TopLanguagesChart(interval);
-        break;
       case ChartData.CHART_TYPES.FASTEST_OVER_100:
         chart = new FastestGrowingLanguagesChart(interval, 100);
         break;
       case ChartData.CHART_TYPES.FASTEST_OVER_1000:
         chart = new FastestGrowingLanguagesChart(interval, 1000);
+        break;
+      case ChartData.CHART_TYPES.MOST_GROWTH:
+        chart = new MostGrowthLanguages(interval, 1000);
+        break;
+      case ChartData.CHART_TYPES.TOP_LANGUAGES:
+        chart = new TopLanguagesChart(interval);
         break;
       default:
         throw new Error(`Unknown chart type: ${chartType}`);
@@ -39,9 +43,10 @@ class ChartData {
 }
 
 ChartData.CHART_TYPES = {
-  TOP_LANGUAGES: 'toplanguages',
   FASTEST_OVER_100: 'fastestover100',
   FASTEST_OVER_1000: 'fastestover1000',
+  MOST_GROWTH: 'mostgrowth',
+  TOP_LANGUAGES: 'toplanguages',
 };
 
 export default ChartData;

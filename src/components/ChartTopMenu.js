@@ -19,6 +19,11 @@ export default function ChartTopMenu(props) {
         onClick={props.handleItemClick}
       >Fastest growing (&gt;100)</Menu.Item>
       <Menu.Item
+        name={ChartData.CHART_TYPES.MOST_GROWTH}
+        active={chartType === ChartData.CHART_TYPES.MOST_GROWTH}
+        onClick={props.handleItemClick}
+      >Most growth</Menu.Item>
+      <Menu.Item
         name={ChartData.CHART_TYPES.TOP_LANGUAGES}
         active={chartType === ChartData.CHART_TYPES.TOP_LANGUAGES}
         onClick={props.handleItemClick}
