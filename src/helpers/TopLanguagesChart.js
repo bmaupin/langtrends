@@ -22,8 +22,8 @@ export default class TopLanguagesChart extends LanguagesChart {
     const dates = await this.getDates();
     const scoresFromApi = await ApiHelper.getAllScores(dates);
     const scoresByDate = LanguagesChart._organizeScoresByDate(scoresFromApi);
-    const topScores = await LanguagesChart._calculateTopScores(dates, scoresByDate);
-    const formattedSeriesData = await this._formatDataForChart(dates, topScores);
+    const topScores = await LanguagesChart._calculateTopScores(scoresByDate, dates);
+    const formattedSeriesData = await this._formatDataForChart(topScores, dates);
 
     return formattedSeriesData;
   }

@@ -18,7 +18,7 @@ export default class LanguagesChart {
     return scoresByDate;
   }
 
-  static async _calculateTopScores(dates, scoresByDate) {
+  static async _calculateTopScores(scoresByDate, dates) {
     let topScores = {};
 
     for (let i = 0; i < dates.length; i++) {
@@ -40,7 +40,7 @@ export default class LanguagesChart {
     return topScores;
   }
 
-  async _formatDataForChart(dates, topScores) {
+  async _formatDataForChart(topScores, dates) {
     let formattedScores = [];
     const allTopLanguages = LanguagesChart._getAllTopLanguages(topScores);
 
@@ -84,10 +84,6 @@ export default class LanguagesChart {
     return formattedScores;
   }
 
-  _formatHintValue(hintValue) {
-    return hintValue;
-  }
-
   static _getAllTopLanguages(topScores) {
     let allTopLanguages = [];
 
@@ -100,5 +96,9 @@ export default class LanguagesChart {
     }
 
     return allTopLanguages;
+  }
+
+  _formatHintValue(hintValue) {
+    return hintValue;
   }
 }
