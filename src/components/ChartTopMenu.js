@@ -12,17 +12,17 @@ export default function ChartTopMenu(props) {
         name={ChartData.CHART_TYPES.FASTEST_OVER_1000}
         active={chartType === ChartData.CHART_TYPES.FASTEST_OVER_1000}
         onClick={props.handleItemClick}
-      />
+      >Fastest growing (&gt;1000)</Menu.Item>
       <Menu.Item
         name={ChartData.CHART_TYPES.FASTEST_OVER_100}
         active={chartType === ChartData.CHART_TYPES.FASTEST_OVER_100}
         onClick={props.handleItemClick}
-      />
+      >Fastest growing (&gt;100)</Menu.Item>
       <Menu.Item
         name={ChartData.CHART_TYPES.TOP_LANGUAGES}
         active={chartType === ChartData.CHART_TYPES.TOP_LANGUAGES}
         onClick={props.handleItemClick}
-      />
+      >Top</Menu.Item>
     </Menu>
   );
 }
