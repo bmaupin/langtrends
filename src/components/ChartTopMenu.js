@@ -9,15 +9,10 @@ export default function ChartTopMenu(props) {
   return (
     <Menu secondary>
       <Menu.Item
-        name={ChartData.CHART_TYPES.FASTEST_OVER_1000}
-        active={chartType === ChartData.CHART_TYPES.FASTEST_OVER_1000}
+        name={ChartData.CHART_TYPES.FASTEST_GROWTH}
+        active={chartType === ChartData.CHART_TYPES.FASTEST_GROWTH}
         onClick={props.handleItemClick}
-      >Fastest growing (&gt;1000)</Menu.Item>
-      <Menu.Item
-        name={ChartData.CHART_TYPES.FASTEST_OVER_100}
-        active={chartType === ChartData.CHART_TYPES.FASTEST_OVER_100}
-        onClick={props.handleItemClick}
-      >Fastest growing (&gt;100)</Menu.Item>
+      >Fastest growth</Menu.Item>
       <Menu.Item
         name={ChartData.CHART_TYPES.MOST_GROWTH}
         active={chartType === ChartData.CHART_TYPES.MOST_GROWTH}
