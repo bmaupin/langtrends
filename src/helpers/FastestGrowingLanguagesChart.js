@@ -30,8 +30,8 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
     const scoresByDate = LanguagesChart._organizeScoresByDate(scoresFromApi);
     const percentageChangesByDate = this._getPercentageChangesByDate(scoresByDate, datesForCalculations);
     const datesForChart = await this.getDates();
-    const topPercentageChanges = await LanguagesChart._calculateTopScores(datesForChart, percentageChangesByDate);
-    const formattedSeriesData = await this._formatDataForChart(datesForChart, topPercentageChanges);
+    const topPercentageChanges = await LanguagesChart._calculateTopScores(percentageChangesByDate, datesForChart);
+    const formattedSeriesData = await this._formatDataForChart(topPercentageChanges, datesForChart);
 
     return formattedSeriesData;
   }
