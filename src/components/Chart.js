@@ -155,10 +155,10 @@ export default class Chart extends Component {
                   key={entry.title}
                   color={GitHubColors.get(entry.title, true).color}
                   data={entry.data}
-                  opacity={!this.state.hoveredSeriesIndex || this.state.hoveredSeriesIndex === i ? 1 : 0.5}
+                  opacity={this.state.hoveredSeriesIndex === null || this.state.hoveredSeriesIndex === i ? 1 : 0.5}
                   onValueMouseOut={this._onValueMouseOut}
                   onValueMouseOver={(datapoint) => this._onValueMouseOver(datapoint, i)}
-                  strokeWidth={this.state.hoveredSeriesIndex && this.state.hoveredSeriesIndex === i ? 4 : null}
+                  strokeWidth={this.state.hoveredSeriesIndex !== null && this.state.hoveredSeriesIndex === i ? 4 : null}
                 />
               )}
               {this.state.hintValue &&
