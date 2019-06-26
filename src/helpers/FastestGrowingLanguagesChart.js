@@ -3,13 +3,6 @@ import LanguagesChart from './LanguagesChart';
 import settings from '../settings.json';
 
 export default class FastestGrowingLanguagesChart extends LanguagesChart {
-  constructor(interval, minimumScore) {
-    super();
-
-    this._interval = interval;
-    this._minimumScore = minimumScore;
-  }
-
   async getDates() {
     // We need one extra date internally for calculations, so to avoid extra API calls just drop the extra date
     return (await this._getDatesForCalculations()).slice(1);
@@ -48,8 +41,8 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
 
       for (let languageName in scoresByDate[date]) {
         // TODO: Filter by scores where the most recent score is above the minimum??
-        // if (scoresByDate[datesForCalculations[datesForCalculations.length - 1]][languageName] > this._minimumScore) {
-        if (scoresByDate[date][languageName] > this._minimumScore) {
+        // if (scoresByDate[datesForCalculations[datesForCalculations.length - 1]][languageName] > settings.minimumScore) {
+        if (scoresByDate[date][languageName] > settings.minimumScore) {
           let percentageChange = FastestGrowingLanguagesChart._calculatePercentageChange(
             scoresByDate[previousDate][languageName],
             scoresByDate[date][languageName]

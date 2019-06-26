@@ -12,10 +12,10 @@ class ChartData {
     let chart;
     switch(chartType) {
       case ChartData.CHART_TYPES.FASTEST_GROWTH:
-        chart = new FastestGrowingLanguagesChart(interval, 1000);
+        chart = new FastestGrowingLanguagesChart(interval);
         break;
       case ChartData.CHART_TYPES.MOST_GROWTH:
-        chart = new MostGrowthLanguages(interval, 1000);
+        chart = new MostGrowthLanguages(interval);
         break;
       case ChartData.CHART_TYPES.TOP_LANGUAGES:
         chart = new TopLanguagesChart(interval);

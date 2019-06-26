@@ -1,4 +1,5 @@
 {
+  "minimumScore": 1000,
   "numberOfDates": 12,
   "numberOfLanguages": 10
 }
