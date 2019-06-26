@@ -3,13 +3,6 @@ import LanguagesChart from './LanguagesChart';
 import settings from '../settings.json';
 
 export default class MostGrowthLanguages extends LanguagesChart {
-  constructor(interval, minimumScore) {
-    super();
-
-    this._interval = interval;
-    this._minimumScore = minimumScore;
-  }
-
   async getDates() {
     // We need one extra date internally for calculations, so to avoid extra API calls just drop the extra date
     return (await this._getDatesForCalculations()).slice(1);
@@ -47,7 +40,7 @@ export default class MostGrowthLanguages extends LanguagesChart {
       growthByDate[date] = {};
 
       for (let languageName in scoresByDate[date]) {
-        if (scoresByDate[date][languageName] > this._minimumScore) {
+        if (scoresByDate[date][languageName] > settings.minimumScore) {
           let growth = MostGrowthLanguages._calculateGrowth(
             scoresByDate[previousDate][languageName],
             scoresByDate[date][languageName]

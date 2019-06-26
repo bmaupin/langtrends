@@ -1,6 +1,10 @@
 import settings from '../settings.json';
 
 export default class LanguagesChart {
+  constructor(interval) {
+    this._interval = interval;
+  }
+
   // Organize scores by date so we can access each one directly
   static _organizeScoresByDate(scores) {
     let scoresByDate = {};

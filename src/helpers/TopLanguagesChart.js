@@ -2,12 +2,6 @@ import ApiHelper from './ApiHelper';
 import LanguagesChart from './LanguagesChart';
 
 export default class TopLanguagesChart extends LanguagesChart {
-  constructor(interval) {
-    super();
-
-    this._interval = interval;
-  }
-
   async getDates() {
     if (typeof this._dates === 'undefined') {
       let dates = await ApiHelper.buildDates(this._interval);
