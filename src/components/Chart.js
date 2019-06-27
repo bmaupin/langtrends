@@ -159,6 +159,7 @@ export default class Chart extends Component {
                   onValueMouseOut={this._onValueMouseOut}
                   onValueMouseOver={(datapoint) => this._onValueMouseOver(datapoint, i)}
                   strokeWidth={this.state.hoveredSeriesIndex !== null && this.state.hoveredSeriesIndex === i ? 4 : null}
+                  lineStyle={{pointerEvents: 'none'}}
                 />
               )}
               {this.state.hintValue &&
