@@ -13,7 +13,7 @@ export default class ChartGroup extends Component {
     super(props);
 
     this.state = {
-      chartType: ChartData.CHART_TYPES.FASTEST_GROWTH,
+      chartType: ChartData.CHART_TYPES.MOST_GROWTH,
       intervalInMonths: 3,
     };
 
