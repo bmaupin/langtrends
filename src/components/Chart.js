@@ -96,7 +96,6 @@ export default class Chart extends Component {
     });
   }
 
-  // TODO: This doesn't get called for every point (https://github.com/uber/react-vis/issues/1157)
   _onValueMouseOver(value, index) {
     this.setState({
       hintValue: value,
