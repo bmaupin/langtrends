@@ -27,7 +27,17 @@ export default class Chart extends Component {
       dates: [],
       hintValue: null,
       hoveredSeriesIndex: null,
+      showloadingMessage: false,
     };
+
+    // Don't show the loading message right away because it can create a lot of visual noise if the loading spinner
+    // only briefly flashes
+    setTimeout(() => {
+      this.setState({showloadingMessage: true});
+    },
+    // This should be just long enough so it only shows when the API isn't ready but doesn't show in any other
+    // situations, such as when changing chart types when the data isn't cached yet
+    3000);
 
     this._onValueMouseOut = this._onValueMouseOut.bind(this);
     this._onValueMouseOver = this._onValueMouseOver.bind(this);
@@ -112,11 +122,20 @@ export default class Chart extends Component {
     return date.slice(0, 7);
   }
 
-  static renderLoadingSpinner() {
+  _renderLoadingSpinner() {
     return (
       <Dimmer.Dimmable blurring dimmed>
         <Dimmer active inverted>
-          <Loader size='massive' />
+          <Loader size='massive'>
+            {this.state.showloadingMessage &&
+              <span>
+                Please wait
+                <div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
+                  (The backend may take up to 30 seconds to start)
+                </div>
+              </span>
+            }
+          </Loader>
         </Dimmer>
 
         <Image src='assets/images/chart-placeholder.png' />
@@ -126,7 +145,7 @@ export default class Chart extends Component {
 
   render() {
     if (!this.state.chartData) {
-      return Chart.renderLoadingSpinner();
+      return this._renderLoadingSpinner();
 
     } else {
       const d3sigmoidcurve = D3SigmoidCurve.compression(0.5);
