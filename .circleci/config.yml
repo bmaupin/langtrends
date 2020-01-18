@@ -7,13 +7,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: update-npm
           command: 'sudo npm install -g npm@latest'
       # Restore dependency cache (https://circleci.com/docs/2.0/caching/)
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
-          name: install-npm-wee
           command: npm install
       # Save dependency cache (https://circleci.com/docs/2.0/caching/)
       - save_cache:
@@ -21,5 +19,4 @@ jobs:
           paths:
             - ./node_modules
       - run:
-          name: test
           command: npm test
