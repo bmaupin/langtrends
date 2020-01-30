@@ -166,4 +166,9 @@ export default class LanguagesChart {
 
     return allTopLanguages;
   }
+
+  async isSeriesCached() {
+    const datesForCalculations = await this._getDatesForCalculations();
+    return await ApiHelper.areScoresCached(datesForCalculations);
+  }
 }
