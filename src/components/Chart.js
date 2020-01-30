@@ -11,7 +11,7 @@ import {
 } from 'react-vis';
 import { Dimmer, Loader, Image } from 'semantic-ui-react';
 
-import ChartData from '../helpers/ChartData';
+import ChartFactory from '../helpers/ChartFactory';
 import D3SigmoidCurve from '../helpers/D3SigmoidCurve';
 import settings from '../settings.json';
 
@@ -46,20 +46,23 @@ export default class Chart extends Component {
   }
 
   async componentDidMount() {
-    await this.setChartData();
+    await this.loadChartData();
   }
 
   async componentDidUpdate(prevProps) {
+    // These conditionals prevent some extra flashing and wonkiness caused by reloading the chart data too aggressively
     if (this.props.chartType !== prevProps.chartType ||
         this.props.intervalInMonths !== prevProps.intervalInMonths) {
-      await this.setChartData();
+      await this.loadChartData();
     }
   }
 
-  async setChartData() {
-    this._chart = await ChartData.fromType(this.props.chartType, this.props.intervalInMonths);
+  async loadChartData() {
+    this._chart = await ChartFactory.fromType(this.props.chartType, this.props.intervalInMonths);
 
     const isSeriesCached = await this._chart.isSeriesCached();
+    // Use to show the loading spinner if the data isn't cached so the user has some feedback that it's being loaded,
+    // but if the data is cached we don't want to show the loading spinner because it causes an annoying flash
     this.setState({
       isLoading: !isSeriesCached,
     });

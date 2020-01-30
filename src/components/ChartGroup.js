@@ -3,7 +3,7 @@ import { Container, Grid, Item } from 'semantic-ui-react';
 
 import Chart from './Chart';
 import ChartBottomMenu from './ChartBottomMenu';
-import ChartData from '../helpers/ChartData';
+import ChartFactory from '../helpers/ChartFactory';
 import ChartTopMenu from './ChartTopMenu';
 
 import './ChartGroup.css';
@@ -13,7 +13,7 @@ export default class ChartGroup extends Component {
     super(props);
 
     this.state = {
-      chartType: ChartData.CHART_TYPES.MOST_GROWTH,
+      chartType: ChartFactory.CHART_TYPES.MOST_GROWTH,
       intervalInMonths: 3,
     };
 
