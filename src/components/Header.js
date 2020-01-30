@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Icon, Menu } from 'semantic-ui-react';
 
-export default class TopMenu extends Component {
+export default class Header extends Component {
   render() {
     return (
       <Menu attached borderless inverted>
