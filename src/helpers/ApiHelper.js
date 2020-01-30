@@ -125,15 +125,32 @@ class ApiHelper {
   }
 
   static async getAllScores(dates) {
-    const apiFilter = {
+    const apiFilter = ApiHelper._buildApiFilter(dates);
+    return await ApiHelper._callApi(apiFilter);
+  }
+
+  static _buildApiFilter(dates) {
+    return {
       where: {
         or: dates.map(date => ({ date: date }))
       },
       // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',
     };
+  }
 
-    return await ApiHelper.callApi(apiFilter);
+  static async areScoresCached(dates) {
+    const apiFilter = ApiHelper._buildApiFilter(dates);
+    const apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(apiFilter)}&access_token=${API_TOKEN}`);
+    const currentYearMonthString = ApiHelper._getCurrentYearMonthString();
+
+    if (await caches.has(currentYearMonthString)) {
+      const cache = await caches.open(currentYearMonthString);
+      // cache.match will return undefined if the URL isn't cached
+      return (typeof (await cache.match(apiUrl)) !== 'undefined');
+    } else {
+      return false;
+    }
   }
 }
 

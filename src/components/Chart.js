@@ -27,6 +27,7 @@ export default class Chart extends Component {
       dates: [],
       hintValue: null,
       hoveredSeriesIndex: null,
+      isLoading: true,
       showloadingMessage: false,
     };
 
@@ -56,16 +57,27 @@ export default class Chart extends Component {
   }
 
   async setChartData() {
-    const chartData = await ChartData.fromType(this.props.chartType, this.props.intervalInMonths);
-    const leftYAxisLabels = Chart._generateLeftYAxisLabels(chartData.series);
-    const rightYAxisLabels = Chart._generateRightYAxisLabels(chartData.series);
+    this._chart = await ChartData.fromType(this.props.chartType, this.props.intervalInMonths);
+
+    const isSeriesCached = await this._chart.isSeriesCached();
+    this.setState({
+      isLoading: !isSeriesCached,
+    });
+
+    const dates = await this._chart.getDates();
+    const series = await this._chart.getSeries();
+
+    const leftYAxisLabels = Chart._generateLeftYAxisLabels(series);
+    const rightYAxisLabels = Chart._generateRightYAxisLabels(series);
 
     // TODO: just one object for chart data?
     this.setState({
-      chartData: chartData.series,
-      dates: chartData.dates,
+      chartData: series,
+      dates: dates,
+      isLoading: false,
       leftYAxisLabels: leftYAxisLabels,
       rightYAxisLabels: rightYAxisLabels,
+      showloadingMessage: false,
     });
   }
 
@@ -144,7 +156,7 @@ export default class Chart extends Component {
   }
 
   render() {
-    if (!this.state.chartData) {
+    if (this.state.isLoading || !this.state.chartData) {
       return this._renderLoadingSpinner();
 
     } else {
