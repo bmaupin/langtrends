@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
 import ChartGroup from './ChartGroup';
-import TopMenu from './TopMenu';
+import Header from './Header';
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <TopMenu />
+        <Header />
         <ChartGroup />
       </div>
     );
