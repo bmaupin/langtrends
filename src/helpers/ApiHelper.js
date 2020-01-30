@@ -26,7 +26,7 @@ class ApiHelper {
       order: 'date ASC',
       limit: 1
     };
-    let scoresFromApi = await ApiHelper.callApi(apiFilter);
+    let scoresFromApi = await ApiHelper._callApi(apiFilter);
 
     return new Date(scoresFromApi[0].date);
   }
@@ -36,7 +36,7 @@ class ApiHelper {
       order: 'date DESC',
       limit: 1
     };
-    let scoresFromApi = await ApiHelper.callApi(apiFilter, bypassCache);
+    let scoresFromApi = await ApiHelper._callApi(apiFilter, bypassCache);
 
     return new Date(scoresFromApi[0].date);
   }
@@ -47,7 +47,7 @@ class ApiHelper {
     return newDate;
   }
 
-  static async callApi(filter, bypassCache) {
+  static async _callApi(filter, bypassCache) {
     const apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
     let response;
 
