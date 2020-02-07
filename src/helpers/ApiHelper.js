@@ -1,10 +1,14 @@
 const settings = require('../settings.json');
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 const API_TOKEN = process.env.REACT_APP_API_TOKEN || null;
 
 class ApiHelper {
-  static async buildDates(intervalInMonths, numberOfDates = settings.numberOfDates) {
+  static async buildDates(
+    intervalInMonths,
+    numberOfDates = settings.numberOfDates
+  ) {
     let dates = [];
     let currentDate = await ApiHelper._getLatestDateFromApi();
     let earliestDate = await ApiHelper._getEarliestDateFromApi();
@@ -24,7 +28,7 @@ class ApiHelper {
   static async _getEarliestDateFromApi() {
     const apiFilter = {
       order: 'date ASC',
-      limit: 1
+      limit: 1,
     };
     let scoresFromApi = await ApiHelper._callApi(apiFilter);
 
@@ -34,7 +38,7 @@ class ApiHelper {
   static async _getLatestDateFromApi(bypassCache) {
     const apiFilter = {
       order: 'date DESC',
-      limit: 1
+      limit: 1,
     };
     let scoresFromApi = await ApiHelper._callApi(apiFilter, bypassCache);
 
@@ -48,7 +52,11 @@ class ApiHelper {
   }
 
   static async _callApi(filter, bypassCache) {
-    const apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(filter)}&access_token=${API_TOKEN}`);
+    const apiUrl = encodeURI(
+      `${API_BASE_URL}/api/scores?filter=${JSON.stringify(
+        filter
+      )}&access_token=${API_TOKEN}`
+    );
     let response;
 
     if (bypassCache || !('caches' in window.self)) {
@@ -75,7 +83,10 @@ class ApiHelper {
     // If the latest year/month in the API is current and the API is finished syncing,
     // delete all old caches and return a new one for the current year/month
     const latestYearMonthString = await ApiHelper._getLatestYearMonthStringFromApi();
-    if (latestYearMonthString === currentYearMonthString && ApiHelper._isApiFinishedSyncing(currentYearMonthString)) {
+    if (
+      latestYearMonthString === currentYearMonthString &&
+      ApiHelper._isApiFinishedSyncing(currentYearMonthString)
+    ) {
       await ApiHelper._deleteAllCaches();
       return await caches.open(currentYearMonthString);
     }
@@ -85,29 +96,41 @@ class ApiHelper {
   }
 
   static async _isApiFinishedSyncing(yearMonthString) {
-    return await ApiHelper._getNumberOfLanguagesFromApi(yearMonthString) === await ApiHelper._getTotalNumberOfLanguages();
+    return (
+      (await ApiHelper._getNumberOfLanguagesFromApi(yearMonthString)) ===
+      (await ApiHelper._getTotalNumberOfLanguages())
+    );
   }
 
   static async _getNumberOfLanguagesFromApi(yearMonthString) {
     const where = {
-      date: yearMonthString
+      date: yearMonthString,
     };
-    const apiUrl = encodeURI(`${API_BASE_URL}/api/scores/count?where=${JSON.stringify(where)}&access_token=${API_TOKEN}`);
+    const apiUrl = encodeURI(
+      `${API_BASE_URL}/api/scores/count?where=${JSON.stringify(
+        where
+      )}&access_token=${API_TOKEN}`
+    );
     const response = await fetch(apiUrl);
 
     return (await response.json()).count;
   }
 
   static async _getTotalNumberOfLanguages() {
-    const response = await fetch('https://raw.githubusercontent.com/bmaupin/langtrends-api/master/server/boot/classes/languages.json');
+    const response = await fetch(
+      'https://raw.githubusercontent.com/bmaupin/langtrends-api/master/server/boot/classes/languages.json'
+    );
     const languages = await response.json();
 
-    return Object.keys(languages).reduce((numberOfIncludedLanguages, languageName) => {
-      if (languages[languageName].include === true) {
-        numberOfIncludedLanguages += 1;
-      }
-      return numberOfIncludedLanguages;
-    }, 0);
+    return Object.keys(languages).reduce(
+      (numberOfIncludedLanguages, languageName) => {
+        if (languages[languageName].include === true) {
+          numberOfIncludedLanguages += 1;
+        }
+        return numberOfIncludedLanguages;
+      },
+      0
+    );
   }
 
   static _getCurrentYearMonthString() {
@@ -115,7 +138,9 @@ class ApiHelper {
   }
 
   static async _getLatestYearMonthStringFromApi() {
-    return (await ApiHelper._getLatestDateFromApi(true)).toISOString().slice(0, 7);
+    return (await ApiHelper._getLatestDateFromApi(true))
+      .toISOString()
+      .slice(0, 7);
   }
 
   static async _deleteAllCaches() {
@@ -132,7 +157,7 @@ class ApiHelper {
   static _buildApiFilter(dates) {
     return {
       where: {
-        or: dates.map(date => ({ date: date }))
+        or: dates.map(date => ({ date: date })),
       },
       // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',
@@ -141,13 +166,17 @@ class ApiHelper {
 
   static async areScoresCached(dates) {
     const apiFilter = ApiHelper._buildApiFilter(dates);
-    const apiUrl = encodeURI(`${API_BASE_URL}/api/scores?filter=${JSON.stringify(apiFilter)}&access_token=${API_TOKEN}`);
+    const apiUrl = encodeURI(
+      `${API_BASE_URL}/api/scores?filter=${JSON.stringify(
+        apiFilter
+      )}&access_token=${API_TOKEN}`
+    );
     const currentYearMonthString = ApiHelper._getCurrentYearMonthString();
 
     if (await caches.has(currentYearMonthString)) {
       const cache = await caches.open(currentYearMonthString);
       // cache.match will return undefined if the URL isn't cached
-      return (typeof (await cache.match(apiUrl)) !== 'undefined');
+      return typeof (await cache.match(apiUrl)) !== 'undefined';
     } else {
       return false;
     }
