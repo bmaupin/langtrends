@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "50fc89685367a6efbfa5bbc9e3f6ed84",
+    "revision": "631a28cf5805ae576815193556709e65",
     "url": "/langtrends/index.html"
   },
   {
-    "revision": "230b5dcb96d66d924258",
+    "revision": "4c1c601a0b074d27deb4",
     "url": "/langtrends/static/css/2.5a2f7233.chunk.css"
   },
   {
-    "revision": "1090a657759678ecec85",
+    "revision": "a42396607c0f62d3aea6",
     "url": "/langtrends/static/css/main.b8ab7400.chunk.css"
   },
   {
-    "revision": "230b5dcb96d66d924258",
-    "url": "/langtrends/static/js/2.e7ac27f2.chunk.js"
+    "revision": "4c1c601a0b074d27deb4",
+    "url": "/langtrends/static/js/2.acd8ed75.chunk.js"
   },
   {
-    "revision": "1090a657759678ecec85",
-    "url": "/langtrends/static/js/main.ddfda4bc.chunk.js"
+    "revision": "a42396607c0f62d3aea6",
+    "url": "/langtrends/static/js/main.417e5080.chunk.js"
   },
   {
     "revision": "0c90df2d624a85e1e4df",
