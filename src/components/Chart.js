@@ -7,7 +7,7 @@ import {
   LineMarkSeries,
   VerticalGridLines,
   XAxis,
-  YAxis
+  YAxis,
 } from 'react-vis';
 import { Dimmer, Loader, Image } from 'semantic-ui-react';
 
@@ -33,12 +33,14 @@ export default class Chart extends Component {
 
     // Don't show the loading message right away because it can create a lot of visual noise if the loading spinner
     // only briefly flashes
-    setTimeout(() => {
-      this.setState({showloadingMessage: true});
-    },
-    // This should be just long enough so it only shows when the API isn't ready but doesn't show in any other
-    // situations, such as when changing chart types when the data isn't cached yet
-    3000);
+    setTimeout(
+      () => {
+        this.setState({ showloadingMessage: true });
+      },
+      // This should be just long enough so it only shows when the API isn't ready but doesn't show in any other
+      // situations, such as when changing chart types when the data isn't cached yet
+      3000
+    );
 
     this._onValueMouseOut = this._onValueMouseOut.bind(this);
     this._onValueMouseOver = this._onValueMouseOver.bind(this);
@@ -51,14 +53,19 @@ export default class Chart extends Component {
 
   async componentDidUpdate(prevProps) {
     // These conditionals prevent some extra flashing and wonkiness caused by reloading the chart data too aggressively
-    if (this.props.chartType !== prevProps.chartType ||
-        this.props.intervalInMonths !== prevProps.intervalInMonths) {
+    if (
+      this.props.chartType !== prevProps.chartType ||
+      this.props.intervalInMonths !== prevProps.intervalInMonths
+    ) {
       await this.loadChartData();
     }
   }
 
   async loadChartData() {
-    this._chart = await ChartFactory.fromType(this.props.chartType, this.props.intervalInMonths);
+    this._chart = await ChartFactory.fromType(
+      this.props.chartType,
+      this.props.intervalInMonths
+    );
 
     const isSeriesCached = await this._chart.isSeriesCached();
     // Use to show the loading spinner if the data isn't cached so the user has some feedback that it's being loaded,
@@ -85,24 +92,28 @@ export default class Chart extends Component {
   }
 
   static _generateLeftYAxisLabels(series) {
-    return series
-      // Get just the data for the first date
-      .map(languageData => languageData.data[0])
-      // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
-      .sort((a, b) => b.y - a.y)
-      // Drop everything else (x value, y value) and return just a list of hint titles
-      .map(languageData => languageData && languageData.hintTitle);
+    return (
+      series
+        // Get just the data for the first date
+        .map(languageData => languageData.data[0])
+        // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
+        .sort((a, b) => b.y - a.y)
+        // Drop everything else (x value, y value) and return just a list of hint titles
+        .map(languageData => languageData && languageData.hintTitle)
+    );
   }
 
   // TODO: remove duplication here?
   static _generateRightYAxisLabels(series) {
-    return series
-      // Get just the data for the last date
-      .map(languageData => languageData.data[languageData.data.length - 1])
-      // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
-      .sort((a, b) => b.y - a.y)
-      // Drop everything else (x value, y value) and return just a list of hint titles
-      .map(languageData => languageData && languageData.hintTitle);
+    return (
+      series
+        // Get just the data for the last date
+        .map(languageData => languageData.data[languageData.data.length - 1])
+        // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
+        .sort((a, b) => b.y - a.y)
+        // Drop everything else (x value, y value) and return just a list of hint titles
+        .map(languageData => languageData && languageData.hintTitle)
+    );
   }
 
   _formatHint(value) {
@@ -110,7 +121,7 @@ export default class Chart extends Component {
       {
         title: value.hintTitle,
         value: value.hintValue,
-      }
+      },
     ];
   }
 
@@ -141,19 +152,19 @@ export default class Chart extends Component {
     return (
       <Dimmer.Dimmable blurring dimmed>
         <Dimmer active inverted>
-          <Loader size='massive'>
-            {this.state.showloadingMessage &&
+          <Loader size="massive">
+            {this.state.showloadingMessage && (
               <span>
                 Please wait
-                <div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
+                <div style={{ fontSize: '0.6em', marginTop: '0.5em' }}>
                   (The backend may take up to 30 seconds to start)
                 </div>
               </span>
-            }
+            )}
           </Loader>
         </Dimmer>
 
-        <Image src='assets/images/chart-placeholder.png' />
+        <Image src="assets/images/chart-placeholder.png" />
       </Dimmer.Dimmable>
     );
   }
@@ -161,7 +172,6 @@ export default class Chart extends Component {
   render() {
     if (this.state.isLoading || !this.state.chartData) {
       return this._renderLoadingSpinner();
-
     } else {
       const d3sigmoidcurve = D3SigmoidCurve.compression(0.5);
       return (
@@ -171,36 +181,54 @@ export default class Chart extends Component {
               height={settings.numberOfLanguages * 49}
               margin={{
                 left: 80,
-                right: 80
+                right: 80,
               }}
               // Reverse the y scale since we're doing a bump chart
               yDomain={[settings.numberOfLanguages, 1]}
             >
               <VerticalGridLines />
               <HorizontalGridLines />
-              <XAxis tickFormat={this._xAxisLabelFormatter} tickTotal={this.state.dates.length} />
-              <YAxis orientation="left" tickFormat={(v, i) => this.state.leftYAxisLabels[i]} />
-              <YAxis orientation="right" tickFormat={(v, i) => this.state.rightYAxisLabels[i]} />
-              {this.state.chartData.map((entry, i) =>
+              <XAxis
+                tickFormat={this._xAxisLabelFormatter}
+                tickTotal={this.state.dates.length}
+              />
+              <YAxis
+                orientation="left"
+                tickFormat={(v, i) => this.state.leftYAxisLabels[i]}
+              />
+              <YAxis
+                orientation="right"
+                tickFormat={(v, i) => this.state.rightYAxisLabels[i]}
+              />
+              {this.state.chartData.map((entry, i) => (
                 <LineMarkSeries
                   curve={d3sigmoidcurve}
-                  getNull={(d) => d.y !== null}
+                  getNull={d => d.y !== null}
                   key={entry.title}
                   color={GitHubColors.get(entry.title, true).color}
                   data={entry.data}
-                  opacity={this.state.hoveredSeriesIndex === null || this.state.hoveredSeriesIndex === i ? 1 : 0.5}
+                  opacity={
+                    this.state.hoveredSeriesIndex === null ||
+                    this.state.hoveredSeriesIndex === i
+                      ? 1
+                      : 0.5
+                  }
                   onValueMouseOut={this._onValueMouseOut}
-                  onValueMouseOver={(datapoint) => this._onValueMouseOver(datapoint, i)}
-                  strokeWidth={this.state.hoveredSeriesIndex !== null && this.state.hoveredSeriesIndex === i ? 4 : null}
-                  lineStyle={{pointerEvents: 'none'}}
+                  onValueMouseOver={datapoint =>
+                    this._onValueMouseOver(datapoint, i)
+                  }
+                  strokeWidth={
+                    this.state.hoveredSeriesIndex !== null &&
+                    this.state.hoveredSeriesIndex === i
+                      ? 4
+                      : null
+                  }
+                  lineStyle={{ pointerEvents: 'none' }}
                 />
+              ))}
+              {this.state.hintValue && (
+                <Hint format={this._formatHint} value={this.state.hintValue} />
               )}
-              {this.state.hintValue &&
-                <Hint
-                  format={this._formatHint}
-                  value={this.state.hintValue}
-                />
-              }
             </FlexibleWidthXYPlot>
           </div>
         </div>
