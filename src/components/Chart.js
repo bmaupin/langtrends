@@ -35,7 +35,9 @@ export default class Chart extends Component {
     // only briefly flashes
     setTimeout(
       () => {
-        this.setState({ showloadingMessage: true });
+        if (this.state.isLoading) {
+          this.setState({ showloadingMessage: true });
+        }
       },
       // This should be just long enough so it only shows when the API isn't ready but doesn't show in any other
       // situations, such as when changing chart types when the data isn't cached yet
