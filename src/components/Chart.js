@@ -41,7 +41,7 @@ export default class Chart extends Component {
       },
       // This should be just long enough so it only shows when the API isn't ready but doesn't show in any other
       // situations, such as when changing chart types when the data isn't cached yet
-      3000
+      4000
     );
 
     this._onValueMouseOut = this._onValueMouseOut.bind(this);
