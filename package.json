@@ -12,6 +12,7 @@
   },
   "homepage": "https://bmaupin.github.io/langtrends/",
   "scripts": {
+    "dev": "npm run start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src/* --ext .js --ext .json",
