@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/langtrends/static/css/main.b8ab7400.chunk.css",
-    "main.js": "/langtrends/static/js/main.c47be4e4.chunk.js",
-    "main.js.map": "/langtrends/static/js/main.c47be4e4.chunk.js.map",
+    "main.js": "/langtrends/static/js/main.44107a50.chunk.js",
+    "main.js.map": "/langtrends/static/js/main.44107a50.chunk.js.map",
     "runtime~main.js": "/langtrends/static/js/runtime~main.27a77da2.js",
     "runtime~main.js.map": "/langtrends/static/js/runtime~main.27a77da2.js.map",
     "static/css/2.5a2f7233.chunk.css": "/langtrends/static/css/2.5a2f7233.chunk.css",
     "static/js/2.acd8ed75.chunk.js": "/langtrends/static/js/2.acd8ed75.chunk.js",
     "static/js/2.acd8ed75.chunk.js.map": "/langtrends/static/js/2.acd8ed75.chunk.js.map",
     "index.html": "/langtrends/index.html",
-    "precache-manifest.b5c86e351bda169fec557825f897722b.js": "/langtrends/precache-manifest.b5c86e351bda169fec557825f897722b.js",
+    "precache-manifest.0907819f3e2bd1939a4203f4b4e65945.js": "/langtrends/precache-manifest.0907819f3e2bd1939a4203f4b4e65945.js",
     "service-worker.js": "/langtrends/service-worker.js",
     "static/css/2.5a2f7233.chunk.css.map": "/langtrends/static/css/2.5a2f7233.chunk.css.map",
     "static/css/main.b8ab7400.chunk.css.map": "/langtrends/static/css/main.b8ab7400.chunk.css.map"
