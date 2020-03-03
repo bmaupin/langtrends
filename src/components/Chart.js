@@ -33,11 +33,9 @@ export default class Chart extends Component {
 
     // Don't show the loading message right away because it can create a lot of visual noise if the loading spinner
     // only briefly flashes
-    setTimeout(
+    this.loadingMessageTimeout = setTimeout(
       () => {
-        if (this.state.isLoading) {
-          this.setState({ showloadingMessage: true });
-        }
+        this.setState({ showloadingMessage: true });
       },
       // This should be just long enough so it only shows when the API isn't ready but doesn't show in any other
       // situations, such as when changing chart types when the data isn't cached yet
@@ -81,6 +79,9 @@ export default class Chart extends Component {
 
     const leftYAxisLabels = Chart._generateLeftYAxisLabels(series);
     const rightYAxisLabels = Chart._generateRightYAxisLabels(series);
+
+    // Prevent the loading message from showing after the data is loaded
+    clearTimeout(this.loadingMessageTimeout);
 
     // TODO: just one object for chart data?
     this.setState({
