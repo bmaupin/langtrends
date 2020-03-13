@@ -30,11 +30,11 @@ export default class Header extends Component {
                 <h4>Fastest growth</h4>
                 <p>
                   Languages with the highest percentage change compared to the
-                  previous date. Note that scores under a certain threshold (
+                  previous date. Note that scores under a{' '}
                   <a href="https://github.com/bmaupin/langtrends/blob/master/src/settings.json#L2">
-                    currently 1000
-                  </a>
-                  ) are filtered out to reduce{' '}
+                    certain threshold
+                  </a>{' '}
+                  are filtered out to reduce{' '}
                   <a href="https://xkcd.com/1102/">dubiousness</a>.
                 </p>
                 <h4>Most growh</h4>
