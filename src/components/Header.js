@@ -37,7 +37,7 @@ export default class Header extends Component {
                   are filtered out to reduce{' '}
                   <a href="https://xkcd.com/1102/">dubiousness</a>.
                 </p>
-                <h4>Most growh</h4>
+                <h4>Most growth</h4>
                 <p>
                   Languages with the highest numerical change compared to the
                   previous date.
