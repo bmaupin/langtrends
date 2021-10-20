@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           # Test with the latest LTS version of Node (https://nodejs.org/)
-          node-version: '14'
+          node-version: 'lts/*'
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
