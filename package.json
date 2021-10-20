@@ -1,6 +1,5 @@
 {
   "name": "langtrends",
-  "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@types/jest": "^27.0.2",
