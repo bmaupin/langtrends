@@ -31,6 +31,7 @@ export default class Chart extends Component {
       showloadingMessage: false,
     };
 
+    // TODO: do we still need this?
     // Don't show the loading message right away because it can create a lot of visual noise if the loading spinner
     // only briefly flashes
     this.loadingMessageTimeout = setTimeout(
@@ -67,11 +68,9 @@ export default class Chart extends Component {
       this.props.intervalInMonths
     );
 
-    const isSeriesCached = await this._chart.isSeriesCached();
-    // Use to show the loading spinner if the data isn't cached so the user has some feedback that it's being loaded,
-    // but if the data is cached we don't want to show the loading spinner because it causes an annoying flash
+    // TODO: do we still need this?
     this.setState({
-      isLoading: !isSeriesCached,
+      isLoading: true,
     });
 
     const dates = await this._chart.getDates();
@@ -98,11 +97,11 @@ export default class Chart extends Component {
     return (
       series
         // Get just the data for the first date
-        .map(languageData => languageData.data[0])
+        .map((languageData) => languageData.data[0])
         // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
         .sort((a, b) => b.y - a.y)
         // Drop everything else (x value, y value) and return just a list of hint titles
-        .map(languageData => languageData && languageData.hintTitle)
+        .map((languageData) => languageData && languageData.hintTitle)
     );
   }
 
@@ -111,11 +110,11 @@ export default class Chart extends Component {
     return (
       series
         // Get just the data for the last date
-        .map(languageData => languageData.data[languageData.data.length - 1])
+        .map((languageData) => languageData.data[languageData.data.length - 1])
         // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
         .sort((a, b) => b.y - a.y)
         // Drop everything else (x value, y value) and return just a list of hint titles
-        .map(languageData => languageData && languageData.hintTitle)
+        .map((languageData) => languageData && languageData.hintTitle)
     );
   }
 
@@ -206,7 +205,7 @@ export default class Chart extends Component {
               {this.state.chartData.map((entry, i) => (
                 <LineMarkSeries
                   curve={d3sigmoidcurve}
-                  getNull={d => d.y !== null}
+                  getNull={(d) => d.y !== null}
                   key={entry.title}
                   color={GitHubColors.get(entry.title, true).color}
                   data={entry.data}
@@ -217,7 +216,7 @@ export default class Chart extends Component {
                       : 0.5
                   }
                   onValueMouseOut={this._onValueMouseOut}
-                  onValueMouseOver={datapoint =>
+                  onValueMouseOver={(datapoint) =>
                     this._onValueMouseOver(datapoint, i)
                   }
                   strokeWidth={
