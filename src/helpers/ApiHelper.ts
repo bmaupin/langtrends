@@ -35,12 +35,12 @@ class ApiHelper {
     return new Date(scoresFromApi[0].date);
   }
 
-  static async _getLatestDateFromApi(bypassCache) {
+  static async _getLatestDateFromApi() {
     const apiFilter = {
       order: 'date DESC',
       limit: 1,
     };
-    let scoresFromApi = await ApiHelper._callApi(apiFilter, bypassCache);
+    let scoresFromApi = await ApiHelper._callApi(apiFilter);
 
     return new Date(scoresFromApi[0].date);
   }
@@ -51,59 +51,15 @@ class ApiHelper {
     return newDate;
   }
 
-  static async _callApi(filter, bypassCache) {
+  static async _callApi(filter) {
     const apiUrl = encodeURI(
       `${API_BASE_URL}/api/scores?filter=${JSON.stringify(
         filter
       )}&access_token=${API_TOKEN}`
     );
-    let response;
 
-    if (bypassCache || !('caches' in window.self)) {
-      response = await fetch(apiUrl);
-    } else {
-      const cache = await ApiHelper._getCache();
-      response = await cache.match(apiUrl);
-      if (typeof response === 'undefined') {
-        await cache.add(apiUrl);
-        response = await cache.match(apiUrl);
-      }
-    }
-
+    const response = await fetch(apiUrl);
     return response.json();
-  }
-
-  static async _getCache() {
-    // If there's a cache matching the current year/month, return it in order to avoid calling the API
-    const currentYearMonthString = ApiHelper._getCurrentYearMonthString();
-    if (await caches.has(currentYearMonthString)) {
-      return await caches.open(currentYearMonthString);
-    }
-
-    // If the latest year/month in the API is current, delete all the old caches before returning the new one
-    const latestYearMonthString = await ApiHelper._getLatestYearMonthStringFromApi();
-    if (latestYearMonthString === currentYearMonthString) {
-      await ApiHelper._deleteAllCaches();
-    }
-
-    // Return a cache for the latest year/month in the API (whether the current month or a previous one)
-    return await caches.open(latestYearMonthString);
-  }
-
-  static _getCurrentYearMonthString() {
-    return new Date().toISOString().slice(0, 7);
-  }
-
-  static async _getLatestYearMonthStringFromApi() {
-    return (await ApiHelper._getLatestDateFromApi(true))
-      .toISOString()
-      .slice(0, 7);
-  }
-
-  static async _deleteAllCaches() {
-    for (let cacheName of await caches.keys()) {
-      await caches.delete(cacheName);
-    }
   }
 
   static async getAllScores(dates) {
@@ -114,29 +70,11 @@ class ApiHelper {
   static _buildApiFilter(dates) {
     return {
       where: {
-        or: dates.map(date => ({ date: date })),
+        or: dates.map((date) => ({ date: date })),
       },
       // This makes sure the language details get included. In particular we need the language name for labels
       include: 'language',
     };
-  }
-
-  static async areScoresCached(dates) {
-    const apiFilter = ApiHelper._buildApiFilter(dates);
-    const apiUrl = encodeURI(
-      `${API_BASE_URL}/api/scores?filter=${JSON.stringify(
-        apiFilter
-      )}&access_token=${API_TOKEN}`
-    );
-    const currentYearMonthString = ApiHelper._getCurrentYearMonthString();
-
-    if (await caches.has(currentYearMonthString)) {
-      const cache = await caches.open(currentYearMonthString);
-      // cache.match will return undefined if the URL isn't cached
-      return typeof (await cache.match(apiUrl)) !== 'undefined';
-    } else {
-      return false;
-    }
   }
 }
 
