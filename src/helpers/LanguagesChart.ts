@@ -14,8 +14,8 @@ export default class LanguagesChart {
   async _getDatesForCalculations() {
     if (typeof this._dates === 'undefined') {
       let dates = await ApiHelper.buildDates(this._interval, settings.numberOfDates + 1);
-      // From this point on we only need the date as a string
-      this._dates = dates.map(date => date.toISOString());
+      // From this point on we only need the date as a string; use the same format as the JSON data
+      this._dates = dates.map(date => date.toISOString().slice(0, 10));
     }
 
     return this._dates;
@@ -23,7 +23,7 @@ export default class LanguagesChart {
 
   async getSeries() {
     const datesForCalculations = await this._getDatesForCalculations();
-    const scoresFromApi = await ApiHelper.getAllScores(datesForCalculations);
+    const scoresFromApi = await ApiHelper.getScores(datesForCalculations);
     const scoresByDate = LanguagesChart._organizeScoresByDate(scoresFromApi);
     const customScoresByDate = this._getCustomScoresByDate(scoresByDate, datesForCalculations);
     const datesForChart = await this.getDates();
