@@ -12,7 +12,7 @@
     "react-dom": "^16.14.0",
     "react-scripts": "^4.0.3",
     "react-vis": "^1.11.7",
-    "semantic-ui-react": "^0.86.0",
+    "semantic-ui-react": "^2.0.4",
     "typescript": "^3.9.10"
   },
   "devDependencies": {
