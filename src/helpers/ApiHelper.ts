@@ -2,16 +2,29 @@ const settings = require('../settings.json');
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
-const API_TOKEN = process.env.REACT_APP_API_TOKEN || null;
 
-class ApiHelper {
-  static async buildDates(
-    intervalInMonths,
+// TODO: where to put these interfaces?
+export interface Language {
+  id: number;
+  name: string;
+  stackoverflowTag?: string;
+}
+
+export interface Score {
+  date: string;
+  language?: Language;
+  languageId: number;
+  points: number;
+}
+
+export default class ApiHelper {
+  public static async buildDates(
+    intervalInMonths: number,
     numberOfDates = settings.numberOfDates
-  ) {
-    let dates = [];
-    let currentDate = await ApiHelper._getLatestDateFromApi();
-    let earliestDate = await ApiHelper._getEarliestDateFromApi();
+  ): Promise<Date[]> {
+    const dates = [];
+    let currentDate = await ApiHelper.getLatestDateFromApi();
+    const earliestDate = await ApiHelper.getEarliestDateFromApi();
 
     for (let i = 0; i < numberOfDates; i++) {
       if (currentDate <= earliestDate) {
@@ -19,63 +32,69 @@ class ApiHelper {
       }
 
       dates.push(currentDate);
-      currentDate = ApiHelper._subtractMonthsUTC(currentDate, intervalInMonths);
+      currentDate = ApiHelper.subtractMonthsUTC(currentDate, intervalInMonths);
     }
 
     return dates.reverse();
   }
 
-  static async _getEarliestDateFromApi() {
-    const apiFilter = {
-      order: 'date ASC',
-      limit: 1,
-    };
-    let scoresFromApi = await ApiHelper._callApi(apiFilter);
-
-    return new Date(scoresFromApi[0].date);
+  private static async getLatestDateFromApi(): Promise<Date> {
+    const scores = await ApiHelper.getScoresFromApi();
+    // Scores are sorted in ascending order by date
+    return new Date(scores[scores.length - 1].date);
   }
 
-  static async _getLatestDateFromApi() {
-    const apiFilter = {
-      order: 'date DESC',
-      limit: 1,
-    };
-    let scoresFromApi = await ApiHelper._callApi(apiFilter);
+  // It might seem ineffecient to call the API every time we need to get the scores,
+  // but so far the browser caching seems to handle it just fine. We can always add
+  // some kind of caching (e.g. react-query) later if needed.
+  private static async getScoresFromApi(dates?: string[]): Promise<Score[]> {
+    const apiUrl = encodeURI(`${API_BASE_URL}/scores.json`);
 
-    return new Date(scoresFromApi[0].date);
+    const response = await fetch(apiUrl);
+    const allScores = (await response.json()) as Score[];
+
+    if (dates) {
+      return allScores.filter((score) => dates.includes(score.date));
+    }
+
+    return allScores;
   }
 
-  static _subtractMonthsUTC(date, monthsToSubtract) {
-    let newDate = new Date(date);
+  private static async getEarliestDateFromApi(): Promise<Date> {
+    const scores = await ApiHelper.getScoresFromApi();
+    // Scores are sorted in ascending order by date
+    return new Date(scores[0].date);
+  }
+
+  private static subtractMonthsUTC(date: Date, monthsToSubtract: number): Date {
+    // Make a copy of the date object so we don't overwrite it
+    const newDate = new Date(date);
     newDate.setUTCMonth(newDate.getUTCMonth() - monthsToSubtract);
     return newDate;
   }
 
-  static async _callApi(filter) {
-    const apiUrl = encodeURI(
-      `${API_BASE_URL}/api/scores?filter=${JSON.stringify(
-        filter
-      )}&access_token=${API_TOKEN}`
-    );
+  public static async getScores(dates: string[]): Promise<Score[]> {
+    return await this.getScoresWithLanguages(dates);
+  }
+
+  private static async getScoresWithLanguages(
+    dates: string[]
+  ): Promise<Score[]> {
+    const languages = await this.getLanguagesFromApi();
+    const scores = await this.getScoresFromApi(dates);
+    for (const score of scores) {
+      score.language = languages.find(
+        (language) => language.id === score.languageId
+      );
+    }
+
+    return scores;
+  }
+
+  private static async getLanguagesFromApi(): Promise<Language[]> {
+    const apiUrl = encodeURI(`${API_BASE_URL}/languages.json`);
 
     const response = await fetch(apiUrl);
     return response.json();
   }
-
-  static async getAllScores(dates) {
-    const apiFilter = ApiHelper._buildApiFilter(dates);
-    return await ApiHelper._callApi(apiFilter);
-  }
-
-  static _buildApiFilter(dates) {
-    return {
-      where: {
-        or: dates.map((date) => ({ date: date })),
-      },
-      // This makes sure the language details get included. In particular we need the language name for labels
-      include: 'language',
-    };
-  }
 }
-
-export default ApiHelper;
