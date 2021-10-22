@@ -1,28 +1,40 @@
 import React from 'react';
-import { Menu } from 'semantic-ui-react';
+import { Menu, MenuItemProps } from 'semantic-ui-react';
 
-import ChartFactory from '../helpers/ChartFactory';
+import { ChartType } from '../helpers/ChartFactory';
 
-export default function ChartTopMenu(props) {
+export default function ChartTopMenu(props: {
+  chartType: string | undefined;
+  handleItemClick: (
+    event: React.MouseEvent<HTMLElement>,
+    data: MenuItemProps
+  ) => void;
+}) {
   const chartType = props.chartType;
 
   return (
     <Menu secondary>
       <Menu.Item
-        name={ChartFactory.CHART_TYPES.FASTEST_GROWTH}
-        active={chartType === ChartFactory.CHART_TYPES.FASTEST_GROWTH}
+        name={ChartType.FastestGrowth}
+        active={chartType === ChartType.FastestGrowth}
         onClick={props.handleItemClick}
-      >Fastest growth</Menu.Item>
+      >
+        Fastest growth
+      </Menu.Item>
       <Menu.Item
-        name={ChartFactory.CHART_TYPES.MOST_GROWTH}
-        active={chartType === ChartFactory.CHART_TYPES.MOST_GROWTH}
+        name={ChartType.MostGrowth}
+        active={chartType === ChartType.MostGrowth}
         onClick={props.handleItemClick}
-      >Most growth</Menu.Item>
+      >
+        Most growth
+      </Menu.Item>
       <Menu.Item
-        name={ChartFactory.CHART_TYPES.TOP_LANGUAGES}
-        active={chartType === ChartFactory.CHART_TYPES.TOP_LANGUAGES}
+        name={ChartType.TopLanguages}
+        active={chartType === ChartType.TopLanguages}
         onClick={props.handleItemClick}
-      >Top</Menu.Item>
+      >
+        Top
+      </Menu.Item>
     </Menu>
   );
 }

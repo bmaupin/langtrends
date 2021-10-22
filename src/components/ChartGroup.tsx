@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Grid, Item } from 'semantic-ui-react';
+import { Container, Grid, Item, MenuItemProps } from 'semantic-ui-react';
 
 import Chart from './Chart';
 import ChartBottomMenu from './ChartBottomMenu';
@@ -9,14 +9,22 @@ import ChartTopMenu from './ChartTopMenu';
 import './ChartGroup.css';
 
 export default function ChartGroup() {
-  const [chartType, setChartType] = useState(ChartType.MostGrowth);
+  const [chartType, setChartType] = useState(
+    ChartType.MostGrowth as string | undefined
+  );
   const [intervalInMonths, setIntervalInMonths] = useState(3);
 
-  const handleChartTypeChanged = (_event, { name }) => {
+  const handleChartTypeChanged = (
+    _event: React.MouseEvent<HTMLElement>,
+    { name }: MenuItemProps
+  ) => {
     setChartType(name);
   };
 
-  const handleIntervalChanged = (_event, { value }) => {
+  const handleIntervalChanged = (
+    _event: React.MouseEvent<HTMLElement>,
+    { value }: MenuItemProps
+  ) => {
     setIntervalInMonths(Number(value));
   };
 
