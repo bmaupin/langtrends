@@ -1,60 +1,46 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Container, Grid, Item } from 'semantic-ui-react';
 
 import Chart from './Chart';
 import ChartBottomMenu from './ChartBottomMenu';
-import ChartFactory from '../helpers/ChartFactory';
+import { ChartType } from '../helpers/ChartFactory';
 import ChartTopMenu from './ChartTopMenu';
 
 import './ChartGroup.css';
 
-export default class ChartGroup extends Component {
-  constructor(props) {
-    super(props);
+export default function ChartGroup() {
+  const [chartType, setChartType] = useState(ChartType.MostGrowth);
+  const [intervalInMonths, setIntervalInMonths] = useState(3);
 
-    this.state = {
-      chartType: ChartFactory.CHART_TYPES.MOST_GROWTH,
-      intervalInMonths: 3,
-    };
+  const handleChartTypeChanged = (_event, { name }) => {
+    setChartType(name);
+  };
 
-    this.handleChartTypeChanged = this.handleChartTypeChanged.bind(this);
-    this.handleIntervalChanged = this.handleIntervalChanged.bind(this);
-  }
+  const handleIntervalChanged = (_event, { value }) => {
+    setIntervalInMonths(Number(value));
+  };
 
-  handleChartTypeChanged(_event, { name }) {
-    this.setState({ chartType: name });
-  }
-
-  handleIntervalChanged(_event, { value }) {
-    this.setState({ intervalInMonths: Number(value) });
-  }
-
-  render() {
-    return (
-      <Container>
-        <Grid centered padded>
-          <Item.Group className="chart-group">
-            <Item.Content>
-              <Grid centered padded>
-                <ChartTopMenu
-                  chartType={this.state.chartType}
-                  handleItemClick={this.handleChartTypeChanged}
-                />
-              </Grid>
-              <Chart
-                chartType={this.state.chartType}
-                intervalInMonths={this.state.intervalInMonths}
+  return (
+    <Container>
+      <Grid centered padded>
+        <Item.Group className="chart-group">
+          <Item.Content>
+            <Grid centered padded>
+              <ChartTopMenu
+                chartType={chartType}
+                handleItemClick={handleChartTypeChanged}
               />
-              <Grid centered padded>
-                <ChartBottomMenu
-                  handleItemClick={this.handleIntervalChanged}
-                  intervalInMonths={this.state.intervalInMonths}
-                />
-              </Grid>
-            </Item.Content>
-          </Item.Group>
-        </Grid>
-      </Container>
-    );
-  }
+            </Grid>
+            <Chart chartType={chartType} intervalInMonths={intervalInMonths} />
+            <Grid centered padded>
+              <ChartBottomMenu
+                handleItemClick={handleIntervalChanged}
+                intervalInMonths={intervalInMonths}
+              />
+            </Grid>
+          </Item.Content>
+        </Item.Group>
+      </Grid>
+    </Container>
+  );
 }
