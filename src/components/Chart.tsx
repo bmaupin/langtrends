@@ -5,6 +5,7 @@ import {
   Hint,
   HorizontalGridLines,
   LineMarkSeries,
+  RVTickFormat,
   VerticalGridLines,
   XAxis,
   YAxis,
@@ -16,17 +17,20 @@ import settings from '../settings.json';
 
 import './Chart.css';
 import '../../node_modules/react-vis/dist/style.css';
+import { SeriesData } from '../helpers/LanguagesChart';
 
 export default function Chart(props: {
   chartType: string;
   intervalInMonths: number;
 }) {
-  const [chartData, setChartData] = useState([]);
-  const [dates, setDates] = useState([]);
+  const [chartData, setChartData] = useState([] as SeriesData[]);
+  const [dates, setDates] = useState([] as string[]);
   const [hintValue, setHintValue] = useState(null);
-  const [hoveredSeriesIndex, setHoveredSeriesIndex] = useState(null);
-  const [leftYAxisLabels, setLeftYAxisLabels] = useState([]);
-  const [rightYAxisLabels, setRightYAxisLabels] = useState([]);
+  const [hoveredSeriesIndex, setHoveredSeriesIndex] = useState(
+    null as number | null
+  );
+  const [leftYAxisLabels, setLeftYAxisLabels] = useState([] as string[]);
+  const [rightYAxisLabels, setRightYAxisLabels] = useState([] as string[]);
 
   useEffect(() => {
     const loadChartData = async () => {
@@ -51,7 +55,7 @@ export default function Chart(props: {
     loadChartData();
   }, [props.chartType, props.intervalInMonths]);
 
-  const generateLeftYAxisLabels = (series) => {
+  const generateLeftYAxisLabels = (series: SeriesData[]): string[] => {
     return (
       series
         // Get just the data for the first date
@@ -64,7 +68,7 @@ export default function Chart(props: {
   };
 
   // TODO: remove duplication here?
-  const generateRightYAxisLabels = (series) => {
+  const generateRightYAxisLabels = (series: SeriesData[]): string[] => {
     return (
       series
         // Get just the data for the last date
@@ -90,17 +94,17 @@ export default function Chart(props: {
     setHoveredSeriesIndex(null);
   };
 
-  const onValueMouseOver = (value, index) => {
+  const onValueMouseOver = (value, index: number) => {
     setHintValue(value);
     setHoveredSeriesIndex(index);
   };
 
   // TODO: could we just format the dates ahead of time and get rid of this method?
-  const xAxisLabelFormatter = (_value, index) => {
+  const xAxisLabelFormatter = (_value: number, index: number) => {
     return formatDateForLabel(dates[index]);
   };
 
-  const formatDateForLabel = (date) => {
+  const formatDateForLabel = (date: string) => {
     // TODO: date can be undefined?
     if (date) {
       return date.slice(0, 7);
@@ -123,11 +127,19 @@ export default function Chart(props: {
         >
           <VerticalGridLines />
           <HorizontalGridLines />
-          <XAxis tickFormat={xAxisLabelFormatter} tickTotal={dates.length} />
-          <YAxis orientation="left" tickFormat={(v, i) => leftYAxisLabels[i]} />
+          <XAxis
+            tickFormat={xAxisLabelFormatter as RVTickFormat}
+            tickTotal={dates.length}
+          />
+          <YAxis
+            orientation="left"
+            tickFormat={((_v, i: number) => leftYAxisLabels[i]) as RVTickFormat}
+          />
           <YAxis
             orientation="right"
-            tickFormat={(v, i) => rightYAxisLabels[i]}
+            tickFormat={
+              ((_v, i: number) => rightYAxisLabels[i]) as RVTickFormat
+            }
           />
           {chartData.map((entry, i) => (
             <LineMarkSeries
