@@ -1,11 +1,11 @@
 import LanguagesChart from './LanguagesChart';
 
 export default class MostGrowthLanguages extends LanguagesChart {
-  _calculateCustomScore(oldValue, newValue) {
+  calculateCustomScore(oldValue: number, newValue: number) {
     return newValue - oldValue;
   }
 
-  _formatHintValue(hintValue) {
+  formatHintValue(hintValue: number): string {
     return `+${hintValue}`;
   }
 }

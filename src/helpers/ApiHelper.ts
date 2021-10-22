@@ -3,7 +3,6 @@ const settings = require('../settings.json');
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 
-// TODO: where to put these interfaces?
 export interface Language {
   id: number;
   name: string;
