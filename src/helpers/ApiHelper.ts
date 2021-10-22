@@ -21,7 +21,7 @@ export default class ApiHelper {
   public static async buildDates(
     intervalInMonths: number,
     numberOfDates = settings.numberOfDates
-  ): Promise<Date[]> {
+  ): Promise<string[]> {
     const dates = [];
     let currentDate = await ApiHelper.getLatestDateFromApi();
     const earliestDate = await ApiHelper.getEarliestDateFromApi();
@@ -35,7 +35,10 @@ export default class ApiHelper {
       currentDate = ApiHelper.subtractMonthsUTC(currentDate, intervalInMonths);
     }
 
-    return dates.reverse();
+    dates.reverse();
+
+    // We only need the date as a string; use the same format as the JSON data
+    return dates.map((date) => date.toISOString().slice(0, 10));
   }
 
   private static async getLatestDateFromApi(): Promise<Date> {
