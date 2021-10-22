@@ -13,9 +13,7 @@ export default class LanguagesChart {
 
   async _getDatesForCalculations() {
     if (typeof this._dates === 'undefined') {
-      let dates = await ApiHelper.buildDates(this._interval, settings.numberOfDates + 1);
-      // From this point on we only need the date as a string; use the same format as the JSON data
-      this._dates = dates.map(date => date.toISOString().slice(0, 10));
+      this._dates = await ApiHelper.buildDates(this._interval, settings.numberOfDates + 1);
     }
 
     return this._dates;
