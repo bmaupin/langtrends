@@ -1,23 +1,6 @@
 // Derived from https://github.com/d3/d3-shape/blob/master/src/curve/linear.js
-// NOTE: The types in this file may be completely incorrect 😬
 
-import { CurveFactory, CurveGenerator } from 'd3-shape';
-import { Path } from 'd3-path';
-
-interface D3SigmoidCurveFactory extends CurveFactory {
-  compression: { (compression: number): D3SigmoidCurveFactory };
-}
-
-interface D3SigmoidCurveGenerator extends CurveGenerator {
-  _context: CanvasRenderingContext2D | Path;
-  _compression: number;
-  _line: number;
-  _point: number;
-  _prevX: number;
-  _prevY: number;
-}
-
-function point(that: D3SigmoidCurveGenerator, x: number, y: number) {
+function point(that, x, y) {
   that._context.bezierCurveTo(
     that._prevX + (x - that._prevX) * that._compression,
     that._prevY,
@@ -32,11 +15,7 @@ function point(that: D3SigmoidCurveGenerator, x: number, y: number) {
 // A compression between 0 (straight lines) and 1 will give the best results
 // The closer you approach 1, the cleaner the lines will look but the more difficult it will be to distinguish between
 // multiple lines
-function D3SigmoidCurve(
-  this: D3SigmoidCurveGenerator,
-  context: CanvasRenderingContext2D | Path,
-  compression: number
-) {
+function D3SigmoidCurve(context, compression) {
   this._context = context;
   this._compression = compression;
 }
@@ -56,7 +35,7 @@ D3SigmoidCurve.prototype = {
       this._context.closePath();
     this._line = 1 - this._line;
   },
-  point: function (x: number, y: number) {
+  point: function (x, y) {
     x = +x;
     y = +y;
     switch (this._point) {
@@ -64,7 +43,6 @@ D3SigmoidCurve.prototype = {
         this._point = 1;
         this._line ? this._context.lineTo(x, y) : this._context.moveTo(x, y);
         break;
-      // @ts-ignore
       case 1:
         this._point = 2; // proceed
       // eslint-disable-next-line no-fallthrough
@@ -75,17 +53,14 @@ D3SigmoidCurve.prototype = {
     this._prevX = x;
     this._prevY = y;
   },
-} as D3SigmoidCurveGenerator;
+};
 
-export default (function custom(compression: number): D3SigmoidCurveFactory {
-  function cardinal(
-    context: CanvasRenderingContext2D | Path
-  ): D3SigmoidCurveGenerator {
-    // https://stackoverflow.com/a/51622913/399105
-    return new (D3SigmoidCurve as any)(context, compression);
+export default (function custom(compression) {
+  function cardinal(context) {
+    return new D3SigmoidCurve(context, compression);
   }
 
-  cardinal.compression = function (compression: number) {
+  cardinal.compression = function (compression) {
     return custom(compression);
   };
 
