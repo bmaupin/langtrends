@@ -2,17 +2,23 @@ import TopLanguagesChart from './TopLanguagesChart';
 import FastestGrowingLanguagesChart from './FastestGrowingLanguagesChart';
 import MostGrowthLanguages from './MostGrowthLanguages';
 
-class ChartFactory {
-  static async fromType(chartType, interval) {
+export enum ChartType {
+  FastestGrowth = 'FASTEST_GROWTH',
+  MostGrowth = 'MOST_GROWTH',
+  TopLanguages = 'TOP_LANGUAGES',
+}
+
+export default class ChartFactory {
+  static async fromType(chartType: string, interval: number) {
     let chart;
-    switch(chartType) {
-      case ChartFactory.CHART_TYPES.FASTEST_GROWTH:
+    switch (chartType) {
+      case ChartType.FastestGrowth:
         chart = new FastestGrowingLanguagesChart(interval);
         break;
-      case ChartFactory.CHART_TYPES.MOST_GROWTH:
+      case ChartType.MostGrowth:
         chart = new MostGrowthLanguages(interval);
         break;
-      case ChartFactory.CHART_TYPES.TOP_LANGUAGES:
+      case ChartType.TopLanguages:
         chart = new TopLanguagesChart(interval);
         break;
       default:
@@ -22,11 +28,3 @@ class ChartFactory {
     return chart;
   }
 }
-
-ChartFactory.CHART_TYPES = {
-  FASTEST_GROWTH: 'fastestgrowth',
-  MOST_GROWTH: 'mostgrowth',
-  TOP_LANGUAGES: 'toplanguages',
-};
-
-export default ChartFactory;

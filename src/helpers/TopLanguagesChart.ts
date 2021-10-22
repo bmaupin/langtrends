@@ -1,11 +1,11 @@
 import LanguagesChart from './LanguagesChart';
 
 export default class TopLanguagesChart extends LanguagesChart {
-  _calculateCustomScore(_oldValue, newValue) {
+  calculateCustomScore(_oldValue: number, newValue: number) {
     return newValue;
   }
 
-  _formatHintValue(hintValue) {
-    return hintValue;
+  formatHintValue(hintValue: number): string {
+    return String(hintValue);
   }
 }

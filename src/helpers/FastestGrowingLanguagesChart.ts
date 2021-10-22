@@ -1,11 +1,11 @@
 import LanguagesChart from './LanguagesChart';
 
 export default class FastestGrowingLanguagesChart extends LanguagesChart {
-  _calculateCustomScore(oldValue, newValue) {
-    return newValue / oldValue * 100;
+  calculateCustomScore(oldValue: number, newValue: number) {
+    return (newValue / oldValue) * 100;
   }
 
-  _formatHintValue(hintValue) {
+  formatHintValue(hintValue: number): string {
     return `${Math.round(hintValue)}% growth`;
   }
 }
