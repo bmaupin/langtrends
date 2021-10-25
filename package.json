@@ -21,7 +21,7 @@
   "homepage": "https://bmaupin.github.io/langtrends/",
   "scripts": {
     "dev": "npm run start",
-    "start": "TSC_COMPILE_ON_ERROR=true react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src/* --ext .js --ext .json",
     "test": "react-scripts test --env=jsdom",
