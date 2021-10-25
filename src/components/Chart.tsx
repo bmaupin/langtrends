@@ -144,7 +144,8 @@ export default function Chart(props: {
           {chartData.map((entry, i) => (
             <LineMarkSeries
               curve={d3sigmoidcurve}
-              getNull={(d) => d.y !== null}
+              // Don't draw zero values (they go way off the chart)
+              getNull={(d) => d.y !== 0}
               key={entry.title}
               color={GitHubColors.get(entry.title, true).color}
               data={entry.data}

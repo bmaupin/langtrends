@@ -1,19 +1,20 @@
 import ApiHelper, { Score } from './ApiHelper';
 import settings from '../settings.json';
+import { LineMarkSeriesPoint } from 'react-vis';
+
+export interface SeriesPointWithHint extends LineMarkSeriesPoint {
+  hintTitle: string;
+  hintValue: string;
+}
 
 export interface SeriesData {
-  data: {
-    x: number;
-    y: number | null;
-    hintTitle: string;
-    hintValue: string;
-  }[];
+  data: SeriesPointWithHint[];
   title: string;
 }
 
 interface ScoresByDate {
   [key: string]: {
-    [key: string]: number | null;
+    [key: string]: number;
   };
 }
 
@@ -30,7 +31,7 @@ export default abstract class LanguagesChart {
     newValue: number
   ): number;
 
-  protected abstract formatHintValue(hintValue: number | null): string;
+  protected abstract formatHintValue(hintValue: number): string;
 
   public async getDates() {
     // We need one extra date internally for calculations, so to avoid extra API calls just drop the extra date
@@ -106,10 +107,9 @@ export default abstract class LanguagesChart {
           let customScore = this.calculateCustomScore(
             scoresByDate[previousDate][languageName]!,
             scoresByDate[date][languageName]!
-          ) as number | null;
+          );
 
-          // percentage change could be NaN or Infinity, but react-vis can only handle numbers or null
-          customScore = LanguagesChart.convertNonFiniteToNull(customScore);
+          customScore = LanguagesChart.convertNonFiniteNumber(customScore);
 
           customScoresByDate[date][languageName] = customScore;
         }
@@ -119,9 +119,12 @@ export default abstract class LanguagesChart {
     return customScoresByDate;
   }
 
-  private static convertNonFiniteToNull(number: number | null): number | null {
+  // I think this is a rare occurrence, but percentage change (for FastestGrowingLanguagesChart)
+  // could be NaN or Infinity (e.g. if a previous month's value was 0). react-vis can only handle
+  // numbers or null
+  private static convertNonFiniteNumber(number: number): number {
     if (!Number.isFinite(number)) {
-      number = null;
+      return 0;
     }
     return number;
   }
@@ -170,8 +173,8 @@ export default abstract class LanguagesChart {
 
       let formattedScoresIndex = 0;
       for (let languageName of allTopLanguages) {
-        let score = null;
-        let rank = null;
+        let score = 0;
+        let rank = 0;
         if (topScores[date].hasOwnProperty(languageName)) {
           score = topScores[date][languageName];
           // TODO: this should be a map to guarantee order
@@ -182,7 +185,7 @@ export default abstract class LanguagesChart {
           x: i,
           // Use the ordinal number ranking for the chart data in order to create a bump chart
           y: rank,
-          // TODO: don't add hintTitle and hintValue if score is null
+          // TODO: don't add hintTitle and hintValue if score is 0
           hintTitle: languageName,
           // Add the custom score as a separate property so it can be used for hints on mouseover
           hintValue: this.formatHintValue(score),
