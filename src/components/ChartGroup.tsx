@@ -9,16 +9,16 @@ import ChartTopMenu from './ChartTopMenu';
 import './ChartGroup.css';
 
 export default function ChartGroup() {
-  const [chartType, setChartType] = useState(
-    ChartType.MostGrowth as string | undefined
-  );
+  const [chartType, setChartType] = useState(ChartType.MostGrowth as string);
   const [intervalInMonths, setIntervalInMonths] = useState(3);
 
   const handleChartTypeChanged = (
     _event: React.MouseEvent<HTMLElement>,
     { name }: MenuItemProps
   ) => {
-    setChartType(name);
+    if (name) {
+      setChartType(name);
+    }
   };
 
   const handleIntervalChanged = (

@@ -17,7 +17,7 @@ import settings from '../settings.json';
 
 import './Chart.css';
 import '../../node_modules/react-vis/dist/style.css';
-import { SeriesData } from '../helpers/LanguagesChart';
+import { SeriesData, SeriesPointWithHint } from '../helpers/LanguagesChart';
 
 export default function Chart(props: {
   chartType: string;
@@ -25,7 +25,9 @@ export default function Chart(props: {
 }) {
   const [chartData, setChartData] = useState([] as SeriesData[]);
   const [dates, setDates] = useState([] as string[]);
-  const [hintValue, setHintValue] = useState(null);
+  const [hintValue, setHintValue] = useState(
+    null as SeriesPointWithHint | null
+  );
   const [hoveredSeriesIndex, setHoveredSeriesIndex] = useState(
     null as number | null
   );
@@ -80,7 +82,7 @@ export default function Chart(props: {
     );
   };
 
-  const formatHint = (value) => {
+  const formatHint = (value: SeriesPointWithHint) => {
     return [
       {
         title: value.hintTitle,
@@ -94,7 +96,7 @@ export default function Chart(props: {
     setHoveredSeriesIndex(null);
   };
 
-  const onValueMouseOver = (value, index: number) => {
+  const onValueMouseOver = (value: SeriesPointWithHint, index: number) => {
     setHintValue(value);
     setHoveredSeriesIndex(index);
   };
@@ -133,12 +135,14 @@ export default function Chart(props: {
           />
           <YAxis
             orientation="left"
-            tickFormat={((_v, i: number) => leftYAxisLabels[i]) as RVTickFormat}
+            tickFormat={
+              ((_v: number, i: number) => leftYAxisLabels[i]) as RVTickFormat
+            }
           />
           <YAxis
             orientation="right"
             tickFormat={
-              ((_v, i: number) => rightYAxisLabels[i]) as RVTickFormat
+              ((_v: number, i: number) => rightYAxisLabels[i]) as RVTickFormat
             }
           />
           {chartData.map((entry, i) => (
@@ -155,11 +159,15 @@ export default function Chart(props: {
                   : 0.5
               }
               onValueMouseOut={onValueMouseOut}
-              onValueMouseOver={(datapoint) => onValueMouseOver(datapoint, i)}
+              onValueMouseOver={(datapoint) =>
+                onValueMouseOver(datapoint as SeriesPointWithHint, i)
+              }
+              // TODO: remove this once the upstream type is fixed
+              // @ts-ignore
               strokeWidth={
                 hoveredSeriesIndex !== null && hoveredSeriesIndex === i
                   ? 4
-                  : null
+                  : undefined
               }
               lineStyle={{ pointerEvents: 'none' }}
             />

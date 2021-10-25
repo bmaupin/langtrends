@@ -5,6 +5,11 @@ import { LineMarkSeriesPoint } from 'react-vis';
 export interface SeriesPointWithHint extends LineMarkSeriesPoint {
   hintTitle: string;
   hintValue: string;
+  // LineMarkSeriesPoint also allows these to be string or Date but we're not using those and so
+  // overriding them allows us to adhere to LineMarkSeriesPoint without having to check for those
+  // unused types everywhere
+  x: number;
+  y: number;
 }
 
 export interface SeriesData {
