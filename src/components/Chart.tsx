@@ -162,8 +162,6 @@ export default function Chart(props: {
               onValueMouseOver={(datapoint) =>
                 onValueMouseOver(datapoint as SeriesPointWithHint, i)
               }
-              // TODO: remove this once the upstream type is fixed
-              // @ts-ignore
               strokeWidth={
                 hoveredSeriesIndex !== null && hoveredSeriesIndex === i
                   ? 4
