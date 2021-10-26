@@ -1,25 +1,23 @@
 {
   "files": {
-    "main.css": "/langtrends/static/css/main.b8ab7400.chunk.css",
-    "main.js": "/langtrends/static/js/main.c7981f4d.chunk.js",
-    "main.js.map": "/langtrends/static/js/main.c7981f4d.chunk.js.map",
-    "runtime-main.js": "/langtrends/static/js/runtime-main.9c5033fd.js",
-    "runtime-main.js.map": "/langtrends/static/js/runtime-main.9c5033fd.js.map",
-    "static/css/2.5a2f7233.chunk.css": "/langtrends/static/css/2.5a2f7233.chunk.css",
-    "static/js/2.589df45f.chunk.js": "/langtrends/static/js/2.589df45f.chunk.js",
-    "static/js/2.589df45f.chunk.js.map": "/langtrends/static/js/2.589df45f.chunk.js.map",
+    "main.css": "/langtrends/static/css/main.c9ddcf2a.chunk.css",
+    "main.js": "/langtrends/static/js/main.23d81ebe.chunk.js",
+    "main.js.map": "/langtrends/static/js/main.23d81ebe.chunk.js.map",
+    "runtime-main.js": "/langtrends/static/js/runtime-main.da55964f.js",
+    "runtime-main.js.map": "/langtrends/static/js/runtime-main.da55964f.js.map",
+    "static/css/2.62e7949a.chunk.css": "/langtrends/static/css/2.62e7949a.chunk.css",
+    "static/js/2.89d5a884.chunk.js": "/langtrends/static/js/2.89d5a884.chunk.js",
+    "static/js/2.89d5a884.chunk.js.map": "/langtrends/static/js/2.89d5a884.chunk.js.map",
     "index.html": "/langtrends/index.html",
-    "precache-manifest.d9fca51115febf9f3756680095d4d6d6.js": "/langtrends/precache-manifest.d9fca51115febf9f3756680095d4d6d6.js",
-    "service-worker.js": "/langtrends/service-worker.js",
-    "static/css/2.5a2f7233.chunk.css.map": "/langtrends/static/css/2.5a2f7233.chunk.css.map",
-    "static/css/main.b8ab7400.chunk.css.map": "/langtrends/static/css/main.b8ab7400.chunk.css.map",
-    "static/js/2.589df45f.chunk.js.LICENSE.txt": "/langtrends/static/js/2.589df45f.chunk.js.LICENSE.txt"
+    "static/css/2.62e7949a.chunk.css.map": "/langtrends/static/css/2.62e7949a.chunk.css.map",
+    "static/css/main.c9ddcf2a.chunk.css.map": "/langtrends/static/css/main.c9ddcf2a.chunk.css.map",
+    "static/js/2.89d5a884.chunk.js.LICENSE.txt": "/langtrends/static/js/2.89d5a884.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.9c5033fd.js",
-    "static/css/2.5a2f7233.chunk.css",
-    "static/js/2.589df45f.chunk.js",
-    "static/css/main.b8ab7400.chunk.css",
-    "static/js/main.c7981f4d.chunk.js"
+    "static/js/runtime-main.da55964f.js",
+    "static/css/2.62e7949a.chunk.css",
+    "static/js/2.89d5a884.chunk.js",
+    "static/css/main.c9ddcf2a.chunk.css",
+    "static/js/main.23d81ebe.chunk.js"
   ]
 }
