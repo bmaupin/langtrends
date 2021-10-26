@@ -26,7 +26,7 @@ export default class ApiHelper {
     const earliestDate = await ApiHelper.getEarliestDateFromApi();
 
     for (let i = 0; i < numberOfDates; i++) {
-      if (currentDate <= earliestDate) {
+      if (currentDate < earliestDate) {
         break;
       }
 
