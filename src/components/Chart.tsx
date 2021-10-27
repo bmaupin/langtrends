@@ -107,10 +107,7 @@ export default function Chart(props: {
   };
 
   const formatDateForLabel = (date: string) => {
-    // TODO: date can be undefined?
-    if (date) {
-      return date.slice(0, 7);
-    }
+    return date.slice(0, 7);
   };
 
   const d3sigmoidcurve = D3SigmoidCurve.compression(0.5);
