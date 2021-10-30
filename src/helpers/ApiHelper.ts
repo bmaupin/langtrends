@@ -42,8 +42,17 @@ export default class ApiHelper {
 
   private static async getLatestDateFromApi(): Promise<Date> {
     const scores = await ApiHelper.getScoresFromApi();
-    // Scores are sorted in ascending order by date
-    return new Date(scores[scores.length - 1].date);
+    let latestDate = '';
+
+    // Scores are not guaranteed to be in order by date
+    for (const score of scores) {
+      // Comparing date strings like this actually works 😁
+      if (score.date > latestDate) {
+        latestDate = score.date;
+      }
+    }
+
+    return new Date(latestDate);
   }
 
   // It might seem ineffecient to call the API every time we need to get the scores,
@@ -64,8 +73,15 @@ export default class ApiHelper {
 
   private static async getEarliestDateFromApi(): Promise<Date> {
     const scores = await ApiHelper.getScoresFromApi();
-    // Scores are sorted in ascending order by date
-    return new Date(scores[0].date);
+    let earliestDate = '';
+
+    for (const score of scores) {
+      if (score.date < earliestDate) {
+        earliestDate = score.date;
+      }
+    }
+
+    return new Date(earliestDate);
   }
 
   private static subtractMonthsUTC(date: Date, monthsToSubtract: number): Date {
