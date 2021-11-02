@@ -7,7 +7,7 @@
 
 Simple charts showing programming language trends
 
-- Data is from [https://github.com/bmaupin/langtrends-data](https://github.com/bmaupin/langtrends-data)
+- Data is from GitHub and Stack Overflow via [https://github.com/bmaupin/langtrends-data](https://github.com/bmaupin/langtrends-data)
 - Data is updated monthly
 
 #### Built with
