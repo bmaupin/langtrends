@@ -31,7 +31,7 @@ export default class Header extends Component {
                 <p>
                   Languages with the highest percentage change compared to the
                   previous date. Note that scores under a{' '}
-                  <a href="https://github.com/bmaupin/langtrends/blob/main/src/settings.json#L2">
+                  <a href="https://github.com/bmaupin/langtrends-data/blob/96b8148cc525d129d11a7a2a357429afe0b6ee63/classes/settings.json#L3">
                     certain threshold
                   </a>{' '}
                   are filtered out to reduce{' '}
