@@ -106,18 +106,14 @@ export default abstract class LanguagesChart {
       customScoresByDate[date] = {};
 
       for (const languageName in scoresByDate[date]) {
-        // TODO: Filter by scores where the most recent score is above the minimum??
-        // if (scoresByDate[datesForCalculations[datesForCalculations.length - 1]][languageName] > settings.minimumScore) {
-        if (scoresByDate[date][languageName]! > settings.minimumScore) {
-          let customScore = this.calculateCustomScore(
-            scoresByDate[previousDate][languageName]!,
-            scoresByDate[date][languageName]!
-          );
+        let customScore = this.calculateCustomScore(
+          scoresByDate[previousDate][languageName]!,
+          scoresByDate[date][languageName]!
+        );
 
-          customScore = LanguagesChart.convertNonFiniteNumber(customScore);
+        customScore = LanguagesChart.convertNonFiniteNumber(customScore);
 
-          customScoresByDate[date][languageName] = customScore;
-        }
+        customScoresByDate[date][languageName] = customScore;
       }
     }
 
