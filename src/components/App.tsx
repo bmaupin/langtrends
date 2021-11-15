@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import ChartGroup from './ChartGroup';
+import Main from './Main';
 import Header from './Header';
 
 class App extends Component {
@@ -8,7 +8,7 @@ class App extends Component {
     return (
       <div className="App">
         <Header />
-        <ChartGroup />
+        <Main />
       </div>
     );
   }
