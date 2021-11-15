@@ -6,9 +6,9 @@ import ChartBottomMenu from './ChartBottomMenu';
 import { ChartType } from '../helpers/ChartFactory';
 import ChartTopMenu from './ChartTopMenu';
 
-import './ChartGroup.css';
+import './Main.css';
 
-export default function ChartGroup() {
+export default function Main() {
   const [chartType, setChartType] = useState(ChartType.MostGrowth as string);
   const [intervalInMonths, setIntervalInMonths] = useState(3);
 
@@ -31,7 +31,7 @@ export default function ChartGroup() {
   return (
     <Container>
       <Grid centered padded>
-        <Item.Group className="chart-group">
+        <Item.Group className="main">
           <Item.Content>
             <Grid centered padded>
               <ChartTopMenu
