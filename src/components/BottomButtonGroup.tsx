@@ -1,35 +1,40 @@
 import React from 'react';
-import { Menu, MenuItemProps } from 'semantic-ui-react';
+import { Button, ButtonProps } from 'semantic-ui-react';
 
-export default function ChartBottomMenu(props: {
+import './ButtonGroup.css';
+
+export default function BottomButtonGroup(props: {
   intervalInMonths: number;
   handleItemClick: (
     event: React.MouseEvent<HTMLElement>,
-    data: MenuItemProps
+    data: ButtonProps
   ) => void;
 }) {
   const intervalInMonths = props.intervalInMonths;
 
   return (
-    <Menu secondary>
-      <Menu.Item
-        name="monthly"
+    <Button.Group basic className="button-group">
+      <Button
         value="1"
         active={intervalInMonths === 1}
         onClick={props.handleItemClick}
-      />
-      <Menu.Item
-        name="quarterly"
+      >
+        Monthly
+      </Button>
+      <Button
         value="3"
         active={intervalInMonths === 3}
         onClick={props.handleItemClick}
-      />
-      <Menu.Item
-        name="yearly"
+      >
+        Quarterly
+      </Button>
+      <Button
         value="12"
         active={intervalInMonths === 12}
         onClick={props.handleItemClick}
-      />
-    </Menu>
+      >
+        Yearly
+      </Button>
+    </Button.Group>
   );
 }
