@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Container, Grid, Item, MenuItemProps } from 'semantic-ui-react';
+import { ButtonProps, Container, Grid, Item } from 'semantic-ui-react';
 
+import BottomButtonGroup from './BottomButtonGroup';
 import Chart from './Chart';
-import ChartBottomMenu from './ChartBottomMenu';
+import TopButtonGroup from './TopButtonGroup';
 import { ChartType } from '../helpers/ChartFactory';
-import ChartTopMenu from './ChartTopMenu';
 
 import './Main.css';
 
@@ -14,7 +14,7 @@ export default function Main() {
 
   const handleChartTypeChanged = (
     _event: React.MouseEvent<HTMLElement>,
-    { name }: MenuItemProps
+    { name }: ButtonProps
   ) => {
     if (name) {
       setChartType(name);
@@ -23,7 +23,7 @@ export default function Main() {
 
   const handleIntervalChanged = (
     _event: React.MouseEvent<HTMLElement>,
-    { value }: MenuItemProps
+    { value }: ButtonProps
   ) => {
     setIntervalInMonths(Number(value));
   };
@@ -33,15 +33,15 @@ export default function Main() {
       <Grid centered padded>
         <Item.Group className="main">
           <Item.Content>
-            <Grid centered padded>
-              <ChartTopMenu
+            <Grid centered className="button-group-grid">
+              <TopButtonGroup
                 chartType={chartType}
                 handleItemClick={handleChartTypeChanged}
               />
             </Grid>
             <Chart chartType={chartType} intervalInMonths={intervalInMonths} />
-            <Grid centered padded>
-              <ChartBottomMenu
+            <Grid centered className="button-group-grid">
+              <BottomButtonGroup
                 handleItemClick={handleIntervalChanged}
                 intervalInMonths={intervalInMonths}
               />

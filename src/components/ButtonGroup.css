@@ -1,0 +1,4 @@
+.button-group {
+  /* Override side padding that Semantic UI adds to items inside a grid */
+  padding: 0 !important;
+}

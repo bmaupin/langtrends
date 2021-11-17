@@ -1,4 +1,9 @@
+.button-group-grid {
+  /* Space around button groups; must be !important to override Semantic UI defaults */
+  margin: 1em !important;
+}
+
 .main {
-  padding: 2em;
+  padding: 1em;
   width: 100%;
 }
