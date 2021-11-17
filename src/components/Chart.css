@@ -1,11 +1,16 @@
 .chart-container {
-    display: flex;
+  display: flex;
 }
 
 .chart-content {
-    width: 100%;
+  width: 100%;
 }
 
 .chart-legend {
-    text-align: left;
+  text-align: left;
+}
+
+.rv-xy-plot__axis__tick__text {
+  /* Override the default text colour of the axis labels, which is too light */
+  fill: #182026 !important;
 }
