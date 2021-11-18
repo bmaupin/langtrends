@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ButtonProps, Container, Grid, Item } from 'semantic-ui-react';
 
 import BottomButtonGroup from './BottomButtonGroup';
@@ -9,8 +10,11 @@ import { ChartType } from '../helpers/ChartFactory';
 import './Main.css';
 
 export default function Main() {
+  // Keep a separate state outside searchParams for chartType and intervalInMonths so, for example, if someone just
+  // loads the default page we can use the default values without having to modify the URL
   const [chartType, setChartType] = useState(ChartType.MostGrowth as string);
   const [intervalInMonths, setIntervalInMonths] = useState(3);
+  let [searchParams, setSearchParams] = useSearchParams();
 
   const handleChartTypeChanged = (
     _event: React.MouseEvent<HTMLElement>,
@@ -18,6 +22,9 @@ export default function Main() {
   ) => {
     if (name) {
       setChartType(name);
+      // Setting the search params this way allows us to set certain params without overriding the others
+      searchParams.set('chart_type', name);
+      setSearchParams(searchParams);
     }
   };
 
@@ -26,6 +33,8 @@ export default function Main() {
     { value }: ButtonProps
   ) => {
     setIntervalInMonths(Number(value));
+    searchParams.set('interval', value);
+    setSearchParams(searchParams);
   };
 
   return (
