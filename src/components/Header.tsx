@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { Container, Icon, Menu, Popup } from 'semantic-ui-react';
 
+import './Header.css';
+
 export default class Header extends Component {
   render() {
     return (
       <Menu attached borderless inverted>
         <Container>
-          <Menu.Item fitted="horizontally" header>
+          <Menu.Item className="header-title" fitted="horizontally" header>
             Programming language trends
           </Menu.Item>
 
