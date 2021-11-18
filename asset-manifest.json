@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/langtrends/static/css/main.c9ddcf2a.chunk.css",
-    "main.js": "/langtrends/static/js/main.0d2b9ee7.chunk.js",
-    "main.js.map": "/langtrends/static/js/main.0d2b9ee7.chunk.js.map",
+    "main.css": "/langtrends/static/css/main.8c81695c.chunk.css",
+    "main.js": "/langtrends/static/js/main.aa6f0587.chunk.js",
+    "main.js.map": "/langtrends/static/js/main.aa6f0587.chunk.js.map",
     "runtime-main.js": "/langtrends/static/js/runtime-main.da55964f.js",
     "runtime-main.js.map": "/langtrends/static/js/runtime-main.da55964f.js.map",
     "static/css/2.62e7949a.chunk.css": "/langtrends/static/css/2.62e7949a.chunk.css",
-    "static/js/2.88348564.chunk.js": "/langtrends/static/js/2.88348564.chunk.js",
-    "static/js/2.88348564.chunk.js.map": "/langtrends/static/js/2.88348564.chunk.js.map",
+    "static/js/2.f1a2cd37.chunk.js": "/langtrends/static/js/2.f1a2cd37.chunk.js",
+    "static/js/2.f1a2cd37.chunk.js.map": "/langtrends/static/js/2.f1a2cd37.chunk.js.map",
     "index.html": "/langtrends/index.html",
     "static/css/2.62e7949a.chunk.css.map": "/langtrends/static/css/2.62e7949a.chunk.css.map",
-    "static/css/main.c9ddcf2a.chunk.css.map": "/langtrends/static/css/main.c9ddcf2a.chunk.css.map",
-    "static/js/2.88348564.chunk.js.LICENSE.txt": "/langtrends/static/js/2.88348564.chunk.js.LICENSE.txt"
+    "static/css/main.8c81695c.chunk.css.map": "/langtrends/static/css/main.8c81695c.chunk.css.map",
+    "static/js/2.f1a2cd37.chunk.js.LICENSE.txt": "/langtrends/static/js/2.f1a2cd37.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.da55964f.js",
     "static/css/2.62e7949a.chunk.css",
-    "static/js/2.88348564.chunk.js",
-    "static/css/main.c9ddcf2a.chunk.css",
-    "static/js/main.0d2b9ee7.chunk.js"
+    "static/js/2.f1a2cd37.chunk.js",
+    "static/css/main.8c81695c.chunk.css",
+    "static/js/main.aa6f0587.chunk.js"
   ]
 }
