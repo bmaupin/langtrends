@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ButtonProps, Container, Grid, Item } from 'semantic-ui-react';
 
@@ -15,6 +15,22 @@ export default function Main() {
   const [chartType, setChartType] = useState(ChartType.MostGrowth as string);
   const [intervalInMonths, setIntervalInMonths] = useState(3);
   let [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (
+      searchParams.get('interval') &&
+      Number(searchParams.get('interval')) !== intervalInMonths
+    ) {
+      setIntervalInMonths(Number(searchParams.get('interval')!));
+    }
+
+    if (
+      searchParams.get('chart_type') &&
+      searchParams.get('chart_type') !== chartType
+    ) {
+      setChartType(searchParams.get('chart_type')!);
+    }
+  }, [chartType, intervalInMonths, searchParams]);
 
   const handleChartTypeChanged = (
     _event: React.MouseEvent<HTMLElement>,
