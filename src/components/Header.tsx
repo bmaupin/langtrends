@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Container, Icon, Menu, Popup } from 'semantic-ui-react';
 
 import './Header.css';
@@ -8,7 +9,8 @@ export default function Header() {
     <Menu attached borderless inverted>
       <Container>
         <Menu.Item className="header-title" fitted="horizontally" header>
-          Programming language trends
+          {/* Just a basic link that wipes the search string to reset the chart back to the default state */}
+          <Link to=".">Programming language trends</Link>
         </Menu.Item>
 
         <Menu.Menu position="right">
