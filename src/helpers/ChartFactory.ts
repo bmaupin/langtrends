@@ -3,9 +3,9 @@ import FastestGrowingLanguagesChart from './FastestGrowingLanguagesChart';
 import MostGrowthLanguages from './MostGrowthLanguages';
 
 export enum ChartType {
-  FastestGrowth = 'FASTEST_GROWTH',
-  MostGrowth = 'MOST_GROWTH',
-  TopLanguages = 'TOP_LANGUAGES',
+  FastestGrowth = 'fastest_growth',
+  MostGrowth = 'most_growth',
+  TopLanguages = 'top_languages',
 }
 
 export default class ChartFactory {
