@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/langtrends/static/css/main.8c81695c.chunk.css",
-    "main.js": "/langtrends/static/js/main.340d5901.chunk.js",
-    "main.js.map": "/langtrends/static/js/main.340d5901.chunk.js.map",
+    "main.js": "/langtrends/static/js/main.8ee90213.chunk.js",
+    "main.js.map": "/langtrends/static/js/main.8ee90213.chunk.js.map",
     "runtime-main.js": "/langtrends/static/js/runtime-main.da55964f.js",
     "runtime-main.js.map": "/langtrends/static/js/runtime-main.da55964f.js.map",
     "static/css/2.62e7949a.chunk.css": "/langtrends/static/css/2.62e7949a.chunk.css",
@@ -18,6 +18,6 @@
     "static/css/2.62e7949a.chunk.css",
     "static/js/2.3fed777d.chunk.js",
     "static/css/main.8c81695c.chunk.css",
-    "static/js/main.340d5901.chunk.js"
+    "static/js/main.8ee90213.chunk.js"
   ]
 }
