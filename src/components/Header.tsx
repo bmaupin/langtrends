@@ -9,8 +9,8 @@ export default function Header() {
     <Menu attached borderless inverted>
       <Container>
         <Menu.Item className="header-title" fitted="horizontally" header>
-          {/* Just a basic link that wipes the search string to reset the chart back to the default state */}
-          <Link to=".">Programming language trends</Link>
+          {/* Wipe the search params to reset the chart back to the default state */}
+          <Link to={{ search: '' }}>Programming language trends</Link>
         </Menu.Item>
 
         <Menu.Menu position="right">
