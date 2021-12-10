@@ -103,9 +103,9 @@ export default function Chart(props: {
   };
 
   // TODO: could we just format the dates ahead of time and get rid of this method?
-  const xAxisLabelFormatter = (index?: number): string => {
-    if (index !== undefined && dates[index]) {
-      return formatDateForLabel(dates[index]);
+  const xAxisLabelFormatter = (xValue: number): string => {
+    if (dates[xValue]) {
+      return formatDateForLabel(dates[xValue]);
     } else {
       return '';
     }
@@ -145,6 +145,7 @@ export default function Chart(props: {
         },
         invert: true,
         scaleType: 'linear',
+        showDatumElements: true,
       },
     ],
 
