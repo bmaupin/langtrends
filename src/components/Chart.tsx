@@ -124,7 +124,13 @@ export default function Chart(props: {
     (): AxisOptions<SeriesPointWithHint>[] => [
       {
         curve: D3SigmoidCurve.compression(0.5),
-        getValue: (datum) => datum.y,
+        getValue: (datum) => {
+          if (datum.y === 0) {
+            return null;
+          } else {
+            return datum.y;
+          }
+        },
         invert: true,
         scaleType: 'linear',
       },
