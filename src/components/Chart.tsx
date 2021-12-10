@@ -103,8 +103,12 @@ export default function Chart(props: {
   };
 
   // TODO: could we just format the dates ahead of time and get rid of this method?
-  const xAxisLabelFormatter = (_value: number, index: number) => {
-    return formatDateForLabel(dates[index]);
+  const xAxisLabelFormatter = (index?: number): string => {
+    if (index !== undefined && dates[index]) {
+      return formatDateForLabel(dates[index]);
+    } else {
+      return '';
+    }
   };
 
   const formatDateForLabel = (date: string) => {
@@ -113,11 +117,14 @@ export default function Chart(props: {
 
   const primaryAxis = React.useMemo(
     (): AxisOptions<SeriesPointWithHint> => ({
+      formatters: {
+        scale: xAxisLabelFormatter,
+      },
       getValue: (datum) => datum.x,
       scaleType: 'linear',
     }),
 
-    []
+    [dates]
   );
 
   const secondaryAxes = React.useMemo(
@@ -173,7 +180,6 @@ export default function Chart(props: {
     //       <VerticalGridLines />
     //       <HorizontalGridLines />
     //       <XAxis
-    //         tickFormat={xAxisLabelFormatter as RVTickFormat}
     //         tickTotal={dates.length}
     //       />
     //       <YAxis
@@ -193,7 +199,6 @@ export default function Chart(props: {
     //           // Don't draw zero values (they go way off the chart)
     //           getNull={(d) => d.y !== 0}
     //           key={entry.title}
-    //           color={GitHubColors.get(entry.title, true).color}
     //           data={entry.data}
     //           opacity={
     //             hoveredSeriesIndex === null || hoveredSeriesIndex === i
