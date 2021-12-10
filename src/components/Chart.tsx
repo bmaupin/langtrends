@@ -163,6 +163,9 @@ export default function Chart(props: {
           data: chartData,
           getSeriesStyle: (series) => {
             return {
+              circle: {
+                r: 5,
+              } as CSSProperties,
               color: GitHubColors.get(series.label, true).color,
             };
           },
