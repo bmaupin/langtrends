@@ -1,5 +1,6 @@
 import GitHubColors from 'github-colors';
 import React, { useEffect, useState } from 'react';
+import { AxisOptions, Chart as ReactChart } from 'react-charts';
 import {
   FlexibleWidthXYPlot,
   Hint,
@@ -112,64 +113,98 @@ export default function Chart(props: {
 
   const d3sigmoidcurve = D3SigmoidCurve.compression(0.5);
 
+  const primaryAxis = React.useMemo(
+    (): AxisOptions<SeriesPointWithHint> => ({
+      getValue: (datum) => datum.x,
+      scaleType: 'linear',
+    }),
+
+    []
+  );
+
+  const secondaryAxes = React.useMemo(
+    (): AxisOptions<SeriesPointWithHint>[] => [
+      {
+        getValue: (datum) => datum.y,
+        scaleType: 'linear',
+      },
+    ],
+
+    []
+  );
+
   return (
-    <div className="chart-container">
-      <div className="chart-content">
-        <FlexibleWidthXYPlot
-          height={settings.numberOfLanguages * 49}
-          margin={{
-            left: 80,
-            right: 80,
-          }}
-          // Reverse the y scale since we're doing a bump chart
-          yDomain={[settings.numberOfLanguages, 1]}
-        >
-          <VerticalGridLines />
-          <HorizontalGridLines />
-          <XAxis
-            tickFormat={xAxisLabelFormatter as RVTickFormat}
-            tickTotal={dates.length}
-          />
-          <YAxis
-            orientation="left"
-            tickFormat={
-              ((_v: number, i: number) => leftYAxisLabels[i]) as RVTickFormat
-            }
-          />
-          <YAxis
-            orientation="right"
-            tickFormat={
-              ((_v: number, i: number) => rightYAxisLabels[i]) as RVTickFormat
-            }
-          />
-          {chartData.map((entry, i) => (
-            <LineMarkSeries
-              curve={d3sigmoidcurve}
-              // Don't draw zero values (they go way off the chart)
-              getNull={(d) => d.y !== 0}
-              key={entry.title}
-              color={GitHubColors.get(entry.title, true).color}
-              data={entry.data}
-              opacity={
-                hoveredSeriesIndex === null || hoveredSeriesIndex === i
-                  ? 1
-                  : 0.5
-              }
-              onValueMouseOut={onValueMouseOut}
-              onValueMouseOver={(datapoint) =>
-                onValueMouseOver(datapoint as SeriesPointWithHint, i)
-              }
-              strokeWidth={
-                hoveredSeriesIndex !== null && hoveredSeriesIndex === i
-                  ? 4
-                  : undefined
-              }
-              lineStyle={{ pointerEvents: 'none' }}
-            />
-          ))}
-          {hintValue && <Hint format={formatHint} value={hintValue} />}
-        </FlexibleWidthXYPlot>
-      </div>
+    <div
+      style={{
+        height: settings.numberOfLanguages * 49,
+      }}
+    >
+      <ReactChart
+        options={{
+          data: chartData,
+          primaryAxis,
+          secondaryAxes,
+        }}
+      />
     </div>
+
+    // <div className="chart-container">
+    //   <div className="chart-content">
+    //     <FlexibleWidthXYPlot
+    //       height={settings.numberOfLanguages * 49}
+    //       margin={{
+    //         left: 80,
+    //         right: 80,
+    //       }}
+    //       // Reverse the y scale since we're doing a bump chart
+    //       yDomain={[settings.numberOfLanguages, 1]}
+    //     >
+    //       <VerticalGridLines />
+    //       <HorizontalGridLines />
+    //       <XAxis
+    //         tickFormat={xAxisLabelFormatter as RVTickFormat}
+    //         tickTotal={dates.length}
+    //       />
+    //       <YAxis
+    //         orientation="left"
+    //         tickFormat={
+    //           ((_v: number, i: number) => leftYAxisLabels[i]) as RVTickFormat
+    //         }
+    //       />
+    //       <YAxis
+    //         orientation="right"
+    //         tickFormat={
+    //           ((_v: number, i: number) => rightYAxisLabels[i]) as RVTickFormat
+    //         }
+    //       />
+    //       {chartData.map((entry, i) => (
+    //         <LineMarkSeries
+    //           curve={d3sigmoidcurve}
+    //           // Don't draw zero values (they go way off the chart)
+    //           getNull={(d) => d.y !== 0}
+    //           key={entry.title}
+    //           color={GitHubColors.get(entry.title, true).color}
+    //           data={entry.data}
+    //           opacity={
+    //             hoveredSeriesIndex === null || hoveredSeriesIndex === i
+    //               ? 1
+    //               : 0.5
+    //           }
+    //           onValueMouseOut={onValueMouseOut}
+    //           onValueMouseOver={(datapoint) =>
+    //             onValueMouseOver(datapoint as SeriesPointWithHint, i)
+    //           }
+    //           strokeWidth={
+    //             hoveredSeriesIndex !== null && hoveredSeriesIndex === i
+    //               ? 4
+    //               : undefined
+    //           }
+    //           lineStyle={{ pointerEvents: 'none' }}
+    //         />
+    //       ))}
+    //       {hintValue && <Hint format={formatHint} value={hintValue} />}
+    //     </FlexibleWidthXYPlot>
+    //   </div>
+    // </div>
   );
 }
