@@ -126,6 +126,7 @@ export default function Chart(props: {
     (): AxisOptions<SeriesPointWithHint>[] => [
       {
         getValue: (datum) => datum.y,
+        invert: true,
         scaleType: 'linear',
       },
     ],
