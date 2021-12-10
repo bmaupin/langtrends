@@ -63,10 +63,10 @@ export default function Chart(props: {
       series
         // Get just the data for the first date
         .map((languageData) => languageData.data[0])
-        // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
-        .sort((a, b) => b.y - a.y)
         // Drop everything else (x value, y value) and return just a list of hint titles
         .map((languageData) => languageData && languageData.hintTitle)
+        // Drop any excess labels
+        .slice(0, settings.numberOfLanguages)
     );
   };
 
@@ -76,10 +76,10 @@ export default function Chart(props: {
       series
         // Get just the data for the last date
         .map((languageData) => languageData.data[languageData.data.length - 1])
-        // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
-        .sort((a, b) => b.y - a.y)
         // Drop everything else (x value, y value) and return just a list of hint titles
         .map((languageData) => languageData && languageData.hintTitle)
+        // Drop any excess labels
+        .slice(0, settings.numberOfLanguages)
     );
   };
 
@@ -131,6 +131,11 @@ export default function Chart(props: {
     (): AxisOptions<SeriesPointWithHint>[] => [
       {
         curve: D3SigmoidCurve.compression(0.5),
+        formatters: {
+          scale: (value: number) => {
+            return leftYAxisLabels[value - 1];
+          },
+        },
         getValue: (datum) => {
           if (datum.y === 0) {
             return null;
@@ -143,7 +148,7 @@ export default function Chart(props: {
       },
     ],
 
-    []
+    [leftYAxisLabels]
   );
 
   return (
@@ -181,12 +186,6 @@ export default function Chart(props: {
     //       <HorizontalGridLines />
     //       <XAxis
     //         tickTotal={dates.length}
-    //       />
-    //       <YAxis
-    //         orientation="left"
-    //         tickFormat={
-    //           ((_v: number, i: number) => leftYAxisLabels[i]) as RVTickFormat
-    //         }
     //       />
     //       <YAxis
     //         orientation="right"
