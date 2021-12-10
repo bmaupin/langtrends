@@ -111,8 +111,6 @@ export default function Chart(props: {
     return date.slice(0, 7);
   };
 
-  const d3sigmoidcurve = D3SigmoidCurve.compression(0.5);
-
   const primaryAxis = React.useMemo(
     (): AxisOptions<SeriesPointWithHint> => ({
       getValue: (datum) => datum.x,
@@ -125,6 +123,7 @@ export default function Chart(props: {
   const secondaryAxes = React.useMemo(
     (): AxisOptions<SeriesPointWithHint>[] => [
       {
+        curve: D3SigmoidCurve.compression(0.5),
         getValue: (datum) => datum.y,
         invert: true,
         scaleType: 'linear',
@@ -180,7 +179,6 @@ export default function Chart(props: {
     //       />
     //       {chartData.map((entry, i) => (
     //         <LineMarkSeries
-    //           curve={d3sigmoidcurve}
     //           // Don't draw zero values (they go way off the chart)
     //           getNull={(d) => d.y !== 0}
     //           key={entry.title}
