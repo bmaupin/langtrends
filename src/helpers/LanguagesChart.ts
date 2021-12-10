@@ -14,7 +14,7 @@ export interface SeriesPointWithHint extends LineMarkSeriesPoint {
 
 export interface SeriesData {
   data: SeriesPointWithHint[];
-  title: string;
+  label: string;
 }
 
 interface ScoresByDate {
@@ -164,7 +164,7 @@ export default abstract class LanguagesChart {
 
     for (const languageName of allTopLanguages) {
       formattedScores.push({
-        title: languageName,
+        label: languageName,
         data: [],
       });
     }
