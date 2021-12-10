@@ -148,6 +148,11 @@ export default function Chart(props: {
       <ReactChart
         options={{
           data: chartData,
+          getSeriesStyle: (series) => {
+            return {
+              color: GitHubColors.get(series.label, true).color,
+            };
+          },
           primaryAxis,
           secondaryAxes,
         }}
