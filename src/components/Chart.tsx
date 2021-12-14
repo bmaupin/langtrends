@@ -179,6 +179,8 @@ export default function Chart(props: {
                 r: 5,
               } as CSSProperties,
               color: GitHubColors.get(series.label, true).color,
+              // Disable default animation of the series point circles "moving" into place
+              transition: 'none',
             };
           },
           primaryAxis,
