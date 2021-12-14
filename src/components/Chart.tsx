@@ -1,5 +1,5 @@
 import GitHubColors from 'github-colors';
-import React, { useEffect, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import { AxisOptions, Chart as ReactChart } from 'react-charts';
 import {
   FlexibleWidthXYPlot,
@@ -161,6 +161,18 @@ export default function Chart(props: {
       <ReactChart
         options={{
           data: chartData,
+          // Work around https://github.com/tannerlinsley/react-charts/issues/266
+          getDatumStyle: (datum, _status) => {
+            if (datum.secondaryValue === null) {
+              return {
+                circle: {
+                  r: 0,
+                } as CSSProperties,
+              };
+            } else {
+              return {};
+            }
+          },
           getSeriesStyle: (series) => {
             return {
               circle: {
