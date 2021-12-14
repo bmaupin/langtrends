@@ -102,30 +102,27 @@ export default function Chart(props: {
     setHoveredSeriesIndex(index);
   };
 
-  // TODO: could we just format the dates ahead of time and get rid of this method?
-  const xAxisLabelFormatter = (xValue: number): string => {
-    if (dates[xValue]) {
-      return formatDateForLabel(dates[xValue]);
-    } else {
-      return '';
-    }
-  };
+  const primaryAxis = React.useMemo((): AxisOptions<SeriesPointWithHint> => {
+    const formatDateForLabel = (date: string) => {
+      return date.slice(0, 7);
+    };
 
-  const formatDateForLabel = (date: string) => {
-    return date.slice(0, 7);
-  };
+    const xAxisLabelFormatter = (xValue: number): string => {
+      if (dates[xValue]) {
+        return formatDateForLabel(dates[xValue]);
+      } else {
+        return '';
+      }
+    };
 
-  const primaryAxis = React.useMemo(
-    (): AxisOptions<SeriesPointWithHint> => ({
+    return {
       formatters: {
         scale: xAxisLabelFormatter,
       },
       getValue: (datum) => datum.x,
       scaleType: 'linear',
-    }),
-
-    [dates]
-  );
+    };
+  }, [dates]);
 
   const secondaryAxes = React.useMemo(
     (): AxisOptions<SeriesPointWithHint>[] => [
