@@ -18,7 +18,7 @@ import settings from '../settings.json';
 
 import './Chart.css';
 import '../../node_modules/react-vis/dist/style.css';
-import { SeriesData, SeriesPointWithHint } from '../helpers/LanguagesChart';
+import { SeriesData, SeriesPoint } from '../helpers/LanguagesChart';
 
 export default function Chart(props: {
   chartType: string;
@@ -26,9 +26,7 @@ export default function Chart(props: {
 }) {
   const [chartData, setChartData] = useState([] as SeriesData[]);
   const [dates, setDates] = useState([] as string[]);
-  const [hintValue, setHintValue] = useState(
-    null as SeriesPointWithHint | null
-  );
+  const [hintValue, setHintValue] = useState(null as SeriesPoint | null);
   const [hoveredSeriesIndex, setHoveredSeriesIndex] = useState(
     null as number | null
   );
@@ -83,7 +81,7 @@ export default function Chart(props: {
     );
   };
 
-  const formatHint = (value: SeriesPointWithHint) => {
+  const formatHint = (value: SeriesPoint) => {
     return [
       {
         title: value.hintTitle,
@@ -97,12 +95,12 @@ export default function Chart(props: {
     setHoveredSeriesIndex(null);
   };
 
-  const onValueMouseOver = (value: SeriesPointWithHint, index: number) => {
+  const onValueMouseOver = (value: SeriesPoint, index: number) => {
     setHintValue(value);
     setHoveredSeriesIndex(index);
   };
 
-  const primaryAxis = React.useMemo((): AxisOptions<SeriesPointWithHint> => {
+  const primaryAxis = React.useMemo((): AxisOptions<SeriesPoint> => {
     const formatDateForLabel = (date: string) => {
       return date.slice(0, 7);
     };
@@ -125,7 +123,7 @@ export default function Chart(props: {
   }, [dates]);
 
   const secondaryAxes = React.useMemo(
-    (): AxisOptions<SeriesPointWithHint>[] => [
+    (): AxisOptions<SeriesPoint>[] => [
       {
         curve: D3SigmoidCurve.compression(0.5),
         formatters: {
