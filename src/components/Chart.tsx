@@ -23,7 +23,7 @@ export default function Chart(props: {
   const [chartData, setChartData] = useState([] as SeriesData[]);
   const [dates, setDates] = useState([] as string[]);
   const [hintValue, setHintValue] = useState(null as SeriesPoint | null);
-  const [hoveredSeriesIndex, setHoveredSeriesIndex] = useState(
+  const [focusedSeriesIndex, setFocusedSeriesIndex] = useState(
     null as number | null
   );
   const [leftYAxisLabels, setLeftYAxisLabels] = useState([] as string[]);
@@ -91,12 +91,12 @@ export default function Chart(props: {
 
   const onValueMouseOut = () => {
     setHintValue(null);
-    setHoveredSeriesIndex(null);
+    setFocusedSeriesIndex(null);
   };
 
   const onValueMouseOver = (value: SeriesPoint, index: number) => {
     setHintValue(value);
-    setHoveredSeriesIndex(index);
+    setFocusedSeriesIndex(index);
   };
 
   const primaryAxis = React.useMemo((): AxisOptions<SeriesPoint> => {
@@ -162,6 +162,7 @@ export default function Chart(props: {
 
   return (
     <div
+      // TODO: use more of the available vertical height of the page
       style={{
         height: settings.numberOfLanguages * 49,
       }}
@@ -170,7 +171,7 @@ export default function Chart(props: {
         options={{
           data: chartData,
           // Work around https://github.com/tannerlinsley/react-charts/issues/266
-          getDatumStyle: (datum, _status) => {
+          getDatumStyle: (datum) => {
             if (datum.secondaryValue === null) {
               return {
                 circle: {
@@ -181,8 +182,8 @@ export default function Chart(props: {
               return {};
             }
           },
-          getSeriesStyle: (series) => {
-            return {
+          getSeriesStyle: (series, status) => {
+            const defaultSeriesStyle = {
               circle: {
                 r: 5,
               } as CSSProperties,
@@ -190,6 +191,48 @@ export default function Chart(props: {
               // Disable default animation of the series point circles "moving" into place
               transition: 'none',
             };
+
+            // If a series is focused, return the style for the focused series
+            if (status === 'focused') {
+              setFocusedSeriesIndex(series.index);
+
+              return {
+                ...defaultSeriesStyle,
+                circle: {
+                  ...defaultSeriesStyle.circle,
+                  strokeWidth: '4px',
+                },
+                line: {
+                  strokeWidth: '4px',
+                },
+              };
+            }
+
+            // If the non-focused series index was previously saved as focused, it means
+            // no series is focused right now
+            else if (series.index === focusedSeriesIndex) {
+              setFocusedSeriesIndex(null);
+              return defaultSeriesStyle;
+            }
+
+            // If a series is focused, return the style for the non-focused series
+            else if (focusedSeriesIndex !== null) {
+              return {
+                ...defaultSeriesStyle,
+                circle: {
+                  ...defaultSeriesStyle.circle,
+                  opacity: '0.5',
+                },
+                line: {
+                  opacity: '0.5',
+                },
+              };
+            }
+
+            // If no series is focused, return the default style
+            else {
+              return defaultSeriesStyle;
+            }
           },
           primaryAxis,
           secondaryAxes,
@@ -200,31 +243,15 @@ export default function Chart(props: {
     // <div className="chart-container">
     //   <div className="chart-content">
     //     <FlexibleWidthXYPlot
-    //       height={settings.numberOfLanguages * 49}
-    //       margin={{
-    //         left: 80,
-    //         right: 80,
-    //       }}
     //     >
     //       {chartData.map((entry, i) => (
     //         <LineMarkSeries
     //           key={entry.title}
     //           data={entry.data}
-    //           opacity={
-    //             hoveredSeriesIndex === null || hoveredSeriesIndex === i
-    //               ? 1
-    //               : 0.5
-    //           }
     //           onValueMouseOut={onValueMouseOut}
     //           onValueMouseOver={(datapoint) =>
     //             onValueMouseOver(datapoint as SeriesPointWithHint, i)
     //           }
-    //           strokeWidth={
-    //             hoveredSeriesIndex !== null && hoveredSeriesIndex === i
-    //               ? 4
-    //               : undefined
-    //           }
-    //           lineStyle={{ pointerEvents: 'none' }}
     //         />
     //       ))}
     //       {hintValue && <Hint format={formatHint} value={hintValue} />}
