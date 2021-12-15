@@ -1,15 +1,11 @@
 import GitHubColors from 'github-colors';
-import React, { CSSProperties, useEffect, useState } from 'react';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { AxisOptions, Chart as ReactChart } from 'react-charts';
 import {
   FlexibleWidthXYPlot,
   Hint,
-  HorizontalGridLines,
   LineMarkSeries,
   RVTickFormat,
-  VerticalGridLines,
-  XAxis,
-  YAxis,
 } from 'react-vis';
 
 import ChartFactory from '../helpers/ChartFactory';
@@ -34,6 +30,22 @@ export default function Chart(props: {
   const [rightYAxisLabels, setRightYAxisLabels] = useState([] as string[]);
 
   useEffect(() => {
+    const generateLeftYAxisLabels = (series: SeriesData[]): string[] => {
+      return generateYAxisLabels(
+        // Get just the data for the first date
+        series.map((languageData) => languageData.data[0])
+      );
+    };
+
+    const generateRightYAxisLabels = (series: SeriesData[]): string[] => {
+      return generateYAxisLabels(
+        // Get just the data for the last date
+        series.map(
+          (languageData) => languageData.data[languageData.data.length - 1]
+        )
+      );
+    };
+
     const loadChartData = async () => {
       const chart = await ChartFactory.fromType(
         props.chartType,
@@ -56,28 +68,15 @@ export default function Chart(props: {
     loadChartData();
   }, [props.chartType, props.intervalInMonths]);
 
-  const generateLeftYAxisLabels = (series: SeriesData[]): string[] => {
+  const generateYAxisLabels = (seriesPoints: SeriesPoint[]): string[] => {
     return (
-      series
-        // Get just the data for the first date
-        .map((languageData) => languageData.data[0])
+      seriesPoints
+        // Filter out 0 y values
+        .filter((seriesPoint) => seriesPoint.y !== 0)
+        // Sort by y value
+        .sort((a, b) => a.y - b.y)
         // Drop everything else (x value, y value) and return just a list of hint titles
-        .map((languageData) => languageData && languageData.hintTitle)
-        // Drop any excess labels
-        .slice(0, settings.numberOfLanguages)
-    );
-  };
-
-  // TODO: remove duplication here?
-  const generateRightYAxisLabels = (series: SeriesData[]): string[] => {
-    return (
-      series
-        // Get just the data for the last date
-        .map((languageData) => languageData.data[languageData.data.length - 1])
-        // Drop everything else (x value, y value) and return just a list of hint titles
-        .map((languageData) => languageData && languageData.hintTitle)
-        // Drop any excess labels
-        .slice(0, settings.numberOfLanguages)
+        .map((seriesPoint) => seriesPoint && seriesPoint.hintTitle)
     );
   };
 
@@ -122,30 +121,44 @@ export default function Chart(props: {
     };
   }, [dates]);
 
-  const secondaryAxes = React.useMemo(
-    (): AxisOptions<SeriesPoint>[] => [
+  const secondaryAxes = React.useMemo((): AxisOptions<SeriesPoint>[] => {
+    const yAxisProperties = {
+      getValue: (datum: SeriesPoint) => {
+        if (datum.y === 0) {
+          return null;
+        } else {
+          return datum.y;
+        }
+      },
+      invert: true,
+      scaleType: 'linear',
+    };
+
+    return [
+      // Left y axis
       {
+        ...yAxisProperties,
         curve: D3SigmoidCurve.compression(0.5),
         formatters: {
           scale: (value: number) => {
             return leftYAxisLabels[value - 1];
           },
         },
-        getValue: (datum) => {
-          if (datum.y === 0) {
-            return null;
-          } else {
-            return datum.y;
-          }
-        },
-        invert: true,
-        scaleType: 'linear',
         showDatumElements: true,
-      },
-    ],
+      } as AxisOptions<SeriesPoint>,
 
-    [leftYAxisLabels]
-  );
+      // Right y axis
+      {
+        ...yAxisProperties,
+        formatters: {
+          scale: (value: number) => {
+            return rightYAxisLabels[value - 1];
+          },
+        },
+        position: 'right',
+      } as AxisOptions<SeriesPoint>,
+    ];
+  }, [leftYAxisLabels, rightYAxisLabels]);
 
   return (
     <div
@@ -192,24 +205,9 @@ export default function Chart(props: {
     //         left: 80,
     //         right: 80,
     //       }}
-    //       // Reverse the y scale since we're doing a bump chart
-    //       yDomain={[settings.numberOfLanguages, 1]}
     //     >
-    //       <VerticalGridLines />
-    //       <HorizontalGridLines />
-    //       <XAxis
-    //         tickTotal={dates.length}
-    //       />
-    //       <YAxis
-    //         orientation="right"
-    //         tickFormat={
-    //           ((_v: number, i: number) => rightYAxisLabels[i]) as RVTickFormat
-    //         }
-    //       />
     //       {chartData.map((entry, i) => (
     //         <LineMarkSeries
-    //           // Don't draw zero values (they go way off the chart)
-    //           getNull={(d) => d.y !== 0}
     //           key={entry.title}
     //           data={entry.data}
     //           opacity={
