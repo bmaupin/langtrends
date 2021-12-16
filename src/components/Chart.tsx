@@ -246,6 +246,10 @@ export default function Chart(props: {
             showLabel: false,
             showLine: false,
           },
+          tooltip: {
+            // Only show the data for the hovered point in the tooltip
+            groupingMode: 'single',
+          },
         }}
       />
     </div>
