@@ -235,7 +235,17 @@ export default function Chart(props: {
             }
           },
           primaryAxis,
+          // Disable the default horizontal line and label that show when a point is hovered
+          primaryCursor: {
+            showLabel: false,
+            showLine: false,
+          },
           secondaryAxes,
+          // Disable the default vertical line and label that show when a point is hovered
+          secondaryCursor: {
+            showLabel: false,
+            showLine: false,
+          },
         }}
       />
     </div>
