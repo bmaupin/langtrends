@@ -22,6 +22,8 @@ export default function Chart(props: {
 }) {
   const [chartData, setChartData] = useState([] as SeriesData[]);
   const [dates, setDates] = useState([] as string[]);
+  const [focusedDatum, setFocusedDatum] = useState({} as SeriesPoint);
+  const [focusedDatumTooltip, setFocusedDatumTooltip] = useState('');
   const [hintValue, setHintValue] = useState(null as SeriesPoint | null);
   const [focusedSeriesIndex, setFocusedSeriesIndex] = useState(
     null as number | null
@@ -143,6 +145,20 @@ export default function Chart(props: {
           scale: (value: number) => {
             return leftYAxisLabels[value - 1];
           },
+          tooltip: (value: number) => {
+            // return focusedDatumTooltip;
+
+            for (const series of chartData) {
+              if (
+                series.data[focusedDatum.x] &&
+                series.data[focusedDatum.x].y === value
+              ) {
+                return series.data[focusedDatum.x].hintValue;
+              }
+            }
+
+            return undefined;
+          },
         },
         showDatumElements: true,
       } as AxisOptions<SeriesPoint>,
@@ -158,7 +174,7 @@ export default function Chart(props: {
         position: 'right',
       } as AxisOptions<SeriesPoint>,
     ];
-  }, [leftYAxisLabels, rightYAxisLabels]);
+  }, [focusedDatumTooltip, focusedDatum, leftYAxisLabels, rightYAxisLabels]);
 
   return (
     <div
@@ -171,7 +187,12 @@ export default function Chart(props: {
         options={{
           data: chartData,
           // Work around https://github.com/tannerlinsley/react-charts/issues/266
-          getDatumStyle: (datum) => {
+          getDatumStyle: (datum, status) => {
+            if (status === 'focused') {
+              // setFocusedDatumTooltip(datum.originalDatum.hintValue);
+              setFocusedDatum(datum.originalDatum);
+            }
+
             if (datum.secondaryValue === null) {
               return {
                 circle: {
@@ -250,7 +271,8 @@ export default function Chart(props: {
           },
           tooltip: {
             // Only show the data for the hovered point in the tooltip
-            groupingMode: 'single',
+            // groupingMode: 'single',
+            groupingMode: 'primary',
           },
         }}
       />
