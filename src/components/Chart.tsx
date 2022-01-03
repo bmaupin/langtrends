@@ -234,6 +234,8 @@ export default function Chart(props: {
               return defaultSeriesStyle;
             }
           },
+          // This fixes the hover behaviour, which otherwise sometimes highlights the incorrect series line
+          interactionMode: 'closest',
           primaryAxis,
           // Disable the default horizontal line and label that show when a point is hovered
           primaryCursor: {
