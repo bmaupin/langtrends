@@ -1,12 +1,7 @@
 import GitHubColors from 'github-colors';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { AxisOptions, Chart as ReactChart } from 'react-charts';
-import {
-  FlexibleWidthXYPlot,
-  Hint,
-  LineMarkSeries,
-  RVTickFormat,
-} from 'react-vis';
+import { FlexibleWidthXYPlot, LineMarkSeries } from 'react-vis';
 
 import ChartFactory from '../helpers/ChartFactory';
 import D3SigmoidCurve from '../helpers/D3SigmoidCurve';
@@ -22,9 +17,7 @@ export default function Chart(props: {
 }) {
   const [chartData, setChartData] = useState([] as SeriesData[]);
   const [dates, setDates] = useState([] as string[]);
-  const [focusedDatum, setFocusedDatum] = useState({} as SeriesPoint);
   const [focusedDatumTooltip, setFocusedDatumTooltip] = useState('');
-  const [hintValue, setHintValue] = useState(null as SeriesPoint | null);
   const [focusedSeriesIndex, setFocusedSeriesIndex] = useState(
     null as number | null
   );
@@ -78,30 +71,11 @@ export default function Chart(props: {
         // Sort by y value
         .sort((a, b) => a.y - b.y)
         // Drop everything else (x value, y value) and return just a list of hint titles
-        .map((seriesPoint) => seriesPoint && seriesPoint.hintTitle)
+        .map((seriesPoint) => seriesPoint && seriesPoint.seriesLabel)
     );
   };
 
-  const formatHint = (value: SeriesPoint) => {
-    return [
-      {
-        title: value.hintTitle,
-        value: value.hintValue,
-      },
-    ];
-  };
-
-  const onValueMouseOut = () => {
-    setHintValue(null);
-    setFocusedSeriesIndex(null);
-  };
-
-  const onValueMouseOver = (value: SeriesPoint, index: number) => {
-    setHintValue(value);
-    setFocusedSeriesIndex(index);
-  };
-
-  const primaryAxis = React.useMemo((): AxisOptions<SeriesPoint> => {
+  const primaryAxis = useMemo((): AxisOptions<SeriesPoint> => {
     const formatDateForLabel = (date: string) => {
       return date.slice(0, 7);
     };
@@ -123,7 +97,7 @@ export default function Chart(props: {
     };
   }, [dates]);
 
-  const secondaryAxes = React.useMemo((): AxisOptions<SeriesPoint>[] => {
+  const secondaryAxes = useMemo((): AxisOptions<SeriesPoint>[] => {
     const yAxisProperties = {
       getValue: (datum: SeriesPoint) => {
         if (datum.y === 0) {
@@ -145,19 +119,8 @@ export default function Chart(props: {
           scale: (value: number) => {
             return leftYAxisLabels[value - 1];
           },
-          tooltip: (value: number) => {
-            // return focusedDatumTooltip;
-
-            for (const series of chartData) {
-              if (
-                series.data[focusedDatum.x] &&
-                series.data[focusedDatum.x].y === value
-              ) {
-                return series.data[focusedDatum.x].hintValue;
-              }
-            }
-
-            return undefined;
+          tooltip: () => {
+            return focusedDatumTooltip;
           },
         },
         showDatumElements: true,
@@ -174,7 +137,7 @@ export default function Chart(props: {
         position: 'right',
       } as AxisOptions<SeriesPoint>,
     ];
-  }, [focusedDatumTooltip, focusedDatum, leftYAxisLabels, rightYAxisLabels]);
+  }, [focusedDatumTooltip, leftYAxisLabels, rightYAxisLabels]);
 
   return (
     <div
@@ -186,13 +149,13 @@ export default function Chart(props: {
       <ReactChart
         options={{
           data: chartData,
-          // Work around https://github.com/tannerlinsley/react-charts/issues/266
           getDatumStyle: (datum, status) => {
+            // Work around https://github.com/tannerlinsley/react-charts/issues/267
             if (status === 'focused') {
-              // setFocusedDatumTooltip(datum.originalDatum.hintValue);
-              setFocusedDatum(datum.originalDatum);
+              setFocusedDatumTooltip(datum.originalDatum.tooltipValue);
             }
 
+            // Work around https://github.com/tannerlinsley/react-charts/issues/266
             if (datum.secondaryValue === null) {
               return {
                 circle: {
@@ -271,8 +234,7 @@ export default function Chart(props: {
           },
           tooltip: {
             // Only show the data for the hovered point in the tooltip
-            // groupingMode: 'single',
-            groupingMode: 'primary',
+            groupingMode: 'single',
           },
         }}
       />
@@ -281,18 +243,6 @@ export default function Chart(props: {
     // <div className="chart-container">
     //   <div className="chart-content">
     //     <FlexibleWidthXYPlot
-    //     >
-    //       {chartData.map((entry, i) => (
-    //         <LineMarkSeries
-    //           key={entry.title}
-    //           data={entry.data}
-    //           onValueMouseOut={onValueMouseOut}
-    //           onValueMouseOver={(datapoint) =>
-    //             onValueMouseOver(datapoint as SeriesPointWithHint, i)
-    //           }
-    //         />
-    //       ))}
-    //       {hintValue && <Hint format={formatHint} value={hintValue} />}
     //     </FlexibleWidthXYPlot>
     //   </div>
     // </div>
