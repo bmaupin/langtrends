@@ -15,12 +15,10 @@ export default function Chart(props: {
   chartType: string;
   intervalInMonths: number;
 }) {
+  const [activeSeriesIndex, setActiveSeriesIndex] = useState(-1);
   const [chartData, setChartData] = useState([] as SeriesData[]);
   const [dates, setDates] = useState([] as string[]);
   const [focusedDatumTooltip, setFocusedDatumTooltip] = useState('');
-  const [focusedSeriesIndex, setFocusedSeriesIndex] = useState(
-    null as number | null
-  );
   const [leftYAxisLabels, setLeftYAxisLabels] = useState([] as string[]);
   const [rightYAxisLabels, setRightYAxisLabels] = useState([] as string[]);
 
@@ -173,9 +171,6 @@ export default function Chart(props: {
 
             // If a series is focused, return the style for the focused series
             if (status === 'focused') {
-              // TODO: move this to onFocusDatum (https://github.com/tannerlinsley/react-charts/blob/beta/examples/simple/src/components/CustomStyles.tsx)
-              setFocusedSeriesIndex(series.index);
-
               return {
                 ...defaultSeriesStyle,
                 circle: {
@@ -188,15 +183,8 @@ export default function Chart(props: {
               };
             }
 
-            // If the non-focused series index was previously saved as focused, it means
-            // no series is focused right now
-            else if (series.index === focusedSeriesIndex) {
-              setFocusedSeriesIndex(null);
-              return defaultSeriesStyle;
-            }
-
             // If a series is focused, return the style for the non-focused series
-            else if (focusedSeriesIndex !== null) {
+            else if (activeSeriesIndex !== -1) {
               return {
                 ...defaultSeriesStyle,
                 circle: {
@@ -219,7 +207,10 @@ export default function Chart(props: {
           onFocusDatum: (datum) => {
             // Work around https://github.com/tannerlinsley/react-charts/issues/267
             if (datum) {
+              setActiveSeriesIndex(datum.seriesIndex);
               setFocusedDatumTooltip(datum.originalDatum.tooltipValue);
+            } else {
+              setActiveSeriesIndex(-1);
             }
           },
           primaryAxis,
