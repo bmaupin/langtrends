@@ -150,11 +150,6 @@ export default function Chart(props: {
         options={{
           data: chartData,
           getDatumStyle: (datum, status) => {
-            // Work around https://github.com/tannerlinsley/react-charts/issues/267
-            if (status === 'focused') {
-              setFocusedDatumTooltip(datum.originalDatum.tooltipValue);
-            }
-
             // Work around https://github.com/tannerlinsley/react-charts/issues/266
             if (datum.secondaryValue === null) {
               return {
@@ -178,6 +173,7 @@ export default function Chart(props: {
 
             // If a series is focused, return the style for the focused series
             if (status === 'focused') {
+              // TODO: move this to onFocusDatum (https://github.com/tannerlinsley/react-charts/blob/beta/examples/simple/src/components/CustomStyles.tsx)
               setFocusedSeriesIndex(series.index);
 
               return {
@@ -220,6 +216,12 @@ export default function Chart(props: {
           },
           // This fixes the hover behaviour, which otherwise sometimes highlights the incorrect series line
           interactionMode: 'closest',
+          onFocusDatum: (datum) => {
+            // Work around https://github.com/tannerlinsley/react-charts/issues/267
+            if (datum) {
+              setFocusedDatumTooltip(datum.originalDatum.tooltipValue);
+            }
+          },
           primaryAxis,
           // Disable the default horizontal line and label that show when a point is hovered
           primaryCursor: {
