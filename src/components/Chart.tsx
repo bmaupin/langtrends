@@ -1,7 +1,6 @@
 import GitHubColors from 'github-colors';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { AxisOptions, Chart as ReactChart } from 'react-charts';
-import { FlexibleWidthXYPlot, LineMarkSeries } from 'react-vis';
 
 import ChartFactory from '../helpers/ChartFactory';
 import D3SigmoidCurve from '../helpers/D3SigmoidCurve';
@@ -138,106 +137,104 @@ export default function Chart(props: {
   }, [focusedDatumTooltip, leftYAxisLabels, rightYAxisLabels]);
 
   return (
-    <div
-      // TODO: use more of the available vertical height of the page
-      style={{
-        height: settings.numberOfLanguages * 49,
-      }}
-    >
-      <ReactChart
-        options={{
-          data: chartData,
-          getDatumStyle: (datum, status) => {
-            // Work around https://github.com/tannerlinsley/react-charts/issues/266
-            if (datum.secondaryValue === null) {
-              return {
-                circle: {
-                  r: 0,
-                } as CSSProperties,
-              };
-            } else {
-              return {};
-            }
-          },
-          getSeriesStyle: (series, status) => {
-            const defaultSeriesStyle = {
-              circle: {
-                r: 5,
-              } as CSSProperties,
-              color: GitHubColors.get(series.label, true).color,
-              // Disable default animation of the series point circles "moving" into place
-              transition: 'none',
-            };
-
-            // If a series is focused, return the style for the focused series
-            if (status === 'focused') {
-              return {
-                ...defaultSeriesStyle,
-                circle: {
-                  ...defaultSeriesStyle.circle,
-                  strokeWidth: '4px',
-                },
-                line: {
-                  strokeWidth: '4px',
-                },
-              };
-            }
-
-            // If a series is focused, return the style for the non-focused series
-            else if (activeSeriesIndex !== -1) {
-              return {
-                ...defaultSeriesStyle,
-                circle: {
-                  ...defaultSeriesStyle.circle,
-                  opacity: '0.5',
-                },
-                line: {
-                  opacity: '0.5',
-                },
-              };
-            }
-
-            // If no series is focused, return the default style
-            else {
-              return defaultSeriesStyle;
-            }
-          },
-          // This fixes the hover behaviour, which otherwise sometimes highlights the incorrect series line
-          interactionMode: 'closest',
-          onFocusDatum: (datum) => {
-            // Work around https://github.com/tannerlinsley/react-charts/issues/267
-            if (datum) {
-              setActiveSeriesIndex(datum.seriesIndex);
-              setFocusedDatumTooltip(datum.originalDatum.tooltipValue);
-            } else {
-              setActiveSeriesIndex(-1);
-            }
-          },
-          primaryAxis,
-          // Disable the default horizontal line and label that show when a point is hovered
-          primaryCursor: {
-            showLabel: false,
-            showLine: false,
-          },
-          secondaryAxes,
-          // Disable the default vertical line and label that show when a point is hovered
-          secondaryCursor: {
-            showLabel: false,
-            showLine: false,
-          },
-          tooltip: {
-            // Only show the data for the hovered point in the tooltip
-            groupingMode: 'single',
-          },
+    <div className="chart-container">
+      <div
+        className="chart-content"
+        style={{
+          // TODO: use more of the available vertical height of the page
+          height: settings.numberOfLanguages * 48,
+          // TODO: move this to Chart.css
+          maxWidth: '800px',
         }}
-      />
-    </div>
+      >
+        <ReactChart
+          options={{
+            data: chartData,
+            getDatumStyle: (datum, status) => {
+              // Work around https://github.com/tannerlinsley/react-charts/issues/266
+              if (datum.secondaryValue === null) {
+                return {
+                  circle: {
+                    r: 0,
+                  } as CSSProperties,
+                };
+              } else {
+                return {};
+              }
+            },
+            getSeriesStyle: (series, status) => {
+              const defaultSeriesStyle = {
+                circle: {
+                  r: 5,
+                } as CSSProperties,
+                color: GitHubColors.get(series.label, true).color,
+                // Disable default animation of the series point circles "moving" into place
+                transition: 'none',
+              };
 
-    // <div className="chart-container">
-    //   <div className="chart-content">
-    //     <FlexibleWidthXYPlot
-    //     </FlexibleWidthXYPlot>
-    //   </div>
-    // </div>
+              // If a series is focused, return the style for the focused series
+              if (status === 'focused') {
+                return {
+                  ...defaultSeriesStyle,
+                  circle: {
+                    ...defaultSeriesStyle.circle,
+                    strokeWidth: '4px',
+                  },
+                  line: {
+                    strokeWidth: '4px',
+                  },
+                };
+              }
+
+              // If a series is focused, return the style for the non-focused series
+              else if (activeSeriesIndex !== -1) {
+                return {
+                  ...defaultSeriesStyle,
+                  circle: {
+                    ...defaultSeriesStyle.circle,
+                    opacity: '0.5',
+                  },
+                  line: {
+                    opacity: '0.5',
+                  },
+                };
+              }
+
+              // If no series is focused, return the default style
+              else {
+                return defaultSeriesStyle;
+              }
+            },
+            // This fixes the hover behaviour, which otherwise sometimes highlights the incorrect series line
+            interactionMode: 'closest',
+            onFocusDatum: (datum) => {
+              // Work around https://github.com/tannerlinsley/react-charts/issues/267
+              if (datum) {
+                setActiveSeriesIndex(datum.seriesIndex);
+                setFocusedDatumTooltip(datum.originalDatum.tooltipValue);
+              } else {
+                setActiveSeriesIndex(-1);
+              }
+            },
+            primaryAxis,
+            // Disable the default horizontal line and label that show when a point is hovered
+            primaryCursor: {
+              showLabel: false,
+              showLine: false,
+            },
+            secondaryAxes,
+            // Disable the default vertical line and label that show when a point is hovered
+            secondaryCursor: {
+              showLabel: false,
+              showLine: false,
+            },
+            tooltip: {
+              // Only show the data for the hovered point in the tooltip
+              groupingMode: 'single',
+            },
+          }}
+        />
+      </div>
+    </div>
   );
 }
