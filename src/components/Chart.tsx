@@ -7,7 +7,6 @@ import D3SigmoidCurve from '../helpers/D3SigmoidCurve';
 import settings from '../settings.json';
 
 import './Chart.css';
-import '../../node_modules/react-vis/dist/style.css';
 import { SeriesData, SeriesPoint } from '../helpers/LanguagesChart';
 
 export default function Chart(props: {
@@ -90,6 +89,11 @@ export default function Chart(props: {
         scale: xAxisLabelFormatter,
       },
       getValue: (datum) => datum.x,
+      // Setting the max/min fixes this console warning: Invalid scale min/max
+      max: settings.numberOfDates - 1,
+      min: 0,
+      // Setting the max X value causes the tick labels to be rotated; this fixes that
+      minTickPaddingForRotation: 0,
       scaleType: 'linear',
     };
   }, [dates]);
@@ -104,6 +108,8 @@ export default function Chart(props: {
         }
       },
       invert: true,
+      max: settings.numberOfLanguages,
+      min: 1,
       scaleType: 'linear',
     };
 
