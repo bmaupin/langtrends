@@ -14,7 +14,7 @@ Simple charts showing programming language trends
 
 - [React](https://reactjs.org/)
 - [Semantic UI](https://react.semantic-ui.com/)
-- [react-vis](https://uber.github.io/react-vis/)
+- [react-charts](https://github.com/tannerlinsley/react-charts)
 - [github-colors](https://github.com/IonicaBizau/github-colors)
 
 #### Development
