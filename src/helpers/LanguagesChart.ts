@@ -1,20 +1,16 @@
 import ApiHelper, { Score } from './ApiHelper';
 import settings from '../settings.json';
-import { LineMarkSeriesPoint } from 'react-vis';
 
-export interface SeriesPointWithHint extends LineMarkSeriesPoint {
-  hintTitle: string;
-  hintValue: string;
-  // LineMarkSeriesPoint also allows these to be string or Date but we're not using those and so
-  // overriding them allows us to adhere to LineMarkSeriesPoint without having to check for those
-  // unused types everywhere
+export interface SeriesPoint {
+  seriesLabel: string;
+  tooltipValue: string;
   x: number;
   y: number;
 }
 
 export interface SeriesData {
-  data: SeriesPointWithHint[];
-  title: string;
+  data: SeriesPoint[];
+  label: string;
 }
 
 interface ScoresByDate {
@@ -36,7 +32,7 @@ export default abstract class LanguagesChart {
     newValue: number
   ): number;
 
-  protected abstract formatHintValue(hintValue: number): string;
+  protected abstract formatTooltipValue(tooltipValue: number): string;
 
   public async getDates() {
     // We need one extra date internally for calculations, so to avoid extra API calls just drop the extra date
@@ -164,7 +160,7 @@ export default abstract class LanguagesChart {
 
     for (const languageName of allTopLanguages) {
       formattedScores.push({
-        title: languageName,
+        label: languageName,
         data: [],
       });
     }
@@ -186,10 +182,10 @@ export default abstract class LanguagesChart {
           x: i,
           // Use the ordinal number ranking for the chart data in order to create a bump chart
           y: rank,
-          // TODO: don't add hintTitle and hintValue if score is 0
-          hintTitle: languageName,
+          // TODO: don't add seriesLabel and tooltipValue if score is 0
+          seriesLabel: languageName,
           // Add the custom score as a separate property so it can be used for hints on mouseover
-          hintValue: this.formatHintValue(score),
+          tooltipValue: this.formatTooltipValue(score),
         });
         formattedScoresIndex++;
       }

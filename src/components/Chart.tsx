@@ -1,40 +1,42 @@
 import GitHubColors from 'github-colors';
-import React, { useEffect, useState } from 'react';
-import {
-  FlexibleWidthXYPlot,
-  Hint,
-  HorizontalGridLines,
-  LineMarkSeries,
-  RVTickFormat,
-  VerticalGridLines,
-  XAxis,
-  YAxis,
-} from 'react-vis';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { AxisOptions, Chart as ReactChart } from 'react-charts';
 
 import ChartFactory from '../helpers/ChartFactory';
 import D3SigmoidCurve from '../helpers/D3SigmoidCurve';
 import settings from '../settings.json';
 
 import './Chart.css';
-import '../../node_modules/react-vis/dist/style.css';
-import { SeriesData, SeriesPointWithHint } from '../helpers/LanguagesChart';
+import { SeriesData, SeriesPoint } from '../helpers/LanguagesChart';
 
 export default function Chart(props: {
   chartType: string;
   intervalInMonths: number;
 }) {
+  const [activeSeriesIndex, setActiveSeriesIndex] = useState(-1);
   const [chartData, setChartData] = useState([] as SeriesData[]);
   const [dates, setDates] = useState([] as string[]);
-  const [hintValue, setHintValue] = useState(
-    null as SeriesPointWithHint | null
-  );
-  const [hoveredSeriesIndex, setHoveredSeriesIndex] = useState(
-    null as number | null
-  );
+  const [focusedDatumTooltip, setFocusedDatumTooltip] = useState('');
   const [leftYAxisLabels, setLeftYAxisLabels] = useState([] as string[]);
   const [rightYAxisLabels, setRightYAxisLabels] = useState([] as string[]);
 
   useEffect(() => {
+    const generateLeftYAxisLabels = (series: SeriesData[]): string[] => {
+      return generateYAxisLabels(
+        // Get just the data for the first date
+        series.map((languageData) => languageData.data[0])
+      );
+    };
+
+    const generateRightYAxisLabels = (series: SeriesData[]): string[] => {
+      return generateYAxisLabels(
+        // Get just the data for the last date
+        series.map(
+          (languageData) => languageData.data[languageData.data.length - 1]
+        )
+      );
+    };
+
     const loadChartData = async () => {
       const chart = await ChartFactory.fromType(
         props.chartType,
@@ -57,118 +59,185 @@ export default function Chart(props: {
     loadChartData();
   }, [props.chartType, props.intervalInMonths]);
 
-  const generateLeftYAxisLabels = (series: SeriesData[]): string[] => {
+  const generateYAxisLabels = (seriesPoints: SeriesPoint[]): string[] => {
     return (
-      series
-        // Get just the data for the first date
-        .map((languageData) => languageData.data[0])
-        // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
-        .sort((a, b) => b.y - a.y)
+      seriesPoints
+        // Filter out 0 y values
+        .filter((seriesPoint) => seriesPoint.y !== 0)
+        // Sort by y value
+        .sort((a, b) => a.y - b.y)
         // Drop everything else (x value, y value) and return just a list of hint titles
-        .map((languageData) => languageData && languageData.hintTitle)
+        .map((seriesPoint) => seriesPoint && seriesPoint.seriesLabel)
     );
   };
 
-  // TODO: remove duplication here?
-  const generateRightYAxisLabels = (series: SeriesData[]): string[] => {
-    return (
-      series
-        // Get just the data for the last date
-        .map((languageData) => languageData.data[languageData.data.length - 1])
-        // Sort in reverse order because the y values are ordinal ranks (1 should be first, not 10)
-        .sort((a, b) => b.y - a.y)
-        // Drop everything else (x value, y value) and return just a list of hint titles
-        .map((languageData) => languageData && languageData.hintTitle)
-    );
-  };
+  const primaryAxis = useMemo((): AxisOptions<SeriesPoint> => {
+    const formatDateForLabel = (date: string) => {
+      return date.slice(0, 7);
+    };
 
-  const formatHint = (value: SeriesPointWithHint) => {
-    return [
-      {
-        title: value.hintTitle,
-        value: value.hintValue,
+    const xAxisLabelFormatter = (xValue: number): string => {
+      if (dates[xValue]) {
+        return formatDateForLabel(dates[xValue]);
+      } else {
+        return '';
+      }
+    };
+
+    return {
+      formatters: {
+        scale: xAxisLabelFormatter,
       },
+      getValue: (datum) => datum.x,
+      scaleType: 'linear',
+    };
+  }, [dates]);
+
+  const secondaryAxes = useMemo((): AxisOptions<SeriesPoint>[] => {
+    const yAxisProperties = {
+      getValue: (datum: SeriesPoint) => {
+        if (datum.y === 0) {
+          return null;
+        } else {
+          return datum.y;
+        }
+      },
+      invert: true,
+      scaleType: 'linear',
+      // This prevents a resize from happening as soon as the chart is loaded
+      tickCount: settings.numberOfLanguages,
+    };
+
+    return [
+      // Left y axis
+      {
+        ...yAxisProperties,
+        curve: D3SigmoidCurve.compression(0.5),
+        formatters: {
+          scale: (value: number) => {
+            return leftYAxisLabels[value - 1];
+          },
+          tooltip: () => {
+            return focusedDatumTooltip;
+          },
+        },
+        showDatumElements: true,
+      } as AxisOptions<SeriesPoint>,
+
+      // Right y axis
+      {
+        ...yAxisProperties,
+        formatters: {
+          scale: (value: number) => {
+            return rightYAxisLabels[value - 1];
+          },
+        },
+        position: 'right',
+      } as AxisOptions<SeriesPoint>,
     ];
-  };
-
-  const onValueMouseOut = () => {
-    setHintValue(null);
-    setHoveredSeriesIndex(null);
-  };
-
-  const onValueMouseOver = (value: SeriesPointWithHint, index: number) => {
-    setHintValue(value);
-    setHoveredSeriesIndex(index);
-  };
-
-  // TODO: could we just format the dates ahead of time and get rid of this method?
-  const xAxisLabelFormatter = (_value: number, index: number) => {
-    return formatDateForLabel(dates[index]);
-  };
-
-  const formatDateForLabel = (date: string) => {
-    return date.slice(0, 7);
-  };
-
-  const d3sigmoidcurve = D3SigmoidCurve.compression(0.5);
+  }, [focusedDatumTooltip, leftYAxisLabels, rightYAxisLabels]);
 
   return (
     <div className="chart-container">
-      <div className="chart-content">
-        <FlexibleWidthXYPlot
-          height={settings.numberOfLanguages * 49}
-          margin={{
-            left: 80,
-            right: 80,
-          }}
-          // Reverse the y scale since we're doing a bump chart
-          yDomain={[settings.numberOfLanguages, 1]}
-        >
-          <VerticalGridLines />
-          <HorizontalGridLines />
-          <XAxis
-            tickFormat={xAxisLabelFormatter as RVTickFormat}
-            tickTotal={dates.length}
+      <div
+        className="chart-content"
+        style={{
+          // TODO: use more of the available vertical height of the page
+          height: settings.numberOfLanguages * 48,
+          // TODO: move this to Chart.css
+          maxWidth: '800px',
+        }}
+      >
+        {/* Don't show the chart until the data is loaded, otherwise it causes weird behaviour */}
+        {chartData.length > 0 && (
+          <ReactChart
+            options={{
+              data: chartData,
+              getDatumStyle: (datum, status) => {
+                // Work around https://github.com/tannerlinsley/react-charts/issues/266
+                if (datum.secondaryValue === null) {
+                  return {
+                    circle: {
+                      r: 0,
+                    } as CSSProperties,
+                  };
+                } else {
+                  return {};
+                }
+              },
+              getSeriesStyle: (series, status) => {
+                const defaultSeriesStyle = {
+                  circle: {
+                    r: 5,
+                  } as CSSProperties,
+                  color: GitHubColors.get(series.label, true).color,
+                  // Disable default animation of the series point circles "moving" into place
+                  transition: 'none',
+                };
+
+                // If a series is focused, return the style for the focused series
+                if (status === 'focused') {
+                  return {
+                    ...defaultSeriesStyle,
+                    circle: {
+                      ...defaultSeriesStyle.circle,
+                      strokeWidth: '4px',
+                    },
+                    line: {
+                      strokeWidth: '4px',
+                    },
+                  };
+                }
+
+                // If a series is focused, return the style for the non-focused series
+                else if (activeSeriesIndex !== -1) {
+                  return {
+                    ...defaultSeriesStyle,
+                    circle: {
+                      ...defaultSeriesStyle.circle,
+                      opacity: '0.5',
+                    },
+                    line: {
+                      opacity: '0.5',
+                    },
+                  };
+                }
+
+                // If no series is focused, return the default style
+                else {
+                  return defaultSeriesStyle;
+                }
+              },
+              // This fixes the hover behaviour, which otherwise sometimes highlights the incorrect series line
+              interactionMode: 'closest',
+              onFocusDatum: (datum) => {
+                // Work around https://github.com/tannerlinsley/react-charts/issues/267
+                if (datum) {
+                  setActiveSeriesIndex(datum.seriesIndex);
+                  setFocusedDatumTooltip(datum.originalDatum.tooltipValue);
+                } else {
+                  setActiveSeriesIndex(-1);
+                }
+              },
+              primaryAxis,
+              // Disable the default horizontal line and label that show when a point is hovered
+              primaryCursor: {
+                showLabel: false,
+                showLine: false,
+              },
+              secondaryAxes,
+              // Disable the default vertical line and label that show when a point is hovered
+              secondaryCursor: {
+                showLabel: false,
+                showLine: false,
+              },
+              tooltip: {
+                // Only show the data for the hovered point in the tooltip
+                groupingMode: 'single',
+              },
+            }}
           />
-          <YAxis
-            orientation="left"
-            tickFormat={
-              ((_v: number, i: number) => leftYAxisLabels[i]) as RVTickFormat
-            }
-          />
-          <YAxis
-            orientation="right"
-            tickFormat={
-              ((_v: number, i: number) => rightYAxisLabels[i]) as RVTickFormat
-            }
-          />
-          {chartData.map((entry, i) => (
-            <LineMarkSeries
-              curve={d3sigmoidcurve}
-              // Don't draw zero values (they go way off the chart)
-              getNull={(d) => d.y !== 0}
-              key={entry.title}
-              color={GitHubColors.get(entry.title, true).color}
-              data={entry.data}
-              opacity={
-                hoveredSeriesIndex === null || hoveredSeriesIndex === i
-                  ? 1
-                  : 0.5
-              }
-              onValueMouseOut={onValueMouseOut}
-              onValueMouseOver={(datapoint) =>
-                onValueMouseOver(datapoint as SeriesPointWithHint, i)
-              }
-              strokeWidth={
-                hoveredSeriesIndex !== null && hoveredSeriesIndex === i
-                  ? 4
-                  : undefined
-              }
-              lineStyle={{ pointerEvents: 'none' }}
-            />
-          ))}
-          {hintValue && <Hint format={formatHint} value={hintValue} />}
-        </FlexibleWidthXYPlot>
+        )}
       </div>
     </div>
   );

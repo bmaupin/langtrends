@@ -5,7 +5,7 @@ export default class MostGrowthLanguages extends LanguagesChart {
     return newValue - oldValue;
   }
 
-  protected formatHintValue(hintValue: number): string {
-    return `+${hintValue}`;
+  protected formatTooltipValue(tooltipValue: number): string {
+    return `+${tooltipValue}`;
   }
 }

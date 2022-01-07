@@ -5,7 +5,7 @@ export default class TopLanguagesChart extends LanguagesChart {
     return newValue;
   }
 
-  protected formatHintValue(hintValue: number): string {
-    return String(hintValue);
+  protected formatTooltipValue(tooltipValue: number): string {
+    return String(tooltipValue);
   }
 }

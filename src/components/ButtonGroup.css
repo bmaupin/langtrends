@@ -2,3 +2,8 @@
   /* Override side padding that Semantic UI adds to items inside a grid */
   padding: 0 !important;
 }
+
+.button-group-grid {
+  /* Space around button groups; must be !important to override Semantic UI defaults */
+  margin: 1em !important;
+}

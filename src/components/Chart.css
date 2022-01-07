@@ -1,16 +1,16 @@
+/* Workarounds for https://github.com/tannerlinsley/react-charts/issues/269 */
+.action-voronoi {
+  /* Round the corners of the voronoi rectangles so the tooltips cover the corner series points */
+  stroke-linecap: round;
+  /* This needs to be at least twice the size of the circle radius set in Chart.tsx (circle: {r: 5) */
+  stroke-width: 14px !important;
+}
+
 .chart-container {
   display: flex;
+  justify-content: center;
 }
 
 .chart-content {
   width: 100%;
-}
-
-.chart-legend {
-  text-align: left;
-}
-
-.rv-xy-plot__axis__tick__text {
-  /* Override the default text colour of the axis labels, which is too light */
-  fill: #182026 !important;
 }

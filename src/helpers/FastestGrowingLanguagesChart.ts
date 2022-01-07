@@ -5,7 +5,7 @@ export default class FastestGrowingLanguagesChart extends LanguagesChart {
     return (newValue / oldValue) * 100;
   }
 
-  protected formatHintValue(hintValue: number): string {
-    return `${Math.round(hintValue)}% growth`;
+  protected formatTooltipValue(tooltipValue: number): string {
+    return `${Math.round(tooltipValue)}% growth`;
   }
 }
