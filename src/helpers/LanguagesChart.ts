@@ -117,8 +117,7 @@ export default abstract class LanguagesChart {
   }
 
   // I think this is a rare occurrence, but percentage change (for FastestGrowingLanguagesChart)
-  // could be NaN or Infinity (e.g. if a previous month's value was 0). react-vis can only handle
-  // numbers or null
+  // could be NaN or Infinity (e.g. if a previous month's value was 0)
   private static convertNonFiniteNumber(number: number): number {
     if (!Number.isFinite(number)) {
       return 0;
