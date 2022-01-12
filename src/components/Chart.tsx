@@ -139,15 +139,7 @@ export default function Chart(props: {
 
   return (
     <div className="chart-container">
-      <div
-        className="chart-content"
-        style={{
-          // TODO: use more of the available vertical height of the page
-          height: settings.numberOfLanguages * 48,
-          // TODO: move this to Chart.css
-          maxWidth: '800px',
-        }}
-      >
+      <div className="chart-content">
         {/* Don't show the chart until the data is loaded, otherwise it causes weird behaviour */}
         {chartData.length > 0 && (
           <ReactChart
