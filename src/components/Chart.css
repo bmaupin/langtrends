@@ -8,12 +8,13 @@
 
 /* Allow the chart to be resized within limits, more-or-less keeping the same height/width ratio */
 .chart-container {
+  /* NOTE: Keep the same 3/2 ratio when adjusting these values for optimum UX */
   height: 55vw;
   min-height: 400px;
   min-width: 600px;
   max-height: 600px;
   max-width: 900px;
-  width: 80vw;
+  width: 82.5vw;
 }
 
 .chart-content {
