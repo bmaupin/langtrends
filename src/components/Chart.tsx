@@ -11,6 +11,7 @@ import { SeriesData, SeriesPoint } from '../helpers/LanguagesChart';
 
 export default function Chart(props: {
   chartType: string;
+  firstLanguageIndex: number;
   intervalInMonths: number;
 }) {
   const [activeSeriesIndex, setActiveSeriesIndex] = useState(-1);
@@ -40,7 +41,8 @@ export default function Chart(props: {
     const loadChartData = async () => {
       const chart = await ChartFactory.fromType(
         props.chartType,
-        props.intervalInMonths
+        props.intervalInMonths,
+        props.firstLanguageIndex
       );
 
       // TODO: just one object for chart data?
@@ -57,7 +59,7 @@ export default function Chart(props: {
     };
 
     loadChartData();
-  }, [props.chartType, props.intervalInMonths]);
+  }, [props.chartType, props.firstLanguageIndex, props.intervalInMonths]);
 
   const generateYAxisLabels = (seriesPoints: SeriesPoint[]): string[] => {
     return (
