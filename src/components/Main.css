@@ -6,3 +6,8 @@
   /* Override the Semantic UI default basic button colour, which is too light */
   color: #182026 !important;
 }
+
+.ui.grid {
+  /* Semantic UI default behaviour is to set negative margins on grids */
+  margin: 0;
+}
