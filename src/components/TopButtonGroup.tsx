@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Button, ButtonProps, Grid, Popup } from 'semantic-ui-react';
+import { Button, ButtonProps, Grid } from 'semantic-ui-react';
 
 import './ButtonGroup.css';
 import { ChartType } from '../helpers/ChartFactory';
@@ -46,19 +46,13 @@ export default function TopButtonGroup(props: {
         </Grid>
       </Grid.Column>
       <Grid.Column width={1}>
-        <Popup
-          content="Show previous language"
-          on="hover"
-          trigger={
-            <Button
-              circular
-              disabled={!props.firstLanguageIndex}
-              icon="arrow up"
-              onClick={() => {
-                props.setFirstLanguageIndex((index) => index - 1);
-              }}
-            />
-          }
+        <Button
+          circular
+          disabled={!props.firstLanguageIndex}
+          icon="arrow up"
+          onClick={() => {
+            props.setFirstLanguageIndex((index) => index - 1);
+          }}
         />
       </Grid.Column>
     </Grid>
