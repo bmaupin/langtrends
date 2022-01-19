@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import {
-  Button,
-  ButtonProps,
-  Container,
-  Grid,
-  Item,
-  Popup,
-} from 'semantic-ui-react';
+import { ButtonProps, Container, Grid, Item } from 'semantic-ui-react';
 
 import BottomButtonGroup from './BottomButtonGroup';
 import Chart from './Chart';
@@ -25,7 +18,7 @@ export default function Main() {
   const defaultChartType = ChartType.MostGrowth;
   const defaultInterval = 3;
 
-  const handleChartTypeChanged = (
+  const changeChartType = (
     _event: React.MouseEvent<HTMLElement>,
     { name }: ButtonProps
   ) => {
@@ -36,7 +29,7 @@ export default function Main() {
     }
   };
 
-  const handleIntervalChanged = (
+  const changeInterval = (
     _event: React.MouseEvent<HTMLElement>,
     { value }: ButtonProps
   ) => {
@@ -49,35 +42,12 @@ export default function Main() {
       <Grid centered padded>
         <Item.Group className="main">
           <Item.Content>
-            <Grid centered>
-              <Grid.Column width={1}></Grid.Column>
-              <Grid.Column width={13}>
-                <Grid centered>
-                  <TopButtonGroup
-                    chartType={
-                      searchParams.get('chart_type') ?? defaultChartType
-                    }
-                    handleItemClick={handleChartTypeChanged}
-                  />
-                </Grid>
-              </Grid.Column>
-              <Grid.Column width={1}>
-                <Popup
-                  content="Show previous language"
-                  on="hover"
-                  trigger={
-                    <Button
-                      circular
-                      disabled={!firstLanguageIndex}
-                      icon="arrow up"
-                      onClick={() => {
-                        setFirstLanguageIndex((index) => index - 1);
-                      }}
-                    />
-                  }
-                />
-              </Grid.Column>
-            </Grid>
+            <TopButtonGroup
+              chartType={searchParams.get('chart_type') ?? defaultChartType}
+              firstLanguageIndex={firstLanguageIndex}
+              changeChartType={changeChartType}
+              setFirstLanguageIndex={setFirstLanguageIndex}
+            />
             <Chart
               chartType={searchParams.get('chart_type') ?? defaultChartType}
               firstLanguageIndex={firstLanguageIndex}
@@ -85,35 +55,13 @@ export default function Main() {
                 searchParams.get('interval') || defaultInterval
               )}
             />
-            <Grid centered>
-              <Grid.Column width={1}></Grid.Column>
-              <Grid.Column width={13}>
-                <Grid centered>
-                  <BottomButtonGroup
-                    handleItemClick={handleIntervalChanged}
-                    intervalInMonths={Number(
-                      searchParams.get('interval') || defaultInterval
-                    )}
-                  />
-                </Grid>
-              </Grid.Column>
-              <Grid.Column width={1}>
-                <Popup
-                  content="Show next language"
-                  on="hover"
-                  position="bottom left"
-                  trigger={
-                    <Button
-                      circular
-                      icon="arrow down"
-                      onClick={() => {
-                        setFirstLanguageIndex((index) => index + 1);
-                      }}
-                    />
-                  }
-                />
-              </Grid.Column>
-            </Grid>
+            <BottomButtonGroup
+              changeInterval={changeInterval}
+              intervalInMonths={Number(
+                searchParams.get('interval') || defaultInterval
+              )}
+              setFirstLanguageIndex={setFirstLanguageIndex}
+            />
           </Item.Content>
         </Item.Group>
       </Grid>
