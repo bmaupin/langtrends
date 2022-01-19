@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Button, ButtonProps, Grid, Popup } from 'semantic-ui-react';
+import { Button, ButtonProps, Grid } from 'semantic-ui-react';
 
 import './ButtonGroup.css';
 
@@ -44,19 +44,12 @@ export default function BottomButtonGroup(props: {
         </Grid>
       </Grid.Column>
       <Grid.Column width={1}>
-        <Popup
-          content="Show next language"
-          on="hover"
-          position="bottom left"
-          trigger={
-            <Button
-              circular
-              icon="arrow down"
-              onClick={() => {
-                props.setFirstLanguageIndex((index) => index + 1);
-              }}
-            />
-          }
+        <Button
+          circular
+          icon="arrow down"
+          onClick={() => {
+            props.setFirstLanguageIndex((index) => index + 1);
+          }}
         />
       </Grid.Column>
     </Grid>
