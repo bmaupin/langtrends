@@ -148,8 +148,10 @@ export default abstract class LanguagesChart {
         i < settings.numberOfLanguages + this.firstLanguageIndex;
         i++
       ) {
-        const languageName = sortedKeys[i];
-        topScores[date][languageName] = scoresByDate[date][languageName];
+        if (sortedKeys[i]) {
+          const languageName = sortedKeys[i];
+          topScores[date][languageName] = scoresByDate[date][languageName];
+        }
       }
     }
 
