@@ -26,6 +26,7 @@ export default function Main() {
       // Setting the search params this way allows us to set certain params without overriding the others
       searchParams.set('chart_type', name);
       setSearchParams(searchParams);
+      setFirstLanguageIndex(0);
     }
   };
 
