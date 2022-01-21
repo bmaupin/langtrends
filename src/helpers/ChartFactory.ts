@@ -1,6 +1,7 @@
-import TopLanguagesChart from './TopLanguagesChart';
+import LanguagesChart from './LanguagesChart';
 import FastestGrowingLanguagesChart from './FastestGrowingLanguagesChart';
 import MostGrowthLanguages from './MostGrowthLanguages';
+import TopLanguagesChart from './TopLanguagesChart';
 
 export enum ChartType {
   FastestGrowth = 'fastest_growth',
@@ -13,7 +14,7 @@ export default class ChartFactory {
     chartType: string,
     interval: number,
     firstLanguageIndex: number
-  ) {
+  ): Promise<LanguagesChart> {
     let chart;
     switch (chartType) {
       case ChartType.FastestGrowth:
