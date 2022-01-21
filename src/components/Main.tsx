@@ -6,7 +6,6 @@ import BottomButtonGroup from './BottomButtonGroup';
 import Chart from './Chart';
 import TopButtonGroup from './TopButtonGroup';
 import { ChartType } from '../helpers/ChartFactory';
-import settings from '../settings.json';
 
 import './Main.css';
 
@@ -43,15 +42,6 @@ export default function Main() {
     setSearchParams(searchParams);
   };
 
-  const incrementFirstLanguageIndex = () => {
-    if (
-      maxLanguageIndex &&
-      firstLanguageIndex + settings.numberOfLanguages < maxLanguageIndex
-    ) {
-      setFirstLanguageIndex((index) => index + 1);
-    }
-  };
-
   return (
     <Container>
       <Grid centered padded>
@@ -73,10 +63,12 @@ export default function Main() {
             />
             <BottomButtonGroup
               changeInterval={changeInterval}
-              incrementFirstLanguageIndex={incrementFirstLanguageIndex}
+              firstLanguageIndex={firstLanguageIndex}
               intervalInMonths={Number(
                 searchParams.get('interval') || defaultInterval
               )}
+              maxLanguageIndex={maxLanguageIndex}
+              setFirstLanguageIndex={setFirstLanguageIndex}
             />
           </Item.Content>
         </Item.Group>
