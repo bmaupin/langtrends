@@ -8,8 +8,8 @@ export default function BottomButtonGroup(props: {
     event: React.MouseEvent<HTMLElement>,
     data: ButtonProps
   ) => void;
+  incrementFirstLanguageIndex: () => void;
   intervalInMonths: number;
-  setFirstLanguageIndex: Dispatch<SetStateAction<number>>;
 }) {
   const intervalInMonths = props.intervalInMonths;
 
@@ -48,7 +48,7 @@ export default function BottomButtonGroup(props: {
           circular
           icon="arrow down"
           onClick={() => {
-            props.setFirstLanguageIndex((index) => index + 1);
+            props.incrementFirstLanguageIndex();
           }}
         />
       </Grid.Column>
