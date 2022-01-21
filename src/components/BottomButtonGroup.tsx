@@ -2,14 +2,17 @@ import React, { Dispatch, SetStateAction } from 'react';
 import { Button, ButtonProps, Grid } from 'semantic-ui-react';
 
 import './ButtonGroup.css';
+import settings from '../settings.json';
 
 export default function BottomButtonGroup(props: {
   changeInterval: (
     event: React.MouseEvent<HTMLElement>,
     data: ButtonProps
   ) => void;
-  incrementFirstLanguageIndex: () => void;
+  firstLanguageIndex: number;
   intervalInMonths: number;
+  maxLanguageIndex: number | null;
+  setFirstLanguageIndex: Dispatch<SetStateAction<number>>;
 }) {
   const intervalInMonths = props.intervalInMonths;
 
@@ -46,9 +49,14 @@ export default function BottomButtonGroup(props: {
       <Grid.Column width={1}>
         <Button
           circular
+          disabled={Boolean(
+            props.maxLanguageIndex &&
+              props.firstLanguageIndex + settings.numberOfLanguages >=
+                props.maxLanguageIndex
+          )}
           icon="arrow down"
           onClick={() => {
-            props.incrementFirstLanguageIndex();
+            props.setFirstLanguageIndex((index) => index + 1);
           }}
         />
       </Grid.Column>
