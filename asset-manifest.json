@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/langtrends/static/css/main.19fd9807.css",
-    "main.js": "/langtrends/static/js/main.e017a9e1.js",
+    "main.css": "/langtrends/static/css/main.71bdbe01.css",
+    "main.js": "/langtrends/static/js/main.6c8aa6d5.js",
     "index.html": "/langtrends/index.html",
-    "main.19fd9807.css.map": "/langtrends/static/css/main.19fd9807.css.map",
-    "main.e017a9e1.js.map": "/langtrends/static/js/main.e017a9e1.js.map"
+    "main.71bdbe01.css.map": "/langtrends/static/css/main.71bdbe01.css.map",
+    "main.6c8aa6d5.js.map": "/langtrends/static/js/main.6c8aa6d5.js.map"
   },
   "entrypoints": [
-    "static/css/main.19fd9807.css",
-    "static/js/main.e017a9e1.js"
+    "static/css/main.71bdbe01.css",
+    "static/js/main.6c8aa6d5.js"
   ]
 }
