@@ -21,10 +21,14 @@ interface ScoresByDate {
 
 export default abstract class LanguagesChart {
   private dates: string[] | undefined;
+  private firstLanguageIndex: number;
   private interval: number;
+  public maxLanguageIndex: number | null;
 
-  constructor(interval: number) {
+  constructor(interval: number, firstLanguageIndex: number) {
     this.interval = interval;
+    this.firstLanguageIndex = firstLanguageIndex;
+    this.maxLanguageIndex = null;
   }
 
   protected abstract calculateCustomScore(
@@ -59,7 +63,7 @@ export default abstract class LanguagesChart {
       datesForCalculations
     );
     const datesForChart = await this.getDates();
-    const topCustomScores = await LanguagesChart.calculateTopScores(
+    const topCustomScores = await this.calculateTopScores(
       customScoresByDate,
       datesForChart
     );
@@ -125,7 +129,7 @@ export default abstract class LanguagesChart {
     return number;
   }
 
-  private static async calculateTopScores(
+  private async calculateTopScores(
     scoresByDate: ScoresByDate,
     dates: string[]
   ): Promise<ScoresByDate> {
@@ -141,9 +145,17 @@ export default abstract class LanguagesChart {
         return scoresByDate[date][b]! - scoresByDate[date][a]!;
       });
 
-      for (let i = 0; i < settings.numberOfLanguages; i++) {
-        const languageName = sortedKeys[i];
-        topScores[date][languageName] = scoresByDate[date][languageName];
+      this.maxLanguageIndex = sortedKeys.length;
+
+      for (
+        let i = this.firstLanguageIndex;
+        i < settings.numberOfLanguages + this.firstLanguageIndex;
+        i++
+      ) {
+        if (sortedKeys[i]) {
+          const languageName = sortedKeys[i];
+          topScores[date][languageName] = scoresByDate[date][languageName];
+        }
       }
     }
 

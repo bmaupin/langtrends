@@ -1,5 +1,12 @@
 import GitHubColors from 'github-colors';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React, {
+  CSSProperties,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { AxisOptions, Chart as ReactChart } from 'react-charts';
 
 import ChartFactory from '../helpers/ChartFactory';
@@ -11,7 +18,9 @@ import { SeriesData, SeriesPoint } from '../helpers/LanguagesChart';
 
 export default function Chart(props: {
   chartType: string;
+  firstLanguageIndex: number;
   intervalInMonths: number;
+  setMaxLanguageIndex: Dispatch<SetStateAction<number | null>>;
 }) {
   const [activeSeriesIndex, setActiveSeriesIndex] = useState(-1);
   const [chartData, setChartData] = useState([] as SeriesData[]);
@@ -19,6 +28,10 @@ export default function Chart(props: {
   const [focusedDatumTooltip, setFocusedDatumTooltip] = useState('');
   const [leftYAxisLabels, setLeftYAxisLabels] = useState([] as string[]);
   const [rightYAxisLabels, setRightYAxisLabels] = useState([] as string[]);
+
+  // For some reason we can't set props.setMaxLanguageIndex as a useEffect dependency
+  // so this avoids the need to set the entire props variable as a dependency
+  const setMaxLanguageIndex = props.setMaxLanguageIndex;
 
   useEffect(() => {
     const generateLeftYAxisLabels = (series: SeriesData[]): string[] => {
@@ -40,12 +53,17 @@ export default function Chart(props: {
     const loadChartData = async () => {
       const chart = await ChartFactory.fromType(
         props.chartType,
-        props.intervalInMonths
+        props.intervalInMonths,
+        props.firstLanguageIndex
       );
 
       // TODO: just one object for chart data?
       const dates = await chart.getDates();
       const series = await chart.getSeries();
+
+      if (chart.maxLanguageIndex) {
+        setMaxLanguageIndex(chart.maxLanguageIndex);
+      }
 
       const leftYAxisLabels = generateLeftYAxisLabels(series);
       const rightYAxisLabels = generateRightYAxisLabels(series);
@@ -57,7 +75,12 @@ export default function Chart(props: {
     };
 
     loadChartData();
-  }, [props.chartType, props.intervalInMonths]);
+  }, [
+    props.chartType,
+    props.firstLanguageIndex,
+    props.intervalInMonths,
+    setMaxLanguageIndex,
+  ]);
 
   const generateYAxisLabels = (seriesPoints: SeriesPoint[]): string[] => {
     return (
@@ -115,7 +138,9 @@ export default function Chart(props: {
         curve: D3SigmoidCurve.compression(0.5),
         formatters: {
           scale: (value: number) => {
-            return leftYAxisLabels[value - 1];
+            return (
+              leftYAxisLabels[value - 1] || props.firstLanguageIndex + value
+            );
           },
           tooltip: () => {
             return focusedDatumTooltip;
@@ -135,7 +160,12 @@ export default function Chart(props: {
         position: 'right',
       } as AxisOptions<SeriesPoint>,
     ];
-  }, [focusedDatumTooltip, leftYAxisLabels, rightYAxisLabels]);
+  }, [
+    focusedDatumTooltip,
+    leftYAxisLabels,
+    props.firstLanguageIndex,
+    rightYAxisLabels,
+  ]);
 
   return (
     <div className="chart-container">

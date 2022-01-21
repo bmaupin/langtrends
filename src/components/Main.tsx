@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ButtonProps, Container, Grid, Item } from 'semantic-ui-react';
 
@@ -10,13 +10,19 @@ import { ChartType } from '../helpers/ChartFactory';
 import './Main.css';
 
 export default function Main() {
+  // Index of the first language shown in the chart so we can show more than just the top 10 languages
+  const [firstLanguageIndex, setFirstLanguageIndex] = useState(0);
+  // Maximum language index; used to prevent going beyond the end of the data
+  const [maxLanguageIndex, setMaxLanguageIndex] = useState(
+    null as number | null
+  );
   // Store the chart type/interval directly in the search params so we don't have to maintain separate state for them
   const [searchParams, setSearchParams] = useSearchParams();
 
   const defaultChartType = ChartType.MostGrowth;
   const defaultInterval = 3;
 
-  const handleChartTypeChanged = (
+  const changeChartType = (
     _event: React.MouseEvent<HTMLElement>,
     { name }: ButtonProps
   ) => {
@@ -24,10 +30,11 @@ export default function Main() {
       // Setting the search params this way allows us to set certain params without overriding the others
       searchParams.set('chart_type', name);
       setSearchParams(searchParams);
+      setFirstLanguageIndex(0);
     }
   };
 
-  const handleIntervalChanged = (
+  const changeInterval = (
     _event: React.MouseEvent<HTMLElement>,
     { value }: ButtonProps
   ) => {
@@ -40,26 +47,29 @@ export default function Main() {
       <Grid centered padded>
         <Item.Group className="main">
           <Item.Content>
-            <Grid centered className="button-group-grid">
-              <TopButtonGroup
-                chartType={searchParams.get('chart_type') ?? defaultChartType}
-                handleItemClick={handleChartTypeChanged}
-              />
-            </Grid>
+            <TopButtonGroup
+              changeChartType={changeChartType}
+              chartType={searchParams.get('chart_type') ?? defaultChartType}
+              firstLanguageIndex={firstLanguageIndex}
+              setFirstLanguageIndex={setFirstLanguageIndex}
+            />
             <Chart
               chartType={searchParams.get('chart_type') ?? defaultChartType}
+              firstLanguageIndex={firstLanguageIndex}
               intervalInMonths={Number(
                 searchParams.get('interval') || defaultInterval
               )}
+              setMaxLanguageIndex={setMaxLanguageIndex}
             />
-            <Grid centered className="button-group-grid">
-              <BottomButtonGroup
-                handleItemClick={handleIntervalChanged}
-                intervalInMonths={Number(
-                  searchParams.get('interval') || defaultInterval
-                )}
-              />
-            </Grid>
+            <BottomButtonGroup
+              changeInterval={changeInterval}
+              firstLanguageIndex={firstLanguageIndex}
+              intervalInMonths={Number(
+                searchParams.get('interval') || defaultInterval
+              )}
+              maxLanguageIndex={maxLanguageIndex}
+              setFirstLanguageIndex={setFirstLanguageIndex}
+            />
           </Item.Content>
         </Item.Group>
       </Grid>
