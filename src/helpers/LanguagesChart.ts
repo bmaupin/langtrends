@@ -23,10 +23,12 @@ export default abstract class LanguagesChart {
   private dates: string[] | undefined;
   private firstLanguageIndex: number;
   private interval: number;
+  public maxLanguageIndex: number | null;
 
   constructor(interval: number, firstLanguageIndex: number) {
     this.interval = interval;
     this.firstLanguageIndex = firstLanguageIndex;
+    this.maxLanguageIndex = null;
   }
 
   protected abstract calculateCustomScore(
@@ -142,6 +144,8 @@ export default abstract class LanguagesChart {
       const sortedKeys = Object.keys(scoresByDate[date]).sort(function (a, b) {
         return scoresByDate[date][b]! - scoresByDate[date][a]!;
       });
+
+      this.maxLanguageIndex = sortedKeys.length;
 
       for (
         let i = this.firstLanguageIndex;

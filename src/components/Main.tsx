@@ -6,12 +6,17 @@ import BottomButtonGroup from './BottomButtonGroup';
 import Chart from './Chart';
 import TopButtonGroup from './TopButtonGroup';
 import { ChartType } from '../helpers/ChartFactory';
+import settings from '../settings.json';
 
 import './Main.css';
 
 export default function Main() {
   // Index of the first language shown in the chart so we can show more than just the top 10 languages
   const [firstLanguageIndex, setFirstLanguageIndex] = useState(0);
+  // Maximum language index; used to prevent going beyond the end of the data
+  const [maxLanguageIndex, setMaxLanguageIndex] = useState(
+    null as number | null
+  );
   // Store the chart type/interval directly in the search params so we don't have to maintain separate state for them
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -38,15 +43,24 @@ export default function Main() {
     setSearchParams(searchParams);
   };
 
+  const incrementFirstLanguageIndex = () => {
+    if (
+      maxLanguageIndex &&
+      firstLanguageIndex + settings.numberOfLanguages < maxLanguageIndex
+    ) {
+      setFirstLanguageIndex((index) => index + 1);
+    }
+  };
+
   return (
     <Container>
       <Grid centered padded>
         <Item.Group className="main">
           <Item.Content>
             <TopButtonGroup
+              changeChartType={changeChartType}
               chartType={searchParams.get('chart_type') ?? defaultChartType}
               firstLanguageIndex={firstLanguageIndex}
-              changeChartType={changeChartType}
               setFirstLanguageIndex={setFirstLanguageIndex}
             />
             <Chart
@@ -55,13 +69,14 @@ export default function Main() {
               intervalInMonths={Number(
                 searchParams.get('interval') || defaultInterval
               )}
+              setMaxLanguageIndex={setMaxLanguageIndex}
             />
             <BottomButtonGroup
               changeInterval={changeInterval}
+              incrementFirstLanguageIndex={incrementFirstLanguageIndex}
               intervalInMonths={Number(
                 searchParams.get('interval') || defaultInterval
               )}
-              setFirstLanguageIndex={setFirstLanguageIndex}
             />
           </Item.Content>
         </Item.Group>

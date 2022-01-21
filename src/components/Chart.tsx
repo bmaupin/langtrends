@@ -1,5 +1,12 @@
 import GitHubColors from 'github-colors';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React, {
+  CSSProperties,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { AxisOptions, Chart as ReactChart } from 'react-charts';
 
 import ChartFactory from '../helpers/ChartFactory';
@@ -13,6 +20,7 @@ export default function Chart(props: {
   chartType: string;
   firstLanguageIndex: number;
   intervalInMonths: number;
+  setMaxLanguageIndex: Dispatch<SetStateAction<number | null>>;
 }) {
   const [activeSeriesIndex, setActiveSeriesIndex] = useState(-1);
   const [chartData, setChartData] = useState([] as SeriesData[]);
@@ -20,6 +28,10 @@ export default function Chart(props: {
   const [focusedDatumTooltip, setFocusedDatumTooltip] = useState('');
   const [leftYAxisLabels, setLeftYAxisLabels] = useState([] as string[]);
   const [rightYAxisLabels, setRightYAxisLabels] = useState([] as string[]);
+
+  // For some reason we can't set props.setMaxLanguageIndex as a useEffect dependency
+  // so this avoids the need to set the entire props variable as a dependency
+  const setMaxLanguageIndex = props.setMaxLanguageIndex;
 
   useEffect(() => {
     const generateLeftYAxisLabels = (series: SeriesData[]): string[] => {
@@ -49,6 +61,10 @@ export default function Chart(props: {
       const dates = await chart.getDates();
       const series = await chart.getSeries();
 
+      if (chart.maxLanguageIndex) {
+        setMaxLanguageIndex(chart.maxLanguageIndex);
+      }
+
       const leftYAxisLabels = generateLeftYAxisLabels(series);
       const rightYAxisLabels = generateRightYAxisLabels(series);
 
@@ -59,7 +75,12 @@ export default function Chart(props: {
     };
 
     loadChartData();
-  }, [props.chartType, props.firstLanguageIndex, props.intervalInMonths]);
+  }, [
+    props.chartType,
+    props.firstLanguageIndex,
+    props.intervalInMonths,
+    setMaxLanguageIndex,
+  ]);
 
   const generateYAxisLabels = (seriesPoints: SeriesPoint[]): string[] => {
     return (
