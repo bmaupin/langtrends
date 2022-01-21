@@ -138,7 +138,9 @@ export default function Chart(props: {
         curve: D3SigmoidCurve.compression(0.5),
         formatters: {
           scale: (value: number) => {
-            return leftYAxisLabels[value - 1];
+            return (
+              leftYAxisLabels[value - 1] || props.firstLanguageIndex + value
+            );
           },
           tooltip: () => {
             return focusedDatumTooltip;
@@ -158,7 +160,12 @@ export default function Chart(props: {
         position: 'right',
       } as AxisOptions<SeriesPoint>,
     ];
-  }, [focusedDatumTooltip, leftYAxisLabels, rightYAxisLabels]);
+  }, [
+    focusedDatumTooltip,
+    leftYAxisLabels,
+    props.firstLanguageIndex,
+    rightYAxisLabels,
+  ]);
 
   return (
     <div className="chart-container">
