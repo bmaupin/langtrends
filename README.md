@@ -3,12 +3,23 @@
 
 ---
 
-#### About
+## About
 
 Simple charts showing programming language trends
 
 - Data is from GitHub and Stack Overflow via [https://github.com/bmaupin/langtrends-data](https://github.com/bmaupin/langtrends-data)
 - Data is updated monthly
+
+#### Why?
+
+I like to keep up with programming languages and see how their adoption is changing over time. Unfortunately I wasn't happy with many of the existing sites for a number of reasons:
+
+- Most sites include markup/data formats (HTML, JSON, etc) and domain-specific languages (SQL, MATLAB, Bash, etc), which feels odd to me and helped me realize what I really wanted was a comparison of general-purpose programming languages
+- Some sites have odd ways of gathering data that result in questionable rankings; for example, [TIOBE](https://www.tiobe.com/tiobe-index/) ranked Groovy as the #10 language in January 2021
+- Sites that do have nicer rankings are often only updated quarterly ([RedMonk](https://redmonk.com/sogrady/category/programming-languages/), [GitHut](https://madnight.github.io/githut/))
+- [RedMonk](https://redmonk.com/sogrady/category/programming-languages/) has a nice visualization but it only reflects one point in time and doesn't show changes over time
+
+This project has also been a place for me to learn or refresh my knowledge on specific technologies (React, TypeScript, [sql.js-httpvfs](https://github.com/bmaupin/langtrends-data/tree/store-data-in-sqlite), [LoopBack](https://github.com/bmaupin/langtrends-api), [Grails](https://github.com/bmaupin/junkpile/tree/main/groovy/grails-test), etc)
 
 #### Built with
 
@@ -17,7 +28,7 @@ Simple charts showing programming language trends
 - [react-charts](https://github.com/tannerlinsley/react-charts)
 - [github-colors](https://github.com/IonicaBizau/github-colors)
 
-#### Development
+## Development
 
 1. (Optional) Host the data locally
 
