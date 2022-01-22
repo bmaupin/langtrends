@@ -21,6 +21,10 @@ export default function Header() {
                 <Icon name="help circle" size="big" />
               </Menu.Item>
             }
+            // This makes the content easier to read and prevents it from not showing on
+            // smaller screens due to Popper's overflow detection
+            // (https://popper.js.org/docs/v2/faq/#my-popper-is-bigger-than-the-viewport-what-do-i-do)
+            wide={true}
           >
             <Popup.Content>
               <h3>How the data is calculated</h3>
