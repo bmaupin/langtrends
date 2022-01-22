@@ -20,3 +20,12 @@
 .chart-content {
   height: 100%;
 }
+
+/* Prevent the chart from going past the bottom of the screen on lower resolutions */
+@media (max-height: 1023px) {
+  .chart-container {
+    /* As above, keep the same 3/2 ratio when adjusting these values */
+    max-height: 65vh;
+    max-width: 97.5vh;
+  }
+}
