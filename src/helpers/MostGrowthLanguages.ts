@@ -6,6 +6,10 @@ export default class MostGrowthLanguages extends LanguagesChart {
   }
 
   protected formatTooltipValue(tooltipValue: number): string {
-    return `+${tooltipValue}`;
+    if (tooltipValue >= 0) {
+      return `+${tooltipValue}`;
+    } else {
+      return String(tooltipValue);
+    }
   }
 }
